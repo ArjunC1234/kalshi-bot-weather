@@ -7,7 +7,6 @@ import argparse
 import math
 import os
 import re
-import statistics
 import sys
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta, timezone
@@ -257,10 +256,49 @@ def parse_datetime(value: str) -> datetime:
     return parsed.replace(tzinfo=UTC) if parsed.tzinfo is None else parsed
 
 
-def climate_day_window(city: City, target_date: date) -> tuple[datetime, datetime]:
+def settlement_window(
+    city: City, target_date: date, markets: Iterable[dict[str, Any]]
+) -> tuple[datetime, datetime]:
+    rows = list(markets)
+    if not rows:
+        raise DataError("cannot validate settlement metadata without markets")
+
+    close_times: set[datetime] = set()
+    expected_dates = {
+        f"{target_date.strftime('%B')} {target_date.day}, {target_date.year}".lower(),
+        f"{target_date.strftime('%b')} {target_date.day}, {target_date.year}".lower(),
+    }
+    for market in rows:
+        event_ticker = market.get("event_ticker")
+        if not isinstance(event_ticker, str) or parse_event_date(event_ticker) != target_date:
+            raise DataError("market event date does not match the selected event")
+        close_time = market.get("close_time")
+        rules = market.get("rules_primary")
+        if not isinstance(close_time, str) or not isinstance(rules, str):
+            raise DataError("market is missing close_time or rules_primary")
+        try:
+            close_times.add(parse_datetime(close_time).astimezone(UTC))
+        except ValueError as exc:
+            raise DataError(f"market has malformed close_time {close_time!r}") from exc
+        normalized_rules = rules.lower()
+        if not any(expected_date in normalized_rules for expected_date in expected_dates):
+            raise DataError(f"settlement rules do not name {target_date.isoformat()}")
+        if not any(alias in normalized_rules for alias in city.settlement_aliases):
+            raise DataError(f"settlement rules do not match {city.name}'s configured station")
+
+    if len(close_times) != 1:
+        raise DataError("event brackets have inconsistent close times")
+    close_time = close_times.pop()
     standard_zone = timezone(timedelta(hours=city.standard_utc_offset_hours))
-    start = datetime.combine(target_date, time.min, tzinfo=standard_zone)
-    return start.astimezone(UTC), (start + timedelta(days=1)).astimezone(UTC)
+    expected_end = datetime.combine(
+        target_date + timedelta(days=1), time.min, tzinfo=standard_zone
+    ).astimezone(UTC)
+    if close_time not in (expected_end, expected_end - timedelta(minutes=1)):
+        raise DataError(
+            f"market close {close_time.isoformat()} does not align with the configured climate day"
+        )
+    window_end = expected_end
+    return window_end - timedelta(days=1), window_end
 
 
 def c_to_f(value: float) -> float:
@@ -273,12 +311,13 @@ def fetch_nws_high(
     target_date: date,
     window_start: datetime,
     window_end: datetime,
-) -> float:
+) -> NwsForecast:
     point = http.get_json(f"{NWS_BASE_URL}/points/{city.latitude:.4f},{city.longitude:.4f}")
     properties = point.get("properties")
     if not isinstance(properties, dict):
         raise DataError("NWS point response is missing properties")
 
+    daytime_high: float | None = None
     forecast_url = properties.get("forecast")
     if isinstance(forecast_url, str):
         forecast = http.get_json(forecast_url)
@@ -286,13 +325,18 @@ def fetch_nws_high(
         for period in periods if isinstance(periods, list) else []:
             try:
                 start = parse_datetime(period["startTime"])
-                period_date = start.astimezone(timezone(timedelta(hours=city.standard_utc_offset_hours))).date()
-                if period_date == target_date and bool(period.get("isDaytime")):
+                if window_start <= start.astimezone(UTC) < window_end and bool(period.get("isDaytime")):
                     value = float(period["temperature"])
-                    return c_to_f(value) if str(period.get("temperatureUnit", "F")).upper() == "C" else value
+                    daytime_high = (
+                        c_to_f(value)
+                        if str(period.get("temperatureUnit", "F")).upper() == "C"
+                        else value
+                    )
+                    break
             except (KeyError, TypeError, ValueError):
                 continue
 
+    hourly_high: float | None = None
     hourly_url = properties.get("forecastHourly")
     if isinstance(hourly_url, str):
         hourly = http.get_json(hourly_url)
@@ -309,14 +353,22 @@ def fetch_nws_high(
             except (KeyError, TypeError, ValueError):
                 continue
         if values:
-            return max(values)
+            hourly_high = max(values)
 
-    raise DataError(f"NWS has no forecast high for {city.name} on {target_date}")
+    available = [value for value in (daytime_high, hourly_high) if value is not None]
+    if not available:
+        raise DataError(f"NWS has no forecast high for {city.name} on {target_date}")
+    warnings: list[str] = []
+    if daytime_high is None:
+        warnings.append("NWS daytime high is unavailable; using hourly maximum")
+    if hourly_high is None:
+        warnings.append("NWS hourly maximum is unavailable; using daytime high")
+    return NwsForecast(max(available), daytime_high, hourly_high, tuple(warnings))
 
 
 def fetch_observed_high(
     http: HttpClient, city: City, window_start: datetime, window_end: datetime
-) -> float | None:
+) -> ObservationSummary | None:
     now = datetime.now(UTC)
     if now <= window_start:
         return None
@@ -331,52 +383,94 @@ def fetch_observed_high(
     features = payload.get("features")
     if not isinstance(features, list):
         raise DataError("NWS observations response is missing features")
-    values: list[float] = []
+    observations: list[tuple[datetime, float]] = []
     for feature in features:
         try:
+            timestamp = parse_datetime(feature["properties"]["timestamp"]).astimezone(UTC)
             value = feature["properties"]["temperature"]["value"]
-            if value is not None:
-                values.append(c_to_f(float(value)))
+            if value is not None and window_start <= timestamp < window_end:
+                observations.append((timestamp, c_to_f(float(value))))
         except (KeyError, TypeError, ValueError):
             continue
-    return max(values) if values else None
+    if not observations:
+        return None
+    return ObservationSummary(
+        max(value for _, value in observations),
+        max(timestamp for timestamp, _ in observations),
+    )
 
 
-def extract_member_highs(
-    hourly: dict[str, Any], window_start: datetime, window_end: datetime
-) -> list[float]:
+def extract_ensemble_members(
+    hourly: dict[str, Any],
+    window_start: datetime,
+    window_end: datetime,
+    observed_at: datetime | None = None,
+) -> tuple[list[EnsembleMember], tuple[tuple[str, int], ...], tuple[str, ...]]:
     raw_times = hourly.get("time")
     if not isinstance(raw_times, list):
         raise DataError("ensemble response is missing hourly timestamps")
     timestamps = [parse_datetime(str(value)).astimezone(UTC) for value in raw_times]
-    indexes = [
+    full_indexes = [
         index for index, timestamp in enumerate(timestamps) if window_start <= timestamp < window_end
     ]
-    if not indexes:
+    if not full_indexes:
         raise DataError("ensemble response does not cover the climate-day window")
+    remaining_indexes = [
+        index
+        for index in full_indexes
+        if observed_at is None or timestamps[index] > observed_at
+    ]
 
-    member_fields = sorted(
-        key for key in hourly if key == "temperature_2m" or key.startswith("temperature_2m_member")
-    )
-    highs: list[float] = []
-    for field in member_fields:
-        values = hourly.get(field)
-        if not isinstance(values, list) or len(values) != len(timestamps):
+    members: list[EnsembleMember] = []
+    model_counts: list[tuple[str, int]] = []
+    missing_models: list[str] = []
+    for model, (_, suffix) in ENSEMBLE_MODELS.items():
+        fields = sorted(
+            key
+            for key in hourly
+            if key.startswith("temperature_2m") and key.endswith(f"_{suffix}")
+        )
+        model_members: list[EnsembleMember] = []
+        for field in fields:
+            values = hourly.get(field)
+            if not isinstance(values, list) or len(values) != len(timestamps):
+                continue
+            full_values = [float(values[index]) for index in full_indexes if values[index] is not None]
+            if not full_values:
+                continue
+            remaining_values = [
+                float(values[index]) for index in remaining_indexes if values[index] is not None
+            ]
+            model_members.append(
+                EnsembleMember(
+                    model,
+                    max(full_values),
+                    max(remaining_values) if remaining_values else None,
+                )
+            )
+        if len(model_members) < 10:
+            missing_models.append(model)
             continue
-        usable = [float(values[index]) for index in indexes if values[index] is not None]
-        if usable:
-            highs.append(max(usable))
-    if len(highs) < 10:
-        raise DataError(f"ensemble returned only {len(highs)} usable members")
-    return highs
+        members.extend(model_members)
+        model_counts.append((model, len(model_members)))
+
+    if len(model_counts) < 3:
+        available = ", ".join(f"{name}={count}" for name, count in model_counts) or "none"
+        raise DataError(f"ensemble returned fewer than three usable model families ({available})")
+    warnings = tuple(
+        f"{model} ensemble is unavailable or has fewer than 10 members"
+        for model in missing_models
+    )
+    return members, tuple(model_counts), warnings
 
 
-def fetch_ensemble_highs(
+def fetch_ensemble_members(
     http: HttpClient,
     city: City,
     window_start: datetime,
     window_end: datetime,
-) -> list[float]:
+    observed_at: datetime | None,
+) -> tuple[list[EnsembleMember], tuple[tuple[str, int], ...], tuple[str, ...]]:
     days_needed = max(3, (window_end.date() - datetime.now(UTC).date()).days + 1)
     if days_needed > 16:
         raise DataError("target date is outside the 16-day ensemble forecast horizon")
@@ -386,7 +480,7 @@ def fetch_ensemble_highs(
             "latitude": city.latitude,
             "longitude": city.longitude,
             "hourly": "temperature_2m",
-            "models": "gfs_seamless",
+            "models": ",".join(value[0] for value in ENSEMBLE_MODELS.values()),
             "forecast_days": days_needed,
             "temperature_unit": "fahrenheit",
             "timezone": "UTC",
@@ -395,30 +489,70 @@ def fetch_ensemble_highs(
     hourly = payload.get("hourly")
     if not isinstance(hourly, dict):
         raise DataError("ensemble response is missing hourly data")
-    return extract_member_highs(hourly, window_start, window_end)
+    return extract_ensemble_members(hourly, window_start, window_end, observed_at)
 
 
-def adjust_member_highs(
-    member_highs: Iterable[float], nws_high: float, observed_high: float | None
+def model_balanced_weights(
+    members: Iterable[EnsembleMember], model_counts: Iterable[tuple[str, int]]
 ) -> list[float]:
-    values = list(member_highs)
-    if not values:
-        raise DataError("cannot adjust an empty ensemble")
-    offset = nws_high - statistics.median(values)
-    adjusted = [value + offset for value in values]
-    if observed_high is not None:
-        adjusted = [max(value, observed_high) for value in adjusted]
-    return adjusted
+    rows = list(members)
+    counts = dict(model_counts)
+    if not rows or not counts:
+        raise DataError("cannot weight an empty ensemble")
+    model_weight = 1.0 / len(counts)
+    weights = [model_weight / counts[member.model] for member in rows]
+    if not math.isclose(sum(weights), 1.0, abs_tol=1e-12):
+        raise DataError("ensemble member weights do not sum to one")
+    return weights
 
 
-def kernel_bandwidth(values: Iterable[float]) -> float:
-    samples = sorted(values)
+def weighted_quantile(values: Iterable[float], weights: Iterable[float], quantile: float) -> float:
+    pairs = sorted(zip(values, weights), key=lambda pair: pair[0])
+    if not pairs or not 0.0 <= quantile <= 1.0:
+        raise ValueError("weighted quantile requires samples and a quantile from zero to one")
+    total = sum(weight for _, weight in pairs)
+    threshold = quantile * total
+    cumulative = 0.0
+    for index, (value, weight) in enumerate(pairs):
+        cumulative += weight
+        if cumulative >= threshold:
+            if math.isclose(cumulative, threshold, abs_tol=1e-12) and index + 1 < len(pairs):
+                return (value + pairs[index + 1][0]) / 2.0
+            return value
+    return pairs[-1][0]
+
+
+def center_values(
+    values: Iterable[float], weights: Iterable[float], target: float
+) -> tuple[float, float, list[float]]:
+    samples = list(values)
+    sample_weights = list(weights)
+    center = weighted_quantile(samples, sample_weights, 0.5)
+    shift = target - center
+    return center, shift, [value + shift for value in samples]
+
+
+def kernel_bandwidth(
+    values: Iterable[float], weights: Iterable[float] | None = None
+) -> float:
+    samples = list(values)
     if len(samples) < 2:
         return 1.0
-    stddev = statistics.stdev(samples)
-    quartiles = statistics.quantiles(samples, n=4, method="inclusive")
-    robust_scale = min(stddev, (quartiles[2] - quartiles[0]) / 1.34)
-    silverman = 0.9 * robust_scale * len(samples) ** (-0.2)
+    sample_weights = list(weights) if weights is not None else [1.0 / len(samples)] * len(samples)
+    if len(sample_weights) != len(samples) or any(weight < 0 for weight in sample_weights):
+        raise ValueError("bandwidth values and weights must align")
+    total = sum(sample_weights)
+    if total <= 0:
+        raise ValueError("bandwidth weights must have positive mass")
+    normalized = [weight / total for weight in sample_weights]
+    mean = sum(value * weight for value, weight in zip(samples, normalized))
+    variance = sum(weight * (value - mean) ** 2 for value, weight in zip(samples, normalized))
+    stddev = math.sqrt(variance)
+    q1 = weighted_quantile(samples, normalized, 0.25)
+    q3 = weighted_quantile(samples, normalized, 0.75)
+    robust_scale = min(stddev, (q3 - q1) / 1.34)
+    effective_n = 1.0 / sum(weight**2 for weight in normalized)
+    silverman = 0.9 * robust_scale * effective_n ** (-0.2)
     return max(1.0, silverman)
 
 
@@ -426,20 +560,56 @@ def normal_cdf(value: float, mean: float, sigma: float) -> float:
     return 0.5 * (1.0 + math.erf((value - mean) / (sigma * math.sqrt(2.0))))
 
 
-def mixture_cdf(value: float, member_highs: Iterable[float], bandwidth: float) -> float:
+def mixture_cdf(
+    value: float,
+    member_highs: Iterable[float],
+    bandwidth: float,
+    weights: Iterable[float] | None = None,
+    observed_floor: float | None = None,
+) -> float:
     members = list(member_highs)
     if not members or bandwidth <= 0:
         raise ValueError("mixture requires members and a positive bandwidth")
-    return sum(normal_cdf(value, member, bandwidth) for member in members) / len(members)
+    if observed_floor is not None and value < observed_floor:
+        return 0.0
+    member_weights = list(weights) if weights is not None else [1.0 / len(members)] * len(members)
+    if len(member_weights) != len(members):
+        raise ValueError("mixture values and weights must align")
+    total = sum(member_weights)
+    if total <= 0:
+        raise ValueError("mixture weights must have positive mass")
+    return sum(
+        weight * normal_cdf(value, member, bandwidth)
+        for member, weight in zip(members, member_weights)
+    ) / total
 
 
-def bracket_probability(bracket: Bracket, members: Iterable[float], bandwidth: float) -> float:
+def bracket_probability(
+    bracket: Bracket,
+    members: Iterable[float],
+    bandwidth: float,
+    weights: Iterable[float] | None = None,
+    observed_floor: float | None = None,
+) -> float:
     if bracket.lower is None:
-        return mixture_cdf(bracket.upper + 0.5, members, bandwidth)  # type: ignore[operator]
+        return mixture_cdf(
+            bracket.upper + 0.5, members, bandwidth, weights, observed_floor  # type: ignore[operator]
+        )
     if bracket.upper is None:
-        return 1.0 - mixture_cdf(bracket.lower - 0.5, members, bandwidth)
-    return mixture_cdf(bracket.upper + 0.5, members, bandwidth) - mixture_cdf(
-        bracket.lower - 0.5, members, bandwidth
+        return 1.0 - mixture_cdf(
+            bracket.lower - 0.5, members, bandwidth, weights, observed_floor
+        )
+    return mixture_cdf(
+        bracket.upper + 0.5, members, bandwidth, weights, observed_floor
+    ) - mixture_cdf(
+        bracket.lower - 0.5, members, bandwidth, weights, observed_floor
+    )
+
+
+def point_mass_bracket_probability(bracket: Bracket, value: float) -> float:
+    return float(
+        (bracket.lower is None or value >= bracket.lower - 0.5)
+        and (bracket.upper is None or value < bracket.upper + 0.5)
     )
 
 
@@ -449,24 +619,83 @@ def build_distribution(
     markets = fetch_open_markets(http, city.series_ticker)
     target_date, event_markets = select_event(markets, requested_date)
     brackets = validate_brackets(parse_bracket(market) for market in event_markets)
-    window_start, window_end = climate_day_window(city, target_date)
-    nws_high = fetch_nws_high(http, city, target_date, window_start, window_end)
-    observed_high = fetch_observed_high(http, city, window_start, window_end)
-    raw_members = fetch_ensemble_highs(http, city, window_start, window_end)
-    members = adjust_member_highs(raw_members, nws_high, observed_high)
-    bandwidth = kernel_bandwidth(members)
-    probabilities = tuple(bracket_probability(item, members, bandwidth) for item in brackets)
+    window_start, window_end = settlement_window(city, target_date, event_markets)
+    nws = fetch_nws_high(http, city, target_date, window_start, window_end)
+    observation = fetch_observed_high(http, city, window_start, window_end)
+    observed_at = observation.latest_at if observation else None
+    ensemble, model_counts, ensemble_warnings = fetch_ensemble_members(
+        http, city, window_start, window_end, observed_at
+    )
+    full_weights = model_balanced_weights(ensemble, model_counts)
+    raw_consensus, center_shift, _ = center_values(
+        [member.full_high_f for member in ensemble], full_weights, nws.high_f
+    )
+
+    if observation is None:
+        projected = ensemble
+        members = [member.full_high_f + center_shift for member in projected]
+        member_weights = full_weights
+        observed_floor = None
+    else:
+        projected = [member for member in ensemble if member.remaining_high_f is not None]
+        members = [
+            member.remaining_high_f + center_shift  # type: ignore[operator]
+            for member in projected
+        ]
+        remaining_counts = tuple(
+            (model, sum(member.model == model for member in projected))
+            for model, _ in model_counts
+            if any(member.model == model for member in projected)
+        )
+        member_weights = model_balanced_weights(projected, remaining_counts) if projected else []
+        observed_floor = observation.high_f
+
+    warnings = [*nws.warnings, *ensemble_warnings]
+    if abs(center_shift) > 5.0:
+        warnings.append(f"large NWS center correction ({center_shift:+.1f} F)")
+    now = datetime.now(UTC)
+    if observation and window_start < now < window_end:
+        age = now - observation.latest_at
+        if age > timedelta(hours=2):
+            warnings.append(f"latest station observation is {age.total_seconds() / 3600:.1f} hours old")
+
+    if members:
+        bandwidth = kernel_bandwidth(members, member_weights)
+        probabilities = tuple(
+            bracket_probability(item, members, bandwidth, member_weights, observed_floor)
+            for item in brackets
+        )
+    elif observation is not None:
+        bandwidth = 1.0
+        members = [observation.high_f]
+        member_weights = [1.0]
+        probabilities = tuple(
+            point_mass_bracket_probability(item, observation.high_f)
+            for item in brackets
+        )
+        warnings.append("climate day is fully observed; distribution is a point mass")
+    else:
+        raise DataError("ensemble has no usable full-day or remaining-day member maxima")
+
     if not math.isclose(sum(probabilities), 1.0, rel_tol=0.0, abs_tol=1e-9):
         raise DataError(f"bracket probabilities sum to {sum(probabilities):.12f}, not 1")
     return Distribution(
-        city,
-        target_date,
-        brackets,
-        probabilities,
-        nws_high,
-        observed_high,
-        tuple(members),
-        bandwidth,
+        city=city,
+        target_date=target_date,
+        brackets=brackets,
+        probabilities=probabilities,
+        nws_high_f=nws.high_f,
+        observed_high_f=observation.high_f if observation else None,
+        observed_at=observed_at,
+        member_highs_f=tuple(members),
+        member_weights=tuple(member_weights),
+        bandwidth_f=bandwidth,
+        raw_consensus_high_f=raw_consensus,
+        center_shift_f=center_shift,
+        model_counts=model_counts,
+        window_start=window_start,
+        window_end=window_end,
+        warnings=tuple(warnings),
     )
 
 
@@ -480,10 +709,20 @@ def print_distributions(distributions: Iterable[Distribution]) -> None:
             f"- {distribution.target_date.isoformat()}"
         )
         print(
-            f"NWS high: {distribution.nws_high_f:.1f}°F | observed high: {observed} | "
-            f"ensemble range: {min(distribution.member_highs_f):.1f}–"
-            f"{max(distribution.member_highs_f):.1f}°F | bandwidth: {distribution.bandwidth_f:.2f}°F"
+            f"NWS high: {distribution.nws_high_f:.1f}°F | raw consensus: "
+            f"{distribution.raw_consensus_high_f:.1f}°F | shift: {distribution.center_shift_f:+.1f}°F"
         )
+        observed_time = (
+            "" if distribution.observed_at is None else f" through {distribution.observed_at:%H:%MZ}"
+        )
+        print(
+            f"Observed high: {observed}{observed_time} | projected range: "
+            f"{min(distribution.member_highs_f):.1f}–{max(distribution.member_highs_f):.1f}°F | "
+            f"bandwidth: {distribution.bandwidth_f:.2f}°F"
+        )
+        print("Models: " + ", ".join(f"{model} ({count})" for model, count in distribution.model_counts))
+        for warning in distribution.warnings:
+            print(f"WARNING: {warning}")
         print(f"{'BRACKET':<20} {'PROBABILITY':>11}")
         for bracket, probability in zip(distribution.brackets, distribution.probabilities):
             print(f"{bracket.label:<20} {probability:>10.2%}")
@@ -498,7 +737,8 @@ def plot_distributions(distributions: list[Distribution], output_path: Path, sho
         bars = axis.bar(x_values, percentages, color="#167D8D", edgecolor="#0B3D46", linewidth=0.8)
         axis.set_title(
             f"{distribution.city.name} | {distribution.target_date.isoformat()}\n"
-            f"NWS {distribution.nws_high_f:.0f}°F · σkernel {distribution.bandwidth_f:.1f}°F",
+            f"NWS {distribution.nws_high_f:.0f}°F · shift {distribution.center_shift_f:+.1f}°F "
+            f"· {len(distribution.model_counts)} models · σ {distribution.bandwidth_f:.1f}°F",
             fontsize=11,
         )
         axis.set_xticks(list(x_values), [item.label for item in distribution.brackets], rotation=28, ha="right")
