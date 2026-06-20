@@ -9,11 +9,16 @@ param(
 $ErrorActionPreference = "Stop"
 $projectRoot = $PSScriptRoot
 $python = (Get-Command python -ErrorAction Stop).Source
+$pythonw = Join-Path (Split-Path $python) "pythonw.exe"
+if (-not (Test-Path -LiteralPath $pythonw)) {
+    throw "pythonw.exe was not found next to $python"
+}
 $script = Join-Path $projectRoot "weather_backtest.py"
 $resolvedDataRoot = [System.IO.Path]::GetFullPath((Join-Path $projectRoot $DataRoot))
-$arguments = '"{0}" --root "{1}" --cohort "{2}" --nws-user-agent "{3}" collect-due' -f $script, $resolvedDataRoot, $Cohort, $NwsUserAgent
+$logFile = Join-Path $resolvedDataRoot "collector.log"
+$arguments = '"{0}" --root "{1}" --cohort "{2}" --nws-user-agent "{3}" --log-file "{4}" collect-due' -f $script, $resolvedDataRoot, $Cohort, $NwsUserAgent, $logFile
 
-$action = New-ScheduledTaskAction -Execute $python -Argument $arguments -WorkingDirectory $projectRoot
+$action = New-ScheduledTaskAction -Execute $pythonw -Argument $arguments -WorkingDirectory $projectRoot
 $trigger = New-ScheduledTaskTrigger `
     -Once `
     -At (Get-Date).AddMinutes(1) `

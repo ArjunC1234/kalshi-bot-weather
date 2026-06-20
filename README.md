@@ -95,7 +95,9 @@ Install the one-minute Windows scheduled task after the model version is final:
 The task records the first complete collection within five minutes of each
 checkpoint. A checkpoint that misses that window is permanently marked missing;
 later data is never substituted. If the model source changes, collection stops
-with an error and a new cohort name is required.
+with an error and a new cohort name is required. It runs through `pythonw.exe`
+without opening a console and appends operational output to
+`backtest_data/collector.log`.
 
 Fetch settlements periodically, then evaluate entirely from stored data:
 

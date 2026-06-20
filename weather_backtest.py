@@ -1215,6 +1215,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=os.getenv("NWS_USER_AGENT"),
         help="Descriptive NWS user agent with contact information.",
     )
+    parser.add_argument(
+        "--log-file",
+        type=Path,
+        help="Append stdout and stderr to this file (for background collection).",
+    )
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("collect-due", help="Collect checkpoints currently due.")
     commands.add_parser("settle", help="Fetch finalized outcomes for collected events.")
@@ -1228,10 +1233,16 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
+    args = build_parser().parse_args()
+    log_handle = None
+    if args.log_file:
+        args.log_file.parent.mkdir(parents=True, exist_ok=True)
+        log_handle = args.log_file.open("a", encoding="utf-8", buffering=1)
+        sys.stdout = log_handle
+        sys.stderr = log_handle
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8")
-    args = build_parser().parse_args()
     try:
         if args.command == "collect-due":
             if not args.nws_user_agent:
@@ -1251,6 +1262,9 @@ def main() -> int:
     except (DataError, OSError, ValueError) as exc:
         print(f"Backtest error: {exc}", file=sys.stderr)
         return 1
+    finally:
+        if log_handle:
+            log_handle.close()
 
 
 if __name__ == "__main__":
