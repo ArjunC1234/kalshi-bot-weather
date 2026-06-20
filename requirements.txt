@@ -1,0 +1,2 @@
+matplotlib>=3.9.0,<4
+requests>=2.32.0,<3
