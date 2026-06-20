@@ -367,9 +367,13 @@ def fetch_nws_high(
 
 
 def fetch_observed_high(
-    http: HttpClient, city: City, window_start: datetime, window_end: datetime
+    http: HttpClient,
+    city: City,
+    window_start: datetime,
+    window_end: datetime,
+    as_of: datetime | None = None,
 ) -> ObservationSummary | None:
-    now = datetime.now(UTC)
+    now = (as_of or datetime.now(UTC)).astimezone(UTC)
     if now <= window_start:
         return None
     payload = http.get_json(
@@ -470,8 +474,10 @@ def fetch_ensemble_members(
     window_start: datetime,
     window_end: datetime,
     observed_at: datetime | None,
+    as_of: datetime | None = None,
 ) -> tuple[list[EnsembleMember], tuple[tuple[str, int], ...], tuple[str, ...]]:
-    days_needed = max(3, (window_end.date() - datetime.now(UTC).date()).days + 1)
+    current = (as_of or datetime.now(UTC)).astimezone(UTC)
+    days_needed = max(3, (window_end.date() - current.date()).days + 1)
     if days_needed > 16:
         raise DataError("target date is outside the 16-day ensemble forecast horizon")
     payload = http.get_json(
@@ -614,17 +620,25 @@ def point_mass_bracket_probability(bracket: Bracket, value: float) -> float:
 
 
 def build_distribution(
-    http: HttpClient, city: City, requested_date: date | None
+    http: HttpClient,
+    city: City,
+    requested_date: date | None,
+    as_of: datetime | None = None,
+    condition_on_observations: bool = True,
 ) -> Distribution:
+    current = (as_of or datetime.now(UTC)).astimezone(UTC)
     markets = fetch_open_markets(http, city.series_ticker)
     target_date, event_markets = select_event(markets, requested_date)
     brackets = validate_brackets(parse_bracket(market) for market in event_markets)
     window_start, window_end = settlement_window(city, target_date, event_markets)
     nws = fetch_nws_high(http, city, target_date, window_start, window_end)
-    observation = fetch_observed_high(http, city, window_start, window_end)
+    fetched_observation = fetch_observed_high(
+        http, city, window_start, window_end, current
+    )
+    observation = fetched_observation if condition_on_observations else None
     observed_at = observation.latest_at if observation else None
     ensemble, model_counts, ensemble_warnings = fetch_ensemble_members(
-        http, city, window_start, window_end, observed_at
+        http, city, window_start, window_end, observed_at, current
     )
     full_weights = model_balanced_weights(ensemble, model_counts)
     raw_consensus, center_shift, _ = center_values(
@@ -653,9 +667,8 @@ def build_distribution(
     warnings = [*nws.warnings, *ensemble_warnings]
     if abs(center_shift) > 5.0:
         warnings.append(f"large NWS center correction ({center_shift:+.1f} F)")
-    now = datetime.now(UTC)
-    if observation and window_start < now < window_end:
-        age = now - observation.latest_at
+    if observation and window_start < current < window_end:
+        age = current - observation.latest_at
         if age > timedelta(hours=2):
             warnings.append(f"latest station observation is {age.total_seconds() / 3600:.1f} hours old")
 
