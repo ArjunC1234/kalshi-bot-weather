@@ -1,0 +1,16 @@
+[Unit]
+Description=Kalshi weather hourly Supabase collector
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/kalshi-weather-demo-bot
+EnvironmentFile=/opt/kalshi-weather-demo-bot/.env
+ExecStart=/opt/kalshi-weather-demo-bot/.venv/bin/python /opt/kalshi-weather-demo-bot/supabase_hourly_collector.py collect-once
+User=root
+Group=root
+Nice=5
+
+[Install]
+WantedBy=multi-user.target

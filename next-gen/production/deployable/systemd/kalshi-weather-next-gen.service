@@ -1,0 +1,15 @@
+[Unit]
+Description=Kalshi weather next-gen bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/kalshi-weather-next-gen
+EnvironmentFile=/opt/kalshi-weather-next-gen/.env
+ExecStart=/opt/kalshi-weather-next-gen/.venv/bin/python /opt/kalshi-weather-next-gen/bot.py
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

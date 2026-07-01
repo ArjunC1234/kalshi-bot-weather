@@ -25,9 +25,10 @@ $trigger = New-ScheduledTaskTrigger `
     -RepetitionInterval (New-TimeSpan -Minutes 1) `
     -RepetitionDuration (New-TimeSpan -Days 3650)
 $settings = New-ScheduledTaskSettingsSet `
-    -MultipleInstances IgnoreNew `
+    -MultipleInstances Queue `
     -StartWhenAvailable `
-    -ExecutionTimeLimit (New-TimeSpan -Minutes 1)
+    -WakeToRun `
+    -ExecutionTimeLimit (New-TimeSpan -Minutes 4)
 
 Register-ScheduledTask `
     -TaskName $TaskName `

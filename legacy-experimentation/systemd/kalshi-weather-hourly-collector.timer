@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Kalshi weather hourly Supabase collector
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+RandomizedDelaySec=45
+Unit=kalshi-weather-hourly-collector.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,70 @@
+{
+  "poll_interval_minutes": 20,
+  "trade_enabled_default": false,
+  "excluded_cities": ["mia", "okc"],
+  "min_edge": 0.02,
+  "max_yes_ask": 0.95,
+  "min_probability": 0.0,
+  "contracts": 1,
+  "order_type": "limit",
+  "time_in_force": "immediate_or_cancel",
+  "exit_enabled": true,
+  "position_sync_enabled": true,
+  "exit_probability_below": 0.25,
+  "exit_edge_below": -0.02,
+  "exit_when_not_top": true,
+  "sell_time_in_force": "immediate_or_cancel",
+  "nws_hrrr_blend_weight": 0.35,
+  "distribution_sigma_f": 1.75,
+  "hrrr_top3_distance_penalty": 0.8,
+  "cities": {
+    "nyc": {
+      "name": "New York City",
+      "series_ticker": "KXHIGHNY",
+      "station_id": "KNYC",
+      "latitude": 40.77898,
+      "longitude": -73.96925,
+      "standard_utc_offset_hours": -5
+    },
+    "mia": {
+      "name": "Miami",
+      "series_ticker": "KXHIGHMIA",
+      "station_id": "KMIA",
+      "latitude": 25.79536,
+      "longitude": -80.29012,
+      "standard_utc_offset_hours": -5
+    },
+    "la": {
+      "name": "Los Angeles",
+      "series_ticker": "KXHIGHLAX",
+      "station_id": "KLAX",
+      "latitude": 33.93817,
+      "longitude": -118.3866,
+      "standard_utc_offset_hours": -8
+    },
+    "den": {
+      "name": "Denver",
+      "series_ticker": "KXHIGHDEN",
+      "station_id": "KDEN",
+      "latitude": 39.84657,
+      "longitude": -104.65623,
+      "standard_utc_offset_hours": -7
+    },
+    "aus": {
+      "name": "Austin",
+      "series_ticker": "KXHIGHAUS",
+      "station_id": "KAUS",
+      "latitude": 30.19453,
+      "longitude": -97.66988,
+      "standard_utc_offset_hours": -6
+    },
+    "okc": {
+      "name": "Oklahoma City",
+      "series_ticker": "KXHIGHTOKC",
+      "station_id": "KOKC",
+      "latitude": 35.39309,
+      "longitude": -97.60073,
+      "standard_utc_offset_hours": -6
+    }
+  }
+}

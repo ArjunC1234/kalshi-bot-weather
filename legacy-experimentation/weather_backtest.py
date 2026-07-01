@@ -11,6 +11,7 @@ import json
 import math
 import os
 import random
+import statistics
 import sys
 import tempfile
 from collections import defaultdict
@@ -30,7 +31,10 @@ from weather_probabilities import (
     DataError,
     Distribution,
     HttpClient,
+    bracket_probability,
     build_distribution,
+    extract_ensemble_members,
+    kernel_bandwidth,
     parse_datetime,
     parse_event_date,
     point_mass_bracket_probability,
@@ -38,7 +42,10 @@ from weather_probabilities import (
 
 
 SCHEMA_VERSION = 1
+SNAPSHOT_SCHEMA_VERSION = 2
 CHECKPOINT_GRACE = timedelta(minutes=5)
+OPEN_METEO_GFS_URL = "https://api.open-meteo.com/v1/gfs"
+HRRR_TOP3_DISTANCE_PENALTY = 0.8
 CHECKPOINTS = (
     ("t_minus_6h", -6),
     ("t_plus_6h", 6),
@@ -47,6 +54,14 @@ CHECKPOINTS = (
     ("t_plus_18h", 18),
 )
 CHECKPOINT_ORDER = tuple(name for name, _ in CHECKPOINTS)
+CHALLENGER_NAMES = (
+    "family_centered",
+    "gefs_centered",
+    "ecmwf_ifs_centered",
+    "icon_eps_centered",
+    "gem_centered",
+    "hrrr_top3_rerank",
+)
 CLI_LOCATIONS = {
     "nyc": "NYC",
     "mia": "MIA",
@@ -264,6 +279,192 @@ def distribution_to_dict(distribution: Distribution) -> dict[str, Any]:
     }
 
 
+def fetch_hrrr_guidance(
+    http: HttpClient,
+    city: City,
+    window_start: datetime,
+    window_end: datetime,
+    observed_high_f: float | None,
+    observed_at: datetime | None,
+    as_of: datetime,
+) -> dict[str, Any]:
+    days_needed = max(2, (window_end.date() - as_of.astimezone(UTC).date()).days + 1)
+    if days_needed > 2:
+        raise DataError("HRRR guidance is only available for short-range checkpoints")
+    payload = http.get_json(
+        OPEN_METEO_GFS_URL,
+        {
+            "latitude": city.latitude,
+            "longitude": city.longitude,
+            "hourly": "temperature_2m",
+            "models": "gfs_hrrr",
+            "forecast_days": days_needed,
+            "temperature_unit": "fahrenheit",
+            "timezone": "UTC",
+        },
+    )
+    hourly = payload.get("hourly")
+    if not isinstance(hourly, dict):
+        raise DataError("HRRR response is missing hourly data")
+    raw_times = hourly.get("time")
+    raw_values = hourly.get("temperature_2m")
+    if not isinstance(raw_times, list) or not isinstance(raw_values, list):
+        raise DataError("HRRR response is missing hourly temperature series")
+    if len(raw_times) != len(raw_values):
+        raise DataError("HRRR time and temperature series do not align")
+    rows: list[tuple[datetime, float]] = []
+    for timestamp, value in zip(raw_times, raw_values, strict=True):
+        if value is None:
+            continue
+        parsed = parse_datetime(str(timestamp)).astimezone(UTC)
+        if window_start <= parsed < window_end:
+            rows.append((parsed, float(value)))
+    if not rows:
+        raise DataError("HRRR response does not cover the climate-day window")
+    remaining = [
+        value
+        for timestamp, value in rows
+        if observed_at is None or timestamp > observed_at.astimezone(UTC)
+    ]
+    projected_candidates = list(remaining)
+    if observed_high_f is not None:
+        projected_candidates.append(float(observed_high_f))
+    if not projected_candidates:
+        raise DataError("HRRR response has no usable remaining-day temperatures")
+    return {
+        "provider": "open_meteo",
+        "endpoint": OPEN_METEO_GFS_URL,
+        "model": "gfs_hrrr",
+        "latitude": city.latitude,
+        "longitude": city.longitude,
+        "window_start": window_start.isoformat(),
+        "window_end": window_end.isoformat(),
+        "observed_high_f": observed_high_f,
+        "observed_at": observed_at.isoformat() if observed_at else None,
+        "full_window_high_f": max(value for _, value in rows),
+        "remaining_forecast_high_f": max(remaining) if remaining else None,
+        "projected_high_f": max(projected_candidates),
+        "hour_count": len(rows),
+        "remaining_hour_count": len(remaining),
+    }
+
+
+def _trace_record(
+    records: Iterable[dict[str, Any]], predicate: Any
+) -> dict[str, Any] | None:
+    return next((record for record in records if predicate(str(record.get("url", "")))), None)
+
+
+def _nws_forecast_metadata(record: dict[str, Any] | None) -> dict[str, Any] | None:
+    if record is None:
+        return None
+    properties = record.get("payload", {}).get("properties", {})
+    received_at = parse_datetime(str(record["received_at"])).astimezone(UTC)
+    update_time = properties.get("updateTime")
+    generated_at = properties.get("generatedAt")
+
+    def age(value: Any) -> float | None:
+        if not isinstance(value, str):
+            return None
+        return (received_at - parse_datetime(value).astimezone(UTC)).total_seconds()
+
+    return {
+        "requested_at": record.get("requested_at"),
+        "received_at": record.get("received_at"),
+        "update_time": update_time,
+        "generated_at": generated_at,
+        "update_age_seconds_at_receipt": age(update_time),
+        "generation_age_seconds_at_receipt": age(generated_at),
+    }
+
+
+def derive_source_metadata(snapshot: dict[str, Any]) -> dict[str, Any]:
+    records = snapshot.get("http_trace")
+    if not isinstance(records, list):
+        raise DataError("snapshot does not contain an HTTP trace")
+    auxiliary_records = snapshot.get("auxiliary_http_trace")
+    if not isinstance(auxiliary_records, list):
+        auxiliary_records = []
+    as_of = parse_datetime(snapshot["checkpoint"]["as_of"]).astimezone(UTC)
+    daily = _trace_record(
+        records,
+        lambda url: "api.weather.gov/gridpoints/" in url and url.endswith("/forecast"),
+    )
+    hourly = _trace_record(records, lambda url: url.endswith("/forecast/hourly"))
+    observations = _trace_record(records, lambda url: url.endswith("/observations"))
+    kalshi = _trace_record(records, lambda url: url.endswith("/markets"))
+    open_meteo = _trace_record(records, lambda url: "ensemble-api.open-meteo.com" in url)
+    hrrr = _trace_record(auxiliary_records, lambda url: "api.open-meteo.com/v1/gfs" in url)
+
+    latest_observation: datetime | None = None
+    observation_count = 0
+    if observations is not None:
+        features = observations.get("payload", {}).get("features", [])
+        if isinstance(features, list):
+            timestamps: list[datetime] = []
+            for feature in features:
+                try:
+                    timestamps.append(
+                        parse_datetime(feature["properties"]["timestamp"]).astimezone(UTC)
+                    )
+                except (KeyError, TypeError, ValueError):
+                    continue
+            observation_count = len(timestamps)
+            latest_observation = max(timestamps) if timestamps else None
+
+    def retrieval(record: dict[str, Any] | None) -> dict[str, Any] | None:
+        if record is None:
+            return None
+        return {
+            "requested_at": record.get("requested_at"),
+            "received_at": record.get("received_at"),
+        }
+
+    open_meteo_metadata = retrieval(open_meteo)
+    if open_meteo_metadata is not None and open_meteo is not None:
+        open_meteo_metadata["api_generation_time_ms"] = open_meteo.get("payload", {}).get(
+            "generationtime_ms"
+        )
+    observation_metadata = retrieval(observations)
+    if observation_metadata is not None:
+        observation_metadata.update(
+            {
+                "observation_count": observation_count,
+                "latest_observation_at": (
+                    latest_observation.isoformat() if latest_observation else None
+                ),
+                "observation_age_seconds_at_checkpoint": (
+                    (as_of - latest_observation).total_seconds()
+                    if latest_observation
+                    else None
+                ),
+            }
+        )
+    return {
+        "nws_daily": _nws_forecast_metadata(daily),
+        "nws_hourly": _nws_forecast_metadata(hourly),
+        "nws_observations": observation_metadata,
+        "kalshi": retrieval(kalshi),
+        "open_meteo": open_meteo_metadata,
+        "open_meteo_hrrr": retrieval(hrrr),
+    }
+
+
+def source_metadata(snapshot: dict[str, Any]) -> dict[str, Any]:
+    stored = snapshot.get("source_metadata")
+    return stored if isinstance(stored, dict) else derive_source_metadata(snapshot)
+
+
+def flatten_source_metadata(snapshot: dict[str, Any]) -> dict[str, Any]:
+    metadata = source_metadata(snapshot)
+    row: dict[str, Any] = {}
+    for source, values in metadata.items():
+        if isinstance(values, dict):
+            for key, value in values.items():
+                row[f"{source}_{key}"] = value
+    return row
+
+
 def probability_vectors_match(left: Distribution, right: Distribution) -> bool:
     return (
         [bracket.ticker for bracket in left.brackets]
@@ -357,8 +558,30 @@ def capture_checkpoint(
     if len(event_tickers) != 1:
         raise DataError("captured event markets have inconsistent event tickers")
 
+    auxiliary_client = TracingHttpClient(user_agent)
+    auxiliary_inputs: dict[str, Any] = {}
+    auxiliary_errors: list[dict[str, Any]] = []
+    try:
+        auxiliary_inputs["open_meteo_hrrr"] = fetch_hrrr_guidance(
+            auxiliary_client,
+            checkpoint.city,
+            full.window_start,
+            full.window_end,
+            full.observed_high_f,
+            full.observed_at,
+            as_of,
+        )
+    except Exception as exc:
+        auxiliary_errors.append(
+            {
+                "source": "open_meteo_hrrr",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+            }
+        )
+
     payload = {
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": SNAPSHOT_SCHEMA_VERSION,
         "cohort": cohort,
         "model_source_hash": model_source_hash(),
         "collector_source_hash": collector_source_hash(),
@@ -382,7 +605,11 @@ def capture_checkpoint(
         "distribution": distribution_to_dict(full),
         "forecast_only_distribution": distribution_to_dict(forecast_only),
         "http_trace": client.records,
+        "auxiliary_http_trace": auxiliary_client.records,
+        "auxiliary_inputs": auxiliary_inputs,
+        "auxiliary_errors": auxiliary_errors,
     }
+    payload["source_metadata"] = derive_source_metadata(payload)
     write_json_gz_immutable(output, payload)
     return output
 
@@ -407,6 +634,7 @@ def record_attempt_failure(
 
 def collect_due(root: Path, cohort: str, user_agent: str, now: datetime | None = None) -> int:
     current = (now or datetime.now(UTC)).astimezone(UTC)
+    print(f"[{current.isoformat()}] collect-due started")
     manifest = ensure_manifest(root, cohort, current - CHECKPOINT_GRACE)
     started_at = parse_datetime(str(manifest["started_at"])).astimezone(UTC)
     base = cohort_dir(root, cohort)
@@ -424,8 +652,15 @@ def collect_due(root: Path, cohort: str, user_agent: str, now: datetime | None =
                     "schema_version": SCHEMA_VERSION,
                     "reason": "collector did not complete within checkpoint grace period",
                     "scheduled_at": checkpoint.scheduled_at.isoformat(),
+                    "deadline_at": deadline.isoformat(),
                     "marked_at": current.isoformat(),
                 },
+            )
+            print(
+                f"[{current.isoformat()}] Marked missing "
+                f"{checkpoint.city.key} {checkpoint.target_date} {checkpoint.name}; "
+                f"scheduled={checkpoint.scheduled_at.isoformat()} "
+                f"deadline={deadline.isoformat()}"
             )
             missed += 1
             continue
@@ -433,17 +668,26 @@ def collect_due(root: Path, cohort: str, user_agent: str, now: datetime | None =
             continue
         try:
             path = capture_checkpoint(root, cohort, checkpoint, current, user_agent)
-            print(f"Collected {checkpoint.city.name} {checkpoint.target_date} {checkpoint.name}: {path}")
+            print(
+                f"[{current.isoformat()}] Collected {checkpoint.city.name} "
+                f"{checkpoint.target_date} {checkpoint.name}: {path}"
+            )
             collected += 1
         except Exception as exc:
             record_attempt_failure(base, checkpoint, current, exc)
             print(
-                f"Collection failed for {checkpoint.city.name} {checkpoint.target_date} "
+                f"[{current.isoformat()}] Collection failed for "
+                f"{checkpoint.city.name} {checkpoint.target_date} "
                 f"{checkpoint.name}: {exc}",
                 file=sys.stderr,
             )
             failed += 1
-    print(f"Collection summary: collected={collected} failed={failed} newly_missing={missed}")
+    finished = datetime.now(UTC) if now is None else current
+    print(
+        f"[{finished.isoformat()}] Collection summary: collected={collected} "
+        f"failed={failed} newly_missing={missed} "
+        f"duration_seconds={(finished - current).total_seconds():.1f}"
+    )
     return 1 if failed else 0
 
 
@@ -624,6 +868,236 @@ def probabilities_from_snapshot(snapshot: dict[str, Any], key: str) -> tuple[lis
     return tickers, values
 
 
+def _stored_brackets(snapshot: dict[str, Any]) -> list[Bracket]:
+    rows = snapshot.get("distribution", {}).get("brackets", [])
+    if not isinstance(rows, list):
+        raise DataError("snapshot brackets are malformed")
+    return [
+        Bracket(
+            str(row["ticker"]),
+            str(row["label"]),
+            int(row["lower"]) if row["lower"] is not None else None,
+            int(row["upper"]) if row["upper"] is not None else None,
+        )
+        for row in rows
+    ]
+
+
+def _family_slug(name: str) -> str:
+    return {
+        "GEFS": "gefs_centered",
+        "ECMWF IFS": "ecmwf_ifs_centered",
+        "ICON EPS": "icon_eps_centered",
+        "GEM": "gem_centered",
+    }[name]
+
+
+def _centered_probabilities(
+    brackets: list[Bracket],
+    means: list[float],
+    weights: list[float],
+    observed_floor: float | None,
+) -> tuple[list[float], float]:
+    if not means:
+        if observed_floor is None:
+            raise DataError("challenger has no projected member highs")
+        return (
+            [point_mass_bracket_probability(bracket, observed_floor) for bracket in brackets],
+            1.0,
+        )
+    bandwidth = kernel_bandwidth(means, weights)
+    probabilities = [
+        bracket_probability(bracket, means, bandwidth, weights, observed_floor)
+        for bracket in brackets
+    ]
+    if not math.isclose(sum(probabilities), 1.0, rel_tol=0.0, abs_tol=1e-9):
+        raise DataError("challenger probabilities do not sum to one")
+    return probabilities, bandwidth
+
+
+def _bracket_index_for_temperature(brackets: list[Bracket], value: float) -> int:
+    matches = [
+        index
+        for index, bracket in enumerate(brackets)
+        if point_mass_bracket_probability(bracket, value)
+    ]
+    if len(matches) != 1:
+        raise DataError(f"temperature {value} does not map to exactly one bracket")
+    return matches[0]
+
+
+def _centered_three_indexes(center_index: int, count: int) -> list[int]:
+    if count < 3:
+        raise DataError("at least three brackets are required")
+    start = min(max(center_index - 1, 0), count - 3)
+    return list(range(start, start + 3))
+
+
+def hrrr_top3_rerank_distribution(snapshot: dict[str, Any]) -> dict[str, Any] | None:
+    guidance = snapshot.get("auxiliary_inputs", {}).get("open_meteo_hrrr")
+    if not isinstance(guidance, dict):
+        return None
+    projected_high = guidance.get("projected_high_f")
+    if projected_high is None:
+        return None
+    baseline = snapshot["distribution"]
+    probabilities = [float(value) for value in baseline["probabilities"]]
+    if len(probabilities) < 3:
+        return None
+    brackets = _stored_brackets(snapshot)
+    hrrr_index = _bracket_index_for_temperature(brackets, float(projected_high))
+    top3 = _centered_three_indexes(hrrr_index, len(probabilities))
+    total_top3_mass = sum(probabilities[index] for index in top3)
+    scores = [
+        probabilities[index]
+        * math.exp(-HRRR_TOP3_DISTANCE_PENALTY * abs(index - hrrr_index))
+        for index in top3
+    ]
+    score_total = sum(scores)
+    if total_top3_mass <= 0 or score_total <= 0:
+        return None
+    reranked = list(probabilities)
+    for index, score in zip(top3, scores, strict=True):
+        reranked[index] = total_top3_mass * score / score_total
+    total = sum(reranked)
+    if total <= 0:
+        raise DataError("HRRR top-3 rerank produced no probability mass")
+    reranked = [value / total for value in reranked]
+    member_highs = baseline.get("member_highs_f")
+    return {
+        "probabilities": reranked,
+        "bandwidth_f": baseline.get("bandwidth_f"),
+        "member_count": len(member_highs) if isinstance(member_highs, list) else None,
+        "hrrr_projected_high_f": float(projected_high),
+        "hrrr_bracket_index": hrrr_index,
+        "hrrr_centered_top3_indexes": top3,
+        "hrrr_centered_original_probabilities": [
+            probabilities[index] for index in top3
+        ],
+        "distance_penalty": HRRR_TOP3_DISTANCE_PENALTY,
+        "source": "open_meteo_gfs_hrrr",
+    }
+
+
+def challenger_distributions(
+    snapshot: dict[str, Any]
+) -> tuple[dict[str, dict[str, Any]], list[dict[str, Any]]]:
+    records = snapshot.get("http_trace")
+    if not isinstance(records, list):
+        raise DataError("snapshot does not contain an HTTP trace")
+    ensemble_record = _trace_record(
+        records, lambda url: "ensemble-api.open-meteo.com" in url
+    )
+    if ensemble_record is None:
+        raise DataError("snapshot trace does not contain an ensemble response")
+    hourly = ensemble_record.get("payload", {}).get("hourly")
+    if not isinstance(hourly, dict):
+        raise DataError("snapshot ensemble response is malformed")
+
+    event = snapshot["event"]
+    baseline = snapshot["distribution"]
+    observed_at = (
+        parse_datetime(baseline["observed_at"]).astimezone(UTC)
+        if baseline.get("observed_at")
+        else None
+    )
+    members, model_counts, warnings = extract_ensemble_members(
+        hourly,
+        parse_datetime(event["window_start"]).astimezone(UTC),
+        parse_datetime(event["window_end"]).astimezone(UTC),
+        observed_at,
+    )
+    if warnings:
+        raise DataError(f"challenger ensemble is incomplete: {', '.join(warnings)}")
+    nws_high = float(baseline["nws_high_f"])
+    observed_floor = (
+        float(baseline["observed_high_f"])
+        if baseline.get("observed_high_f") is not None
+        else None
+    )
+    brackets = _stored_brackets(snapshot)
+
+    family_rows: dict[str, list[Any]] = {
+        name: [member for member in members if member.model == name]
+        for name, _ in model_counts
+    }
+    diagnostics: list[dict[str, Any]] = []
+    offsets: dict[str, float] = {}
+    for family, rows in family_rows.items():
+        full_highs = sorted(member.full_high_f for member in rows)
+        median = statistics.median(full_highs)
+        quartiles = statistics.quantiles(full_highs, n=4, method="inclusive")
+        offset = nws_high - median
+        offsets[family] = offset
+        diagnostics.append(
+            {
+                "family": family,
+                "member_count": len(rows),
+                "minimum_high_f": min(full_highs),
+                "q25_high_f": quartiles[0],
+                "median_high_f": median,
+                "q75_high_f": quartiles[2],
+                "maximum_high_f": max(full_highs),
+                "nws_anchor_f": nws_high,
+                "center_offset_f": offset,
+                "centered_median_f": median + offset,
+                "centered_minimum_high_f": min(full_highs) + offset,
+                "centered_maximum_high_f": max(full_highs) + offset,
+            }
+        )
+
+    variants: dict[str, dict[str, Any]] = {}
+    pooled_means: list[float] = []
+    pooled_weights: list[float] = []
+    active_families = list(family_rows)
+    for family, rows in family_rows.items():
+        projected = [
+            member
+            for member in rows
+            if observed_at is None or member.remaining_high_f is not None
+        ]
+        means = [
+            (
+                member.full_high_f
+                if observed_at is None
+                else float(member.remaining_high_f)
+            )
+            + offsets[family]
+            for member in projected
+        ]
+        weights = [1.0 / len(means)] * len(means) if means else []
+        probabilities, bandwidth = _centered_probabilities(
+            brackets, means, weights, observed_floor
+        )
+        variants[_family_slug(family)] = {
+            "probabilities": probabilities,
+            "bandwidth_f": bandwidth,
+            "member_count": len(means),
+            "families": [family],
+        }
+        if means:
+            family_weight = 1.0 / len(active_families)
+            pooled_means.extend(means)
+            pooled_weights.extend([family_weight / len(means)] * len(means))
+
+    pooled_probabilities, pooled_bandwidth = _centered_probabilities(
+        brackets, pooled_means, pooled_weights, observed_floor
+    )
+    variants["family_centered"] = {
+        "probabilities": pooled_probabilities,
+        "bandwidth_f": pooled_bandwidth,
+        "member_count": len(pooled_means),
+        "families": active_families,
+        "family_total_weights": {
+            family: 1.0 / len(active_families) for family in active_families
+        },
+    }
+    hrrr_variant = hrrr_top3_rerank_distribution(snapshot)
+    if hrrr_variant is not None:
+        variants["hrrr_top3_rerank"] = hrrr_variant
+    return variants, diagnostics
+
+
 def score_probabilities(
     tickers: list[str], probabilities: list[float], winner_ticker: str
 ) -> dict[str, Any]:
@@ -757,10 +1231,18 @@ def date_cluster_bootstrap(
 
 def build_score_rows(
     base: Path,
-) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+) -> tuple[
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+]:
     score_rows: list[dict[str, Any]] = []
     calibration_rows: list[dict[str, Any]] = []
     snapshot_meta: list[dict[str, Any]] = []
+    family_diagnostics: list[dict[str, Any]] = []
+    source_rows: list[dict[str, Any]] = []
     for path in sorted((base / "snapshots").glob("*/*/*.json.gz")):
         snapshot = read_json_gz(path)
         event = snapshot["event"]
@@ -783,6 +1265,13 @@ def build_score_rows(
             "winner_ticker": winner,
         }
         snapshot_meta.append(common)
+        source_rows.append(
+            {
+                **common,
+                "snapshot_schema_version": snapshot.get("schema_version", 1),
+                **flatten_source_metadata(snapshot),
+            }
+        )
         for model_name, key in (
             ("full", "distribution"),
             ("forecast_only", "forecast_only_distribution"),
@@ -798,17 +1287,41 @@ def build_score_rows(
                     calibration_rows.append(
                         {
                             **common,
+                            "model": model_name,
                             "probability": probability,
                             "outcome": float(index == outcome_index),
                         }
                     )
+        variants, diagnostics = challenger_distributions(snapshot)
+        family_diagnostics.extend({**common, **row} for row in diagnostics)
         tickers, _ = probabilities_from_snapshot(snapshot, "distribution")
+        outcome_index = tickers.index(winner)
+        for model_name, variant in variants.items():
+            probabilities = [float(value) for value in variant["probabilities"]]
+            row = {
+                **common,
+                "model": model_name,
+                "bandwidth_f": variant["bandwidth_f"],
+                "member_count": variant["member_count"],
+            }
+            row.update(score_probabilities(tickers, probabilities, winner))
+            row["nws_top_one_correct"] = nws_top_one_correct(snapshot, winner)
+            score_rows.append(row)
+            for index, probability in enumerate(probabilities):
+                calibration_rows.append(
+                    {
+                        **common,
+                        "model": model_name,
+                        "probability": probability,
+                        "outcome": float(index == outcome_index),
+                    }
+                )
         uniform = [1.0 / len(tickers)] * len(tickers)
         uniform_row = {**common, "model": "uniform"}
         uniform_row.update(score_probabilities(tickers, uniform, winner))
         uniform_row["nws_top_one_correct"] = nws_top_one_correct(snapshot, winner)
         score_rows.append(uniform_row)
-    return score_rows, calibration_rows, snapshot_meta
+    return score_rows, calibration_rows, snapshot_meta, family_diagnostics, source_rows
 
 
 def aggregate_scores(
@@ -894,6 +1407,70 @@ def paired_checkpoint_deltas(
     return results
 
 
+def paired_model_deltas(
+    rows: list[dict[str, Any]], bootstrap_samples: int = 2000
+) -> list[dict[str, Any]]:
+    lookup = {
+        (row["city"], row["target_date"], row["checkpoint"], row["model"]): row
+        for row in rows
+    }
+    baseline_rows = [row for row in rows if row["model"] == "full"]
+    results: list[dict[str, Any]] = []
+    for challenger in CHALLENGER_NAMES:
+        delta_rows: list[dict[str, Any]] = []
+        for baseline in baseline_rows:
+            challenger_row = lookup.get(
+                (
+                    baseline["city"],
+                    baseline["target_date"],
+                    baseline["checkpoint"],
+                    challenger,
+                )
+            )
+            if challenger_row is None:
+                continue
+            delta_rows.append(
+                {
+                    "target_date": baseline["target_date"],
+                    "log_loss_delta": (
+                        float(challenger_row["log_loss"]) - float(baseline["log_loss"])
+                        if challenger_row["log_loss"] is not None
+                        and baseline["log_loss"] is not None
+                        else None
+                    ),
+                    "brier_delta": float(challenger_row["brier"])
+                    - float(baseline["brier"]),
+                    "ranked_probability_score_delta": float(
+                        challenger_row["ranked_probability_score"]
+                    )
+                    - float(baseline["ranked_probability_score"]),
+                }
+            )
+        result: dict[str, Any] = {
+            "challenger": challenger,
+            "pair_count": len(delta_rows),
+            "date_count": len({row["target_date"] for row in delta_rows}),
+            "status": (
+                "eligible_for_manual_review"
+                if len({row["target_date"] for row in delta_rows}) >= 60
+                else "exploratory_minimum_60_dates"
+            ),
+            "automatic_promotion": False,
+        }
+        for metric in (
+            "log_loss_delta",
+            "brier_delta",
+            "ranked_probability_score_delta",
+        ):
+            result[metric] = mean(
+                float(row[metric]) for row in delta_rows if row[metric] is not None
+            )
+            interval = date_cluster_bootstrap(delta_rows, metric, bootstrap_samples)
+            result[f"{metric}_ci95"] = list(interval) if interval else None
+        results.append(result)
+    return results
+
+
 def aggregate_scores_by_city(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     grouped: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
@@ -925,20 +1502,27 @@ def aggregate_scores_by_city(rows: list[dict[str, Any]]) -> list[dict[str, Any]]
 
 
 def calibration_summary(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    bins: list[list[dict[str, Any]]] = [[] for _ in range(10)]
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
-        index = min(9, int(float(row["probability"]) * 10))
-        bins[index].append(row)
-    return [
-        {
-            "lower": index / 10,
-            "upper": (index + 1) / 10,
-            "count": len(group),
-            "mean_probability": mean(float(row["probability"]) for row in group),
-            "observed_frequency": mean(float(row["outcome"]) for row in group),
-        }
-        for index, group in enumerate(bins)
-    ]
+        grouped[str(row["model"])].append(row)
+    result: list[dict[str, Any]] = []
+    for model, model_rows in sorted(grouped.items()):
+        bins: list[list[dict[str, Any]]] = [[] for _ in range(10)]
+        for row in model_rows:
+            index = min(9, int(float(row["probability"]) * 10))
+            bins[index].append(row)
+        result.extend(
+            {
+                "model": model,
+                "lower": index / 10,
+                "upper": (index + 1) / 10,
+                "count": len(group),
+                "mean_probability": mean(float(row["probability"]) for row in group),
+                "observed_frequency": mean(float(row["outcome"]) for row in group),
+            }
+            for index, group in enumerate(bins)
+        )
+    return result
 
 
 def completeness_summary(base: Path, manifest: dict[str, Any], now: datetime) -> dict[str, Any]:
@@ -989,7 +1573,15 @@ def plot_evaluation(
     figure, axes = plt.subplots(2, 3, figsize=(17, 10), constrained_layout=True)
     labels = list(CHECKPOINT_ORDER)
     short_labels = ["T-6", "T+6", "T+10", "T+14", "T+18"]
-    colors = {"full": "#167D8D", "forecast_only": "#D97706", "uniform": "#6B7280"}
+    plotted_models = ("full", "family_centered", *CHALLENGER_NAMES[1:])
+    colors = {
+        "full": "#111827",
+        "family_centered": "#167D8D",
+        "gefs_centered": "#D97706",
+        "ecmwf_ifs_centered": "#2563EB",
+        "icon_eps_centered": "#16A34A",
+        "gem_centered": "#C2410C",
+    }
     lookup = {(row["model"], row["checkpoint"]): row for row in aggregates}
 
     for axis, metric, title in zip(
@@ -997,10 +1589,16 @@ def plot_evaluation(
         ("log_loss", "brier", "ranked_probability_score"),
         ("Log Loss", "Brier Score", "Ranked Probability Score"),
     ):
-        for model in ("full", "forecast_only", "uniform"):
+        for model in plotted_models:
             values = [lookup.get((model, checkpoint), {}).get(metric) for checkpoint in labels]
             if any(value is not None for value in values):
-                axis.plot(short_labels, values, marker="o", label=model.replace("_", " "), color=colors[model])
+                axis.plot(
+                    short_labels,
+                    values,
+                    marker="o",
+                    label=model.replace("_", " "),
+                    color=colors[model],
+                )
         axis.set_title(title)
         axis.set_ylabel("Lower is better")
         axis.grid(alpha=0.2)
@@ -1015,6 +1613,21 @@ def plot_evaluation(
         marker="o",
         label="model",
         color="#167D8D",
+    )
+    family_centered_by_checkpoint = {
+        row["checkpoint"]: row
+        for row in aggregates
+        if row["model"] == "family_centered"
+    }
+    axes[1, 0].plot(
+        short_labels,
+        [
+            family_centered_by_checkpoint.get(checkpoint, {}).get("top_one_accuracy")
+            for checkpoint in labels
+        ],
+        marker="o",
+        label="family centered",
+        color="#2563EB",
     )
     axes[1, 0].plot(
         short_labels,
@@ -1077,13 +1690,18 @@ def plot_diagnostics(
     output: Path,
 ) -> None:
     figure, axes = plt.subplots(1, 3, figsize=(17, 5), constrained_layout=True)
-    calibration_rows = [row for row in calibration if row["count"]]
-    axes[0].plot(
-        [row["mean_probability"] for row in calibration_rows],
-        [row["observed_frequency"] for row in calibration_rows],
-        marker="o",
-        color="#167D8D",
-    )
+    for model, color in (("full", "#111827"), ("family_centered", "#167D8D")):
+        calibration_rows = [
+            row for row in calibration if row["model"] == model and row["count"]
+        ]
+        if calibration_rows:
+            axes[0].plot(
+                [row["mean_probability"] for row in calibration_rows],
+                [row["observed_frequency"] for row in calibration_rows],
+                marker="o",
+                label=model.replace("_", " "),
+                color=color,
+            )
     axes[0].plot([0, 1], [0, 1], linestyle="--", color="#6B7280")
     axes[0].set_xlim(0, 1)
     axes[0].set_ylim(0, 1)
@@ -1091,6 +1709,7 @@ def plot_diagnostics(
     axes[0].set_xlabel("Mean forecast probability")
     axes[0].set_ylabel("Observed frequency")
     axes[0].grid(alpha=0.2)
+    axes[0].legend(fontsize=8)
 
     labels = ["completed", "missing", "unaccounted"]
     values = [
@@ -1133,12 +1752,19 @@ def evaluate(
             "current model source differs from the frozen cohort; restore it before evaluation"
         )
     base = cohort_dir(root, cohort)
-    score_rows, calibration_rows, snapshot_meta = build_score_rows(base)
+    (
+        score_rows,
+        calibration_rows,
+        snapshot_meta,
+        family_diagnostics,
+        source_rows,
+    ) = build_score_rows(base)
     if not score_rows:
         raise DataError("no settled snapshots are available for evaluation")
     aggregates = aggregate_scores(score_rows, bootstrap_samples)
     city_aggregates = aggregate_scores_by_city(score_rows)
     paired = paired_checkpoint_deltas(score_rows, bootstrap_samples)
+    model_deltas = paired_model_deltas(score_rows, bootstrap_samples)
     calibration = calibration_summary(calibration_rows)
     completeness = completeness_summary(base, manifest, datetime.now(UTC))
     report_dir = output or (
@@ -1148,15 +1774,23 @@ def evaluate(
     write_csv(report_dir / "forecast_scores.csv", score_rows)
     write_csv(report_dir / "aggregate_scores.csv", aggregates)
     write_csv(report_dir / "city_scores.csv", city_aggregates)
+    write_csv(report_dir / "paired_model_deltas.csv", model_deltas)
+    write_csv(report_dir / "model_family_diagnostics.csv", family_diagnostics)
+    write_csv(report_dir / "source_freshness.csv", source_rows)
     with (report_dir / "evaluation.json").open("w", encoding="utf-8") as handle:
         json.dump(
             {
                 "schema_version": SCHEMA_VERSION,
                 "cohort": cohort,
                 "generated_at": datetime.now(UTC).isoformat(),
+                "challenger_source_hash": collector_source_hash(),
+                "challenger_status": "exploratory_no_automatic_promotion",
                 "aggregates": aggregates,
                 "city_aggregates": city_aggregates,
                 "paired_checkpoint_deltas": paired,
+                "paired_model_deltas": model_deltas,
+                "model_family_diagnostics": family_diagnostics,
+                "source_freshness": source_rows,
                 "calibration": calibration,
                 "completeness": completeness,
                 "limitations": {

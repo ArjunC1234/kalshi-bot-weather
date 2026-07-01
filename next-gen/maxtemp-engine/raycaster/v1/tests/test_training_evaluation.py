@@ -1,0 +1,117 @@
+from __future__ import annotations
+
+# ruff: noqa: E402
+import sys
+import tempfile
+import unittest
+from datetime import UTC, date, datetime, timedelta
+from pathlib import Path
+
+RAYCASTER_V1 = Path(__file__).resolve().parents[1]
+NEXT_GEN = Path(__file__).resolve().parents[4]
+for path in (NEXT_GEN, RAYCASTER_V1):
+    if str(path) not in sys.path:
+        sys.path.insert(0, str(path))
+
+from evaluate import evaluate_expanding_window
+from features import build_feature_rows
+from train import train_raycaster_model
+
+from libs.models import (
+    BacktestDataset,
+    Bracket,
+    EventSnapshot,
+    MarketSnapshot,
+    Settlement,
+    WeatherSnapshot,
+)
+
+
+class TrainingEvaluationTests(unittest.TestCase):
+    def test_fallback_before_minimum_training_events(self) -> None:
+        rows = build_feature_rows(_dataset())
+        model = train_raycaster_model(rows, min_training_events=99)
+        self.assertEqual(model.mode, "fallback_source_blend")
+
+    def test_expanding_evaluation_writes_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            summary = evaluate_expanding_window(
+                _dataset(),
+                Path(tmp),
+                min_training_events=1,
+                probability_floor=0.0,
+            )
+            self.assertEqual(summary["mode"], "expanding_window")
+            self.assertTrue((Path(tmp) / "summary.json").exists())
+            self.assertGreaterEqual(summary["temperature_rows"], 1)
+            self.assertGreaterEqual(summary["bracket_rows"], 1)
+
+
+def _dataset() -> BacktestDataset:
+    events = []
+    weather = []
+    markets = []
+    settlements = []
+    for offset, high in enumerate((80, 82, 84), start=1):
+        target = date(2026, 7, offset)
+        event_ticker = f"TEST-{offset}"
+        snapshot = datetime(2026, 7, offset, 18, tzinfo=UTC)
+        start = datetime(2026, 7, offset, 5, tzinfo=UTC)
+        events.append(
+            EventSnapshot(
+                city="nyc",
+                event_ticker=event_ticker,
+                target_date=target,
+                snapshot_hour_utc=snapshot,
+                climate_window_start_utc=start,
+                climate_window_end_utc=start + timedelta(hours=24),
+                station_id="KNYC",
+            )
+        )
+        weather.append(
+            WeatherSnapshot(
+                city="nyc",
+                event_ticker=event_ticker,
+                target_date=target,
+                snapshot_hour_utc=snapshot,
+                nws_anchor_high_f=high,
+                observed_high_so_far_f=high - 1,
+                hrrr_projected_high_f=high + 0.5,
+                nbm_projected_high_f=high - 0.5,
+                ensemble_raw_median_high_f=high,
+            )
+        )
+        brackets = [
+            Bracket(f"{event_ticker}-LOW", "Low", None, high - 1, 0),
+            Bracket(f"{event_ticker}-WIN", "Win", high, high, 1),
+            Bracket(f"{event_ticker}-HIGH", "High", high + 1, None, 2),
+        ]
+        markets.extend(
+            MarketSnapshot(
+                city="nyc",
+                event_ticker=event_ticker,
+                market_ticker=bracket.ticker,
+                target_date=target,
+                snapshot_hour_utc=snapshot,
+                bracket=bracket,
+                yes_bid=0.2,
+                yes_ask=0.4,
+            )
+            for bracket in brackets
+        )
+        settlements.append(
+            Settlement(
+                city="nyc",
+                event_ticker=event_ticker,
+                target_date=target,
+                settled_at_utc=start + timedelta(hours=26),
+                winner_ticker=f"{event_ticker}-WIN",
+                settlement_temperature_f=high,
+                settlement_bracket_index=1,
+            )
+        )
+    return BacktestDataset(events=events, weather=weather, markets=markets, settlements=settlements)
+
+
+if __name__ == "__main__":
+    unittest.main()

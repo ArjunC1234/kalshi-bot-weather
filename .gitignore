@@ -1,5 +1,11 @@
 __pycache__/
 *.py[cod]
 .venv/
+.env
+*.env
+.ruff_cache/
 output/
 backtest_data/
+collector_spool/
+collector_spool_*/
+*.log
