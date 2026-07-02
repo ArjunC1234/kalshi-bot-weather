@@ -11,10 +11,11 @@ SUPABASE_TABLES = (
     "events",
     "market_snapshots",
     "weather_snapshots",
-    "model_outputs",
     "settlements",
     "provider_errors",
 )
+
+LOCAL_MODEL_OUTPUT_TABLES = ("model_outputs",)
 
 KALSHI_API_BASE_URL = "https://api.elections.kalshi.com/trade-api/v2"
 NWS_API_BASE_URL = "https://api.weather.gov"

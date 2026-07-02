@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import date
 from typing import Any
 
@@ -43,7 +44,9 @@ def _date(value: Any) -> date:
 def _collector_run(row: dict[str, Any]) -> CollectorRun:
     return CollectorRun(
         collector_run_id=str(row["collector_run_id"]),
-        snapshot_hour_utc=parse_datetime(str(row["snapshot_hour_utc"])),
+        snapshot_hour_utc=parse_datetime(
+            str(_first(row, "snapshot_hour_utc", "snapshot_time_utc"))
+        ),
         schema_version=int(row.get("schema_version") or 0),
     )
 
@@ -53,9 +56,15 @@ def _event(row: dict[str, Any]) -> EventSnapshot:
         city=str(row["city"]),
         event_ticker=str(row["event_ticker"]),
         target_date=_date(row["target_date"]),
-        snapshot_hour_utc=parse_datetime(str(row["snapshot_hour_utc"])),
-        climate_window_start_utc=parse_datetime(str(row["climate_window_start_utc"])),
-        climate_window_end_utc=parse_datetime(str(row["climate_window_end_utc"])),
+        snapshot_hour_utc=parse_datetime(
+            str(_first(row, "snapshot_hour_utc", "snapshot_time_utc"))
+        ),
+        climate_window_start_utc=parse_datetime(
+            str(_first(row, "climate_window_start_utc", "climate_day_start_utc"))
+        ),
+        climate_window_end_utc=parse_datetime(
+            str(_first(row, "climate_window_end_utc", "climate_day_end_utc"))
+        ),
         station_id=str(row["station_id"]),
     )
 
@@ -73,7 +82,9 @@ def _market(row: dict[str, Any]) -> MarketSnapshot:
         event_ticker=str(row["event_ticker"]),
         market_ticker=str(row["market_ticker"]),
         target_date=_date(row["target_date"]),
-        snapshot_hour_utc=parse_datetime(str(row["snapshot_hour_utc"])),
+        snapshot_hour_utc=parse_datetime(
+            str(_first(row, "snapshot_hour_utc", "snapshot_time_utc"))
+        ),
         bracket=bracket,
         yes_bid=_optional_float(row.get("yes_bid_dollars")),
         yes_ask=_optional_float(row.get("yes_ask_dollars")),
@@ -85,17 +96,25 @@ def _market(row: dict[str, Any]) -> MarketSnapshot:
 
 
 def _weather(row: dict[str, Any]) -> WeatherSnapshot:
+    features = row.get("features")
+    if isinstance(features, str) and features:
+        try:
+            features = json.loads(features)
+        except json.JSONDecodeError:
+            features = {}
     return WeatherSnapshot(
         city=str(row["city"]),
         event_ticker=str(row["event_ticker"]),
         target_date=_date(row["target_date"]),
-        snapshot_hour_utc=parse_datetime(str(row["snapshot_hour_utc"])),
+        snapshot_hour_utc=parse_datetime(
+            str(_first(row, "snapshot_hour_utc", "snapshot_time_utc"))
+        ),
         nws_anchor_high_f=_optional_float(row.get("nws_anchor_high_f")),
         observed_high_so_far_f=_optional_float(row.get("observed_high_so_far_f")),
         hrrr_projected_high_f=_optional_float(row.get("hrrr_projected_high_f")),
         nbm_projected_high_f=_optional_float(row.get("nbm_projected_high_f")),
         ensemble_raw_median_high_f=_optional_float(row.get("ensemble_raw_median_high_f")),
-        features=row.get("features") if isinstance(row.get("features"), dict) else {},
+        features=features if isinstance(features, dict) else {},
     )
 
 
@@ -123,6 +142,14 @@ def _distribution(row: dict[str, Any]) -> BracketDistribution:
         model_name=str(row["model_name"]),
         probabilities={str(key): float(value) for key, value in probabilities.items()},
     )
+
+
+def _first(row: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        value = row.get(key)
+        if value not in (None, ""):
+            return value
+    raise KeyError(f"missing required value; tried {', '.join(keys)}")
 
 
 def _optional_float(value: Any) -> float | None:

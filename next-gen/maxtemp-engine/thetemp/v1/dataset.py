@@ -1,4 +1,4 @@
-"""Dataset loading helpers for Raycaster v1."""
+"""Dataset loading helpers for TheTemp v1."""
 
 from __future__ import annotations
 

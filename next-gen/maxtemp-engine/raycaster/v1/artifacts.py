@@ -44,4 +44,3 @@ def write_training_rows(rows: list[FeatureRow], output_dir: str | Path) -> None:
 
 def write_json(path: str | Path, payload: dict[str, Any]) -> None:
     Path(path).write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
-

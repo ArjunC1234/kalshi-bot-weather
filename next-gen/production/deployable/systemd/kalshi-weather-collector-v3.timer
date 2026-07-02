@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Kalshi weather immutable collector v3 hourly
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+RandomizedDelaySec=60
+Unit=kalshi-weather-collector-v3.service
+
+[Install]
+WantedBy=timers.target

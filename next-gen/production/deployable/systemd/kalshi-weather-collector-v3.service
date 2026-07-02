@@ -1,0 +1,13 @@
+[Unit]
+Description=Kalshi weather immutable collector v3
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/kalshi-weather-next-gen
+EnvironmentFile=/opt/kalshi-weather-next-gen/.env
+ExecStart=/opt/kalshi-weather-next-gen/.venv/bin/python /opt/kalshi-weather-next-gen/collector/collector.py collect-once
+
+[Install]
+WantedBy=multi-user.target
