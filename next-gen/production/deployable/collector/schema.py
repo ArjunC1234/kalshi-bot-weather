@@ -9,6 +9,7 @@ FACT_TABLES = (
     "market_snapshots",
     "weather_snapshots",
     "settlements",
+    "final_temperature_labels",
     "provider_errors",
 )
 
@@ -223,6 +224,23 @@ create table if not exists settlements (
   unique(city, event_ticker)
 );
 
+create table if not exists final_temperature_labels (
+  final_temperature_label_id text primary key,
+  city text not null,
+  target_date date not null,
+  event_ticker text not null,
+  station_id text not null,
+  final_high_f double precision not null,
+  source_provider text not null,
+  product_id text,
+  issued_at_utc timestamptz,
+  raw_payload_id text references raw_payloads(raw_payload_id),
+  validation_status text not null,
+  warnings jsonb not null default '[]'::jsonb,
+  created_at_utc timestamptz not null,
+  unique(city, event_ticker, source_provider)
+);
+
 create table if not exists provider_errors (
   provider_error_id text primary key,
   collector_run_id text references collector_runs(collector_run_id),
@@ -242,6 +260,15 @@ create index if not exists idx_events_unsettled on events (target_date, city, ev
 create index if not exists idx_weather_snapshot_time on weather_snapshots (snapshot_time_utc);
 create index if not exists idx_market_snapshot_time on market_snapshots (snapshot_time_utc);
 create index if not exists idx_settlements_city_event on settlements (city, event_ticker);
+create index if not exists idx_final_temperature_labels_city_event
+  on final_temperature_labels (city, event_ticker);
+
+drop view if exists v_backtest_export;
+drop view if exists v_collector_health;
+drop view if exists v_latest_city_snapshots;
+drop view if exists v_snapshots_with_settlements;
+drop view if exists v_events_missing_final_high;
+drop view if exists v_unsettled_events;
 
 create or replace view v_unsettled_events as
 select distinct on (e.city, e.event_ticker)
@@ -257,6 +284,29 @@ where s.settlement_id is null
   and coalesce(e.market_close_time_utc, e.climate_day_end_utc) <= now()
 order by e.city, e.event_ticker, e.snapshot_time_utc desc;
 
+create or replace view v_events_missing_final_high as
+select distinct on (e.city, e.event_ticker)
+  e.city,
+  e.event_ticker,
+  e.target_date,
+  e.station_id,
+  e.city_timezone,
+  e.climate_day_end_utc,
+  e.market_close_time_utc,
+  e.metadata as event_metadata,
+  s.winner_ticker,
+  s.settlement_temperature_f as kalshi_settlement_temperature_f,
+  s.settlement_bracket_index
+from events e
+left join final_temperature_labels f
+  on f.city = e.city
+  and f.event_ticker = e.event_ticker
+  and f.source_provider = 'nws_cli'
+left join settlements s on s.city = e.city and s.event_ticker = e.event_ticker
+where f.final_temperature_label_id is null
+  and e.climate_day_end_utc <= now()
+order by e.city, e.event_ticker, e.snapshot_time_utc desc;
+
 create or replace view v_snapshots_with_settlements as
 select
   e.*,
@@ -264,11 +314,21 @@ select
   s.winner_ticker,
   s.winner_label,
   s.settlement_temperature_f,
+  s.settlement_temperature_f as kalshi_settlement_temperature_f,
   s.settlement_bracket_index,
   s.validation_status as settlement_validation_status,
-  s.warnings as settlement_warnings
+  s.warnings as settlement_warnings,
+  f.final_high_f as final_nws_high_f,
+  f.product_id as final_high_product_id,
+  f.issued_at_utc as final_high_issued_at_utc,
+  f.validation_status as final_high_validation_status,
+  f.warnings as final_high_warnings
 from events e
-left join settlements s on s.city = e.city and s.event_ticker = e.event_ticker;
+left join settlements s on s.city = e.city and s.event_ticker = e.event_ticker
+left join final_temperature_labels f
+  on f.city = e.city
+  and f.event_ticker = e.event_ticker
+  and f.source_provider = 'nws_cli';
 
 create or replace view v_latest_city_snapshots as
 select distinct on (city, event_ticker)
@@ -280,6 +340,7 @@ create or replace view v_collector_health as
 select
   (select max(snapshot_time_utc) from collector_runs) as latest_run_utc,
   (select count(*) from v_unsettled_events) as unsettled_events,
+  (select count(*) from v_events_missing_final_high) as pending_final_highs,
   (
     select count(*)
     from provider_errors
@@ -306,11 +367,19 @@ select
   w.ensemble_raw_median_high_f,
   s.winner_ticker,
   s.settlement_temperature_f,
-  s.settlement_bracket_index
+  s.settlement_temperature_f as kalshi_settlement_temperature_f,
+  s.settlement_bracket_index,
+  f.final_high_f as final_nws_high_f,
+  f.source_provider as final_high_source_provider,
+  f.validation_status as final_high_validation_status
 from events e
 left join weather_snapshots w
   on w.city = e.city
   and w.event_ticker = e.event_ticker
   and w.snapshot_time_utc = e.snapshot_time_utc
-left join settlements s on s.city = e.city and s.event_ticker = e.event_ticker;
+left join settlements s on s.city = e.city and s.event_ticker = e.event_ticker
+left join final_temperature_labels f
+  on f.city = e.city
+  and f.event_ticker = e.event_ticker
+  and f.source_provider = 'nws_cli';
 """

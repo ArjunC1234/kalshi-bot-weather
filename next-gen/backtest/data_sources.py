@@ -55,7 +55,11 @@ class SupabaseSource(DataSource):
 
     def load_table(self, table: str) -> list[dict]:
         params: dict[str, str] = {}
-        date_column = "target_date" if table == "settlements" else "snapshot_time_utc"
+        date_column = (
+            "target_date"
+            if table in ("settlements", "final_temperature_labels")
+            else "snapshot_time_utc"
+        )
         filters: list[str] = []
         if self.start:
             filters.append(f"{date_column}.gte.{self.start}")

@@ -15,6 +15,10 @@ from clients import HttpRecorder, raw_storage_path  # noqa: E402
 from config import CITY_BY_KEY  # noqa: E402
 from normalizers import (  # noqa: E402
     Bracket,
+    final_high_validation_warnings,
+    final_temperature_label_row,
+    parse_nws_cli_final_high,
+    select_nws_cli_final_high_product,
     settlement_row,
     validate_brackets,
     weather_row,
@@ -37,6 +41,10 @@ class CollectorV3Tests(unittest.TestCase):
     def test_schema_excludes_model_outputs(self) -> None:
         self.assertNotIn("model_outputs", FACT_TABLES)
         self.assertNotIn("create table if not exists model_outputs", INIT_SQL.lower())
+        self.assertIn("final_temperature_labels", FACT_TABLES)
+        self.assertIn("create table if not exists final_temperature_labels", INIT_SQL.lower())
+        self.assertIn("v_events_missing_final_high", INIT_SQL)
+        self.assertIn("final_nws_high_f", INIT_SQL)
 
     def test_city_clock_uses_city_local_fields(self) -> None:
         city = CITY_BY_KEY["la"]
@@ -175,6 +183,80 @@ class CollectorV3Tests(unittest.TestCase):
         self.assertEqual(row["winner_ticker"], "MID")
         self.assertEqual(row["settlement_bracket_index"], 1)
 
+    def test_nws_cli_final_high_parser_accepts_final_report_only(self) -> None:
+        final_product = {
+            "id": "product-final",
+            "issuanceTime": "2026-07-02T06:20:00+00:00",
+            "productText": """
+...THE CENTRAL PARK NY CLIMATE SUMMARY FOR JULY 1 2026...
+
+TEMPERATURE (F)
+ TODAY
+  MAXIMUM         93    127 PM 100    1901  84      9       89
+  MINIMUM         75    649 AM  52    1943  69      6       72
+
+PRECIPITATION (IN)
+""",
+        }
+        interim_product = {
+            **final_product,
+            "id": "product-interim",
+            "issuanceTime": "2026-07-01T20:20:00+00:00",
+            "productText": final_product["productText"].replace(
+                "TEMPERATURE (F)", "VALID TODAY AS OF 0400 PM LOCAL TIME.\n\nTEMPERATURE (F)"
+            ),
+        }
+        self.assertEqual(parse_nws_cli_final_high(final_product, date(2026, 7, 1)), 93.0)
+        self.assertIsNone(parse_nws_cli_final_high(interim_product, date(2026, 7, 1)))
+        self.assertIsNone(parse_nws_cli_final_high(final_product, date(2026, 7, 2)))
+
+    def test_select_nws_cli_final_high_product_chooses_latest_parseable(self) -> None:
+        older = {
+            "id": "older",
+            "issuanceTime": "2026-07-02T06:00:00+00:00",
+            "productText": """
+...THE MIAMI FL CLIMATE SUMMARY FOR JULY 1 2026...
+TEMPERATURE (F)
+ TODAY
+  MAXIMUM         91    200 PM
+""",
+        }
+        newer = {
+            "id": "newer",
+            "issuanceTime": "2026-07-02T07:00:00+00:00",
+            "productText": older["productText"].replace("91", "92", 1),
+        }
+        selected = select_nws_cli_final_high_product([older, newer], date(2026, 7, 1))
+        self.assertIsNotNone(selected)
+        product, high = selected or ({}, 0.0)
+        self.assertEqual(product["id"], "newer")
+        self.assertEqual(high, 92.0)
+
+    def test_final_temperature_label_row_and_bracket_warning(self) -> None:
+        city = CITY_BY_KEY["den"]
+        metadata = {
+            "brackets": [
+                {"ticker": "LOW", "label": "89 or below", "lower_f": None, "upper_f": 89},
+                {"ticker": "HIGH", "label": "90 or above", "lower_f": 90, "upper_f": None},
+            ]
+        }
+        self.assertEqual(final_high_validation_warnings(91.0, metadata, "HIGH"), [])
+        warnings = final_high_validation_warnings(88.0, metadata, "HIGH")
+        self.assertTrue(warnings)
+        row = final_temperature_label_row(
+            city,
+            date(2026, 7, 1),
+            "KXHIGHDEN-26JUL01",
+            "KDEN",
+            91.0,
+            {"id": "product-1", "issuanceTime": "2026-07-02T06:00:00+00:00"},
+            "raw-1",
+            datetime(2026, 7, 2, 7, tzinfo=UTC),
+            [],
+        )
+        self.assertEqual(row["final_high_f"], 91.0)
+        self.assertEqual(row["source_provider"], "nws_cli")
+
     def test_backtest_loader_accepts_v3_export_aliases(self) -> None:
         source = StaticSource(
             {
@@ -228,12 +310,28 @@ class CollectorV3Tests(unittest.TestCase):
                         "settlement_bracket_index": "0",
                     }
                 ],
+                "final_temperature_labels": [
+                    {
+                        "city": "nyc",
+                        "event_ticker": "KXHIGHNY-26JUL01",
+                        "target_date": "2026-07-01",
+                        "station_id": "KNYC",
+                        "final_high_f": "87",
+                        "source_provider": "nws_cli",
+                        "product_id": "product-1",
+                        "issued_at_utc": "2026-07-02T06:20:00+00:00",
+                        "validation_status": "valid",
+                        "warnings": "[]",
+                    }
+                ],
             }
         )
         dataset = load_dataset(source)
         self.assertEqual(len(dataset.collector_runs), 1)
         self.assertEqual(len(dataset.events), 1)
         self.assertEqual(dataset.weather[0].features["source"], "v3")
+        self.assertEqual(len(dataset.final_temperature_labels), 1)
+        self.assertEqual(dataset.final_temperature_labels[0].final_high_f, 87.0)
 
 
 def recorder_payload(

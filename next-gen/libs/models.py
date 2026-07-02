@@ -122,6 +122,26 @@ class Settlement:
 
 
 @dataclass(frozen=True)
+class FinalTemperatureLabel:
+    city: str
+    event_ticker: str
+    target_date: date
+    station_id: str
+    final_high_f: float
+    source_provider: str
+    product_id: str | None = None
+    issued_at_utc: datetime | None = None
+    validation_status: str = "valid"
+    warnings: list[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        _require_text(self.city, "final_temperature_label.city")
+        _require_text(self.event_ticker, "final_temperature_label.event_ticker")
+        _require_text(self.station_id, "final_temperature_label.station_id")
+        _require_text(self.source_provider, "final_temperature_label.source_provider")
+
+
+@dataclass(frozen=True)
 class TemperaturePrediction:
     city: str
     event_ticker: str
@@ -152,6 +172,7 @@ class BacktestDataset:
     markets: list[MarketSnapshot] = field(default_factory=list)
     weather: list[WeatherSnapshot] = field(default_factory=list)
     settlements: list[Settlement] = field(default_factory=list)
+    final_temperature_labels: list[FinalTemperatureLabel] = field(default_factory=list)
     model_outputs: list[BracketDistribution] = field(default_factory=list)
 
 

@@ -13,6 +13,7 @@ from libs.models import (
     BracketDistribution,
     CollectorRun,
     EventSnapshot,
+    FinalTemperatureLabel,
     MarketSnapshot,
     Settlement,
     WeatherSnapshot,
@@ -25,6 +26,9 @@ def load_dataset(source: DataSource) -> BacktestDataset:
     markets = [_market(row) for row in source.load_table("market_snapshots")]
     weather = [_weather(row) for row in source.load_table("weather_snapshots")]
     settlements = [_settlement(row) for row in source.load_table("settlements")]
+    final_temperature_labels = [
+        _final_temperature_label(row) for row in source.load_table("final_temperature_labels")
+    ]
     model_outputs = [_distribution(row) for row in source.load_table("model_outputs")]
     collector_runs = [_collector_run(row) for row in source.load_table("collector_runs")]
     return BacktestDataset(
@@ -33,6 +37,7 @@ def load_dataset(source: DataSource) -> BacktestDataset:
         markets=markets,
         weather=weather,
         settlements=settlements,
+        final_temperature_labels=final_temperature_labels,
         model_outputs=model_outputs,
     )
 
@@ -131,6 +136,22 @@ def _settlement(row: dict[str, Any]) -> Settlement:
     )
 
 
+def _final_temperature_label(row: dict[str, Any]) -> FinalTemperatureLabel:
+    issued_at = row.get("issued_at_utc")
+    return FinalTemperatureLabel(
+        city=str(row["city"]),
+        event_ticker=str(row["event_ticker"]),
+        target_date=_date(row["target_date"]),
+        station_id=str(row.get("station_id") or ""),
+        final_high_f=float(row["final_high_f"]),
+        source_provider=str(row.get("source_provider") or "nws_cli"),
+        product_id=str(row["product_id"]) if row.get("product_id") not in (None, "") else None,
+        issued_at_utc=parse_datetime(str(issued_at)) if issued_at not in (None, "") else None,
+        validation_status=str(row.get("validation_status") or "valid"),
+        warnings=_json_list(row.get("warnings")),
+    )
+
+
 def _distribution(row: dict[str, Any]) -> BracketDistribution:
     probabilities = row.get("probabilities")
     if not isinstance(probabilities, dict):
@@ -162,3 +183,18 @@ def _optional_int(value: Any) -> int | None:
     if value in (None, ""):
         return None
     return int(float(value))
+
+
+def _json_list(value: Any) -> list[str]:
+    if value in (None, ""):
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    if isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError:
+            return [value]
+        if isinstance(parsed, list):
+            return [str(item) for item in parsed]
+    return [str(value)]

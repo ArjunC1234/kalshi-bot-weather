@@ -7,7 +7,7 @@ import argparse
 import json
 import socket
 import sys
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -22,9 +22,12 @@ from config import City, load_dotenv, parse_cities, settings_from_env
 from ids import deterministic_id, sha256_bytes
 from normalizers import (
     event_row,
+    final_high_validation_warnings,
+    final_temperature_label_row,
     market_rows,
     parse_bracket,
     select_event,
+    select_nws_cli_final_high_product,
     settlement_row,
     validate_brackets,
     weather_row,
@@ -48,6 +51,8 @@ NBM_HOURLY_FIELDS = ",".join(
         "cloud_cover",
     )
 )
+
+NWS_CLI_SEARCH_DAYS = 3
 
 
 def collect_once(
@@ -319,6 +324,7 @@ def settle_pending(
     storage: StorageClient | None,
     limit: int = 100,
 ) -> int:
+    started = datetime.now(UTC)
     inserted = 0
     tables: dict[str, list[dict[str, Any]]] = {table: [] for table in FACT_TABLES}
     for event in postgres.fetch_unsettled_events(limit):
@@ -355,11 +361,130 @@ def settle_pending(
         raw_payload_row(row) for row in raw_payload_dicts(recorder.raw_payloads)
     ]
     tables["provider_errors"] = recorder.errors
+    tables["collector_runs"].append(
+        post_event_collector_run_row(
+            recorder,
+            started,
+            "settle-pending",
+            inserted,
+            sum(len(rows) for table, rows in tables.items() if table != "collector_runs"),
+        )
+    )
     if storage is not None:
         for record in raw_payload_dicts(recorder.raw_payloads):
             storage.upload_raw_payload(record)
     postgres.insert_facts(tables)
     return inserted
+
+
+def ingest_final_highs(
+    recorder: HttpRecorder,
+    postgres: PostgresClient,
+    storage: StorageClient | None,
+    limit: int = 100,
+) -> int:
+    started = datetime.now(UTC)
+    inserted = 0
+    tables: dict[str, list[dict[str, Any]]] = {table: [] for table in FACT_TABLES}
+    for event in postgres.fetch_events_missing_final_high(limit):
+        city = parse_cities(str(event["city"]))[0]
+        event_ticker = str(event["event_ticker"])
+        target_date = _date_value(event["target_date"])
+        try:
+            selected = fetch_nws_final_high_product(recorder, city, event_ticker, target_date)
+            if selected is None:
+                continue
+            product, final_high_f, raw_payload_id = selected
+            warnings = final_high_validation_warnings(
+                final_high_f,
+                event.get("event_metadata"),
+                _optional_text(event.get("winner_ticker")),
+            )
+            tables["final_temperature_labels"].append(
+                final_temperature_label_row(
+                    city,
+                    target_date,
+                    event_ticker,
+                    str(event.get("station_id") or city.station_id),
+                    final_high_f,
+                    product,
+                    raw_payload_id,
+                    datetime.now(UTC),
+                    warnings,
+                )
+            )
+            inserted += 1
+        except Exception as exc:  # noqa: BLE001 - keep other events retryable.
+            recorder.record_error(
+                "nws", "nws_cli_final_high_parse", exc, city.key, event_ticker, str(target_date)
+            )
+    tables["raw_payloads"] = [
+        raw_payload_row(row) for row in raw_payload_dicts(recorder.raw_payloads)
+    ]
+    tables["provider_errors"] = recorder.errors
+    tables["collector_runs"].append(
+        post_event_collector_run_row(
+            recorder,
+            started,
+            "ingest-final-highs",
+            inserted,
+            sum(len(rows) for table, rows in tables.items() if table != "collector_runs"),
+        )
+    )
+    if storage is not None:
+        for record in raw_payload_dicts(recorder.raw_payloads):
+            storage.upload_raw_payload(record)
+    postgres.insert_facts(tables)
+    return inserted
+
+
+def fetch_nws_final_high_product(
+    recorder: HttpRecorder,
+    city: City,
+    event_ticker: str,
+    target_date: date,
+) -> tuple[dict[str, Any], float, str | None] | None:
+    location = city.station_id.removeprefix("K")
+    listing = recorder.get_json(
+        "nws",
+        "nws_cli_product_listing",
+        f"{NWS_BASE_URL}/products/types/CLI/locations/{location}",
+        city=city.key,
+        event_ticker=event_ticker,
+        target_date=target_date.isoformat(),
+        required=False,
+    )
+    graph = listing.get("@graph") if isinstance(listing, dict) else None
+    if not isinstance(graph, list):
+        raise RuntimeError("NWS CLI product listing is malformed")
+    products: list[dict[str, Any]] = []
+    product_raw_ids: dict[str, str] = {}
+    for item in graph:
+        product_id, issued_at = _nws_cli_listing_item(item)
+        if product_id is None or issued_at is None:
+            continue
+        if not _within_nws_cli_search_window(issued_at, target_date):
+            continue
+        product = recorder.get_json(
+            "nws",
+            "nws_cli_product",
+            f"{NWS_BASE_URL}/products/{product_id}",
+            city=city.key,
+            event_ticker=event_ticker,
+            target_date=target_date.isoformat(),
+            required=False,
+        )
+        if isinstance(product, dict):
+            products.append(product)
+            raw_id = recorder.latest_raw_id("nws", "nws_cli_product", city.key)
+            if raw_id:
+                product_raw_ids[str(product.get("id") or product_id)] = raw_id
+    selected = select_nws_cli_final_high_product(products, target_date)
+    if selected is None:
+        return None
+    product, final_high_f = selected
+    raw_payload_id = product_raw_ids.get(str(product.get("id") or ""))
+    return product, final_high_f, raw_payload_id
 
 
 def status(data_dir: Path, postgres: PostgresClient | None) -> dict[str, Any]:
@@ -381,6 +506,7 @@ def export_tables(
         "market_snapshots",
         "weather_snapshots",
         "settlements",
+        "final_temperature_labels",
         "provider_errors",
     ):
         counts[table] = postgres.export_table(table, output_dir / f"{table}.csv", start, end)
@@ -399,6 +525,62 @@ def _date_value(value: Any) -> date:
     if isinstance(value, date) and not isinstance(value, datetime):
         return value
     return date.fromisoformat(str(value)[:10])
+
+
+def _optional_text(value: Any) -> str | None:
+    if value in (None, ""):
+        return None
+    return str(value)
+
+
+def _nws_cli_listing_item(item: Any) -> tuple[str | None, datetime | None]:
+    if not isinstance(item, dict):
+        return None, None
+    product_id = item.get("id")
+    issued = item.get("issuanceTime")
+    if not isinstance(product_id, str) or not isinstance(issued, str):
+        return None, None
+    try:
+        return product_id, parse_datetime(issued).astimezone(UTC)
+    except ValueError:
+        return product_id, None
+
+
+def _within_nws_cli_search_window(issued_at: datetime, target_date: date) -> bool:
+    start = datetime.combine(target_date, time.min, tzinfo=UTC)
+    end = start + timedelta(days=NWS_CLI_SEARCH_DAYS + 1)
+    return start <= issued_at < end
+
+
+def post_event_collector_run_row(
+    recorder: HttpRecorder,
+    started_at: datetime,
+    job_name: str,
+    inserted_count: int,
+    normalized_count: int,
+) -> dict[str, Any]:
+    completed_at = datetime.now(UTC)
+    return {
+        "collector_run_id": recorder.collector_run_id,
+        "schema_version": SCHEMA_VERSION,
+        "started_at_utc": started_at.isoformat(),
+        "completed_at_utc": completed_at.isoformat(),
+        "snapshot_time_utc": recorder.snapshot_time_utc.isoformat(),
+        "server_hostname": socket.gethostname(),
+        "collector_version": "immutable-supabase-v3",
+        "collector_source_hash": source_hash(),
+        "config_hash": sha256_bytes(json.dumps({"job": job_name}, sort_keys=True).encode("utf-8")),
+        "city_count_attempted": None,
+        "city_count_completed": inserted_count,
+        "provider_error_count": len(recorder.errors),
+        "raw_payload_count": len(recorder.raw_payloads),
+        "normalized_row_count": normalized_count,
+        "spool_status": "post_event",
+        "metadata": {
+            "job": job_name,
+            "duration_seconds": (completed_at - started_at).total_seconds(),
+        },
+    }
 
 
 def build_clients(settings):
@@ -428,6 +610,7 @@ def main(argv: list[str] | None = None) -> int:
     collect.add_argument("--snapshot-hour")
     commands.add_parser("sync-spool")
     commands.add_parser("settle-pending")
+    commands.add_parser("ingest-final-highs")
     commands.add_parser("status")
     export = commands.add_parser("export")
     export.add_argument("--start", required=True)
@@ -469,7 +652,22 @@ def main(argv: list[str] | None = None) -> int:
             SCHEMA_VERSION,
         )
         settled = settle_pending(recorder, postgres, storage)
-        print(f"synced_spool_files={synced} inserted_settlements={settled}")
+        final_highs = 0
+        try:
+            final_recorder = HttpRecorder(
+                settings.nws_user_agent,
+                deterministic_id("final-high", datetime.now(UTC).isoformat()),
+                datetime.now(UTC),
+                settings.supabase_storage_bucket,
+                SCHEMA_VERSION,
+            )
+            final_highs = ingest_final_highs(final_recorder, postgres, storage)
+        except Exception as exc:  # noqa: BLE001 - final labels should not block collection.
+            print(f"WARNING: final high ingestion failed: {exc}", file=sys.stderr)
+        print(
+            "synced_spool_files="
+            f"{synced} inserted_settlements={settled} inserted_final_highs={final_highs}"
+        )
         return 0
     if args.command == "sync-spool":
         if postgres is None:
@@ -487,6 +685,18 @@ def main(argv: list[str] | None = None) -> int:
             SCHEMA_VERSION,
         )
         print(f"inserted_settlements={settle_pending(recorder, postgres, storage)}")
+        return 0
+    if args.command == "ingest-final-highs":
+        if postgres is None:
+            raise RuntimeError("DATABASE_URL is required")
+        recorder = HttpRecorder(
+            settings.nws_user_agent,
+            deterministic_id("final-high", datetime.now(UTC).isoformat()),
+            datetime.now(UTC),
+            settings.supabase_storage_bucket,
+            SCHEMA_VERSION,
+        )
+        print(f"inserted_final_highs={ingest_final_highs(recorder, postgres, storage)}")
         return 0
     if args.command == "status":
         print(json.dumps(status(data_dir, postgres), indent=2, default=str))

@@ -7,7 +7,13 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any
 
-from libs.models import BacktestDataset, EventSnapshot, Settlement, WeatherSnapshot
+from libs.models import (
+    BacktestDataset,
+    EventSnapshot,
+    FinalTemperatureLabel,
+    Settlement,
+    WeatherSnapshot,
+)
 from libs.time_utils import checkpoint_label
 
 MODEL_NAME = "raycaster_v1"
@@ -69,13 +75,17 @@ class FeatureRow:
 def build_feature_rows(dataset: BacktestDataset) -> list[FeatureRow]:
     events = _events_by_snapshot(dataset.events)
     settlements = {settlement.event_ticker: settlement for settlement in dataset.settlements}
+    final_labels = {
+        label.event_ticker: label for label in dataset.final_temperature_labels
+    }
     rows: list[FeatureRow] = []
     for weather in dataset.weather:
         settlement = settlements.get(weather.event_ticker)
+        final_label = final_labels.get(weather.event_ticker)
         event = events.get(
             _snapshot_key(weather.city, weather.event_ticker, weather.snapshot_hour_utc)
         )
-        rows.append(feature_row_from_snapshot(weather, event, settlement))
+        rows.append(feature_row_from_snapshot(weather, event, settlement, final_label))
     return sorted(rows, key=lambda row: (row.target_date, row.city, row.snapshot_hour_utc))
 
 
@@ -83,6 +93,7 @@ def feature_row_from_snapshot(
     weather: WeatherSnapshot,
     event: EventSnapshot | None = None,
     settlement: Settlement | None = None,
+    final_label: FinalTemperatureLabel | None = None,
 ) -> FeatureRow:
     raw_features = weather.features or {}
     features: dict[str, float | str | None] = {
@@ -139,7 +150,11 @@ def feature_row_from_snapshot(
         snapshot_hour_utc=weather.snapshot_hour_utc,
         features=features,
         settlement_temperature_f=(
-            settlement.settlement_temperature_f if settlement is not None else None
+            final_label.final_high_f
+            if final_label is not None
+            else settlement.settlement_temperature_f
+            if settlement is not None
+            else None
         ),
         winner_ticker=settlement.winner_ticker if settlement is not None else None,
         settlement_bracket_index=(

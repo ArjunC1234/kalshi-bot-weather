@@ -14,7 +14,7 @@ for path in (NEXT_GEN, RAYCASTER_V1):
 
 from features import feature_row_from_snapshot, source_blend_prediction
 
-from libs.models import EventSnapshot, Settlement, WeatherSnapshot
+from libs.models import EventSnapshot, FinalTemperatureLabel, Settlement, WeatherSnapshot
 
 
 class FeatureTests(unittest.TestCase):
@@ -54,6 +54,17 @@ class FeatureTests(unittest.TestCase):
         self.assertEqual(row.features["observed_minus_nws"], -2)
         self.assertEqual(row.features["hrrr_next_3h_max_f"], 93)
         self.assertEqual(row.settlement_temperature_f, 91)
+
+        final_label = FinalTemperatureLabel(
+            city="den",
+            event_ticker="KXHIGHDEN-TEST",
+            target_date=date(2026, 7, 1),
+            station_id="KDEN",
+            final_high_f=92,
+            source_provider="nws_cli",
+        )
+        row_with_final = feature_row_from_snapshot(weather, event, settlement, final_label)
+        self.assertEqual(row_with_final.settlement_temperature_f, 92)
 
     def test_source_blend_respects_observed_high(self) -> None:
         weather = WeatherSnapshot(

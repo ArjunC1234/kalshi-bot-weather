@@ -290,6 +290,14 @@ class PostgresClient:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    def fetch_events_missing_final_high(self, limit: int = 100) -> list[dict[str, Any]]:
+        with psycopg.connect(self.database_url, row_factory=dict_row) as conn:
+            rows = conn.execute(
+                "select * from v_events_missing_final_high order by target_date, city limit %s",
+                (limit,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
     def status(self) -> dict[str, Any]:
         with psycopg.connect(self.database_url, row_factory=dict_row) as conn:
             row = conn.execute("select * from v_collector_health").fetchone()
@@ -297,7 +305,11 @@ class PostgresClient:
 
     def export_table(self, table: str, output: Path, start: str, end: str) -> int:
         output.parent.mkdir(parents=True, exist_ok=True)
-        date_column = "target_date" if table == "settlements" else "snapshot_time_utc"
+        date_column = (
+            "target_date"
+            if table in ("settlements", "final_temperature_labels")
+            else "snapshot_time_utc"
+        )
         with psycopg.connect(self.database_url, row_factory=dict_row) as conn:
             rows = conn.execute(
                 f"select * from {table} where {date_column} >= %s and {date_column} < %s",

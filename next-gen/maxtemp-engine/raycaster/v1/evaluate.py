@@ -195,13 +195,22 @@ def _temperature_score_rows(
     predictions: list[TemperaturePrediction],
 ) -> list[dict[str, Any]]:
     settlements = {settlement.event_ticker: settlement for settlement in dataset.settlements}
+    final_labels = {label.event_ticker: label for label in dataset.final_temperature_labels}
     events = {event.event_ticker: event for event in dataset.events}
     rows: list[dict[str, Any]] = []
     for prediction in predictions:
         settlement = settlements.get(prediction.event_ticker)
-        if settlement is None or settlement.settlement_temperature_f is None:
+        final_label = final_labels.get(prediction.event_ticker)
+        actual_high = (
+            final_label.final_high_f
+            if final_label is not None
+            else settlement.settlement_temperature_f
+            if settlement is not None
+            else None
+        )
+        if actual_high is None:
             continue
-        actual = float(settlement.settlement_temperature_f)
+        actual = float(actual_high)
         error = prediction.expected_high_f - actual
         event = events.get(prediction.event_ticker)
         rows.append(

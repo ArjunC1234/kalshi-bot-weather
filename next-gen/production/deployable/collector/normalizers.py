@@ -27,6 +27,21 @@ MONTHS = {
     "DEC": 12,
 }
 
+FULL_MONTHS = {
+    "JANUARY": 1,
+    "FEBRUARY": 2,
+    "MARCH": 3,
+    "APRIL": 4,
+    "MAY": 5,
+    "JUNE": 6,
+    "JULY": 7,
+    "AUGUST": 8,
+    "SEPTEMBER": 9,
+    "OCTOBER": 10,
+    "NOVEMBER": 11,
+    "DECEMBER": 12,
+}
+
 
 @dataclass(frozen=True)
 class Bracket:
@@ -430,6 +445,130 @@ def settlement_row(
     }
 
 
+def final_temperature_label_row(
+    city: City,
+    target_date: date,
+    event_ticker: str,
+    station_id: str,
+    final_high_f: float,
+    product: dict[str, Any],
+    raw_payload_id: str | None,
+    created_at_utc: datetime,
+    warnings: list[str] | None = None,
+) -> dict[str, Any]:
+    product_id = str(product.get("id") or "")
+    issued_at = product.get("issuanceTime")
+    status = "valid_with_warnings" if warnings else "valid"
+    return {
+        "final_temperature_label_id": deterministic_id(
+            "final_temperature_label", city.key, event_ticker, "nws_cli"
+        ),
+        "city": city.key,
+        "target_date": target_date.isoformat(),
+        "event_ticker": event_ticker,
+        "station_id": station_id,
+        "final_high_f": final_high_f,
+        "source_provider": "nws_cli",
+        "product_id": product_id or None,
+        "issued_at_utc": str(issued_at) if issued_at else None,
+        "raw_payload_id": raw_payload_id,
+        "validation_status": status,
+        "warnings": warnings or [],
+        "created_at_utc": created_at_utc.astimezone(UTC).isoformat(),
+    }
+
+
+def parse_nws_cli_final_high(product: dict[str, Any], target_date: date) -> float | None:
+    text = _nws_cli_product_text(product)
+    if not text:
+        return None
+    normalized = text.upper()
+    if "VALID TODAY AS OF" in normalized:
+        return None
+    report_date = _nws_cli_report_date(normalized)
+    if report_date != target_date:
+        return None
+    in_temperature_section = False
+    for raw_line in normalized.splitlines():
+        line = raw_line.strip()
+        if line.startswith("TEMPERATURE"):
+            in_temperature_section = True
+            continue
+        if in_temperature_section and line.startswith("PRECIPITATION"):
+            break
+        if in_temperature_section:
+            match = re.match(r"MAXIMUM\s+(-?\d+(?:\.\d+)?)\b", line)
+            if match:
+                return float(match.group(1))
+    match = re.search(r"^\s*MAXIMUM\s+(-?\d+(?:\.\d+)?)\b", normalized, flags=re.MULTILINE)
+    return float(match.group(1)) if match else None
+
+
+def select_nws_cli_final_high_product(
+    products: list[dict[str, Any]], target_date: date
+) -> tuple[dict[str, Any], float] | None:
+    candidates: list[tuple[datetime, dict[str, Any], float]] = []
+    for product in products:
+        final_high = parse_nws_cli_final_high(product, target_date)
+        if final_high is None:
+            continue
+        try:
+            issued_at = parse_datetime(str(product["issuanceTime"])).astimezone(UTC)
+        except (KeyError, TypeError, ValueError):
+            issued_at = datetime.min.replace(tzinfo=UTC)
+        candidates.append((issued_at, product, final_high))
+    if not candidates:
+        return None
+    _, product, final_high = max(candidates, key=lambda item: item[0])
+    return product, final_high
+
+
+def final_high_validation_warnings(
+    final_high_f: float,
+    event_metadata: Any,
+    winner_ticker: str | None,
+) -> list[str]:
+    if not winner_ticker:
+        return []
+    metadata = event_metadata if isinstance(event_metadata, dict) else {}
+    brackets = metadata.get("brackets")
+    if not isinstance(brackets, list):
+        return ["cannot validate final high against winner bracket: missing bracket metadata"]
+    winner = next(
+        (
+            item
+            for item in brackets
+            if isinstance(item, dict) and item.get("ticker") == winner_ticker
+        ),
+        None,
+    )
+    if not isinstance(winner, dict):
+        return ["cannot validate final high against winner bracket: winner bracket missing"]
+    bracket = Bracket(
+        str(winner.get("ticker") or ""),
+        str(winner.get("label") or ""),
+        _optional_int(winner.get("lower_f")),
+        _optional_int(winner.get("upper_f")),
+    )
+    return (
+        []
+        if bracket_contains_temperature(bracket, final_high_f)
+        else [
+            (
+                f"final NWS high {final_high_f:g}F does not fall inside "
+                f"Kalshi winner bracket {winner_ticker}"
+            )
+        ]
+    )
+
+
+def bracket_contains_temperature(bracket: Bracket, temperature_f: float) -> bool:
+    rounded = int(temperature_f + 0.5)
+    if bracket.lower_f is not None and rounded < bracket.lower_f:
+        return False
+    return not (bracket.upper_f is not None and rounded > bracket.upper_f)
+
+
 def clock_fields(clock: SnapshotClock) -> dict[str, Any]:
     return {
         "snapshot_time_utc": clock.snapshot_time_utc.isoformat(),
@@ -454,6 +593,42 @@ def parse_float(value: Any) -> float | None:
     except (TypeError, ValueError):
         return None
     return parsed if math.isfinite(parsed) else None
+
+
+def _optional_int(value: Any) -> int | None:
+    if value in (None, ""):
+        return None
+    try:
+        return int(float(value))
+    except (TypeError, ValueError):
+        return None
+
+
+def _nws_cli_product_text(product: dict[str, Any]) -> str:
+    for key in ("productText", "text"):
+        value = product.get(key)
+        if isinstance(value, str):
+            return value
+    properties = product.get("properties")
+    if isinstance(properties, dict) and isinstance(properties.get("productText"), str):
+        return str(properties["productText"])
+    return ""
+
+
+def _nws_cli_report_date(text: str) -> date | None:
+    match = re.search(
+        r"CLIMATE SUMMARY FOR\s+([A-Z]+)\s+(\d{1,2})\s+(\d{4})",
+        text,
+    )
+    if not match:
+        return None
+    month = FULL_MONTHS.get(match.group(1))
+    if month is None:
+        return None
+    try:
+        return date(int(match.group(3)), month, int(match.group(2)))
+    except ValueError:
+        return None
 
 
 def market_float(market: dict[str, Any], *keys: str) -> float | None:

@@ -12,6 +12,7 @@ SUPABASE_TABLES = (
     "market_snapshots",
     "weather_snapshots",
     "settlements",
+    "final_temperature_labels",
     "provider_errors",
 )
 
