@@ -483,7 +483,7 @@ def parse_nws_cli_final_high(product: dict[str, Any], target_date: date) -> floa
     if not text:
         return None
     normalized = text.upper()
-    if "VALID TODAY AS OF" in normalized:
+    if re.search(r"\bVALID(?:\s+TODAY)?\s+AS\s+OF\b", normalized):
         return None
     report_date = _nws_cli_report_date(normalized)
     if report_date != target_date:

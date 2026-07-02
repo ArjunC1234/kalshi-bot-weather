@@ -9,6 +9,8 @@ from backtest.data_sources import LocalExportSource
 from backtest.evaluate import evaluate_bracket_model
 from backtest.export_supabase import export_supabase
 from backtest.load_dataset import load_dataset
+from backtest.pipeline import run_export_validate_pipeline
+from backtest.quality import build_quality_report, write_quality_report
 from backtest.reports import write_dataset_summary, write_result
 from backtest.validators import validate_dataset
 from libs.config import load_dotenv
@@ -29,6 +31,19 @@ def main(argv: list[str] | None = None) -> int:
     validate_parser.add_argument("--data", type=Path, required=True)
     validate_parser.add_argument("--require-settlements", action="store_true")
 
+    quality_parser = commands.add_parser("quality", help="Write data quality reports.")
+    quality_parser.add_argument("--data", type=Path, required=True)
+    quality_parser.add_argument("--output", type=Path, required=True)
+
+    pipeline_parser = commands.add_parser(
+        "pipeline", help="Export Supabase data, validate it, and write quality reports."
+    )
+    pipeline_parser.add_argument("--start", required=True)
+    pipeline_parser.add_argument("--end", required=True)
+    pipeline_parser.add_argument("--data-output", type=Path, required=True)
+    pipeline_parser.add_argument("--report-output", type=Path, required=True)
+    pipeline_parser.add_argument("--require-settlements", action="store_true")
+
     evaluate_parser = commands.add_parser("evaluate", help="Evaluate stored model probabilities.")
     evaluate_parser.add_argument("--data", type=Path, required=True)
     evaluate_parser.add_argument("--model", required=True)
@@ -45,6 +60,21 @@ def main(argv: list[str] | None = None) -> int:
         dataset = load_dataset(LocalExportSource(args.data))
         validate_dataset(dataset, require_settlements=args.require_settlements)
         write_dataset_summary(dataset, args.data)
+        return 0
+    if args.command == "quality":
+        source = LocalExportSource(args.data)
+        report = build_quality_report(source)
+        write_quality_report(report, args.output)
+        return 0
+    if args.command == "pipeline":
+        result = run_export_validate_pipeline(
+            args.start,
+            args.end,
+            args.data_output,
+            args.report_output,
+            require_settlements=args.require_settlements,
+        )
+        print(f"pipeline complete: data={result.data_dir} report={result.report_dir}")
         return 0
     if args.command == "evaluate":
         dataset = load_dataset(LocalExportSource(args.data))

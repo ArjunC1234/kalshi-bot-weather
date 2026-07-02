@@ -206,8 +206,17 @@ PRECIPITATION (IN)
                 "TEMPERATURE (F)", "VALID TODAY AS OF 0400 PM LOCAL TIME.\n\nTEMPERATURE (F)"
             ),
         }
+        valid_as_of_product = {
+            **final_product,
+            "id": "product-valid-as-of",
+            "issuanceTime": "2026-07-01T12:29:00+00:00",
+            "productText": final_product["productText"].replace(
+                "TEMPERATURE (F)", "VALID AS OF 0600 AM LOCAL TIME.\n\nTEMPERATURE (F)"
+            ),
+        }
         self.assertEqual(parse_nws_cli_final_high(final_product, date(2026, 7, 1)), 93.0)
         self.assertIsNone(parse_nws_cli_final_high(interim_product, date(2026, 7, 1)))
+        self.assertIsNone(parse_nws_cli_final_high(valid_as_of_product, date(2026, 7, 1)))
         self.assertIsNone(parse_nws_cli_final_high(final_product, date(2026, 7, 2)))
 
     def test_select_nws_cli_final_high_product_chooses_latest_parseable(self) -> None:

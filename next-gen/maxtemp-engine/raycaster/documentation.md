@@ -21,6 +21,5 @@ compared without overwriting old assumptions.
 Run version-specific commands from the `next-gen/` folder. For v1:
 
 ```powershell
-python maxtemp-engine/raycaster/v1/cli.py evaluate --data data/export --output reports/raycaster_v1
+python maxtemp-engine/raycaster/v1/cli.py evaluate --data data/export --output reports/model/raycaster_v1
 ```
-

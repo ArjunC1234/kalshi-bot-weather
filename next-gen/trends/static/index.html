@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kalshi Weather Trends Workbench</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="start-screen" id="unloadedPanel">
+        <div class="start-card">
+          <p class="eyebrow">Next-Gen Research</p>
+          <h1>Weather Workbench</h1>
+          <p class="lede">
+            Load a local Supabase export and optional model/quality reports, then inspect weather
+            sources, model behavior, markets, and data quality in one analysis workspace.
+          </p>
+          <form class="source-form start-source-form" id="startSourceForm">
+            <label>
+              Export
+              <select id="exportSourceSelect"></select>
+            </label>
+            <label>
+              Report
+              <select id="reportSourceSelect"></select>
+            </label>
+            <label>
+              Quality
+              <select id="qualitySourceSelect"></select>
+            </label>
+            <button id="loadSourceButton" type="button">Load Workbench</button>
+            <button id="reloadSourcesButton" class="ghost" type="button">Reload Sources</button>
+          </form>
+          <div id="sourceStatus" class="notice" hidden></div>
+        </div>
+      </section>
+
+      <section class="workbench" id="workspacePanel" hidden>
+        <aside class="layout-rail">
+          <div class="rail-brand">
+            <p class="eyebrow">Trends</p>
+            <h1>Weather Workbench</h1>
+          </div>
+
+          <details class="source-box" id="sourceBox">
+            <summary>Sources</summary>
+            <form class="source-form">
+              <label>
+                Export
+                <select id="railExportSourceSelect"></select>
+              </label>
+              <label>
+                Report
+                <select id="railReportSourceSelect"></select>
+              </label>
+              <label>
+                Quality
+                <select id="railQualitySourceSelect"></select>
+              </label>
+              <button id="railLoadSourceButton" type="button">Reload Workbench</button>
+              <button id="railReloadSourcesButton" class="ghost" type="button">Refresh List</button>
+            </form>
+          </details>
+
+          <div class="source-summary" id="sourceSummary"></div>
+          <nav class="mode-nav" id="modeNav"></nav>
+        </aside>
+
+        <section class="layout-main">
+          <div class="content-topline">
+            <div id="contentTabs" class="content-tabs"></div>
+            <div id="hoverReadout" class="hover-readout">Hover a chart mark for details.</div>
+          </div>
+          <div id="notice" class="notice" hidden></div>
+          <div id="content" class="content-scroll"></div>
+        </section>
+
+        <aside class="layout-inspector">
+          <div class="inspector-head">
+            <p id="modeGroup" class="eyebrow">Mode</p>
+            <h2 id="modeTitle">Overview</h2>
+            <p id="modeSubtitle"></p>
+          </div>
+          <div id="metricPills" class="metric-pills"></div>
+          <div id="modeControls" class="mode-controls"></div>
+          <button id="resetFiltersButton" class="ghost reset-button" type="button" hidden>
+            Reset View
+          </button>
+          <div id="detailsPanel" class="details-panel"></div>
+        </aside>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -18,6 +18,7 @@ def write_dataset_summary(dataset: BacktestDataset, output: Path) -> None:
             "markets": len(dataset.markets),
             "weather": len(dataset.weather),
             "settlements": len(dataset.settlements),
+            "final_temperature_labels": len(dataset.final_temperature_labels),
             "model_outputs": len(dataset.model_outputs),
         },
     )

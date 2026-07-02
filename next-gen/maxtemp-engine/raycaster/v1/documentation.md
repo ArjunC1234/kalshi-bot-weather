@@ -24,9 +24,9 @@ Run from `next-gen/`:
 
 ```powershell
 python maxtemp-engine/raycaster/v1/cli.py train --data data/export --output models/raycaster/v1/run_001
-python maxtemp-engine/raycaster/v1/cli.py predict --data data/export --model models/raycaster/v1/run_001 --output reports/raycaster_v1_predictions
-python maxtemp-engine/raycaster/v1/cli.py evaluate --data data/export --output reports/raycaster_v1_eval
-python maxtemp-engine/raycaster/v1/cli.py report --run reports/raycaster_v1_eval
+python maxtemp-engine/raycaster/v1/cli.py predict --data data/export --model models/raycaster/v1/run_001 --output reports/model/raycaster_v1_predictions
+python maxtemp-engine/raycaster/v1/cli.py evaluate --data data/export --output reports/model/raycaster_v1_eval
+python maxtemp-engine/raycaster/v1/cli.py report --run reports/model/raycaster_v1_eval
 ```
 
 `evaluate` uses expanding-window backtesting by default. Passing `--model`
@@ -38,4 +38,3 @@ was trained only on prior data.
 
 No live API credentials are required. The model reads frozen local exports using
 the shared backtest loader.
-

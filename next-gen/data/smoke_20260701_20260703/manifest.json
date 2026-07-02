@@ -1,0 +1,14 @@
+{
+  "start": "2026-07-01",
+  "end": "2026-07-03",
+  "counts": {
+    "collector_runs": 38,
+    "raw_payloads": 808,
+    "events": 72,
+    "market_snapshots": 432,
+    "weather_snapshots": 72,
+    "settlements": 6,
+    "final_temperature_labels": 6,
+    "provider_errors": 0
+  }
+}

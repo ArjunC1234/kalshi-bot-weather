@@ -10,9 +10,9 @@ Run from `next-gen/`:
 
 ```powershell
 python maxtemp-engine/thetemp/v1/cli.py train --data data/export --output models/thetemp/v1/run_001
-python maxtemp-engine/thetemp/v1/cli.py predict --data data/export --model models/thetemp/v1/run_001 --output reports/thetemp_predictions
-python maxtemp-engine/thetemp/v1/cli.py evaluate --data data/export --output reports/thetemp_eval
-python maxtemp-engine/thetemp/v1/cli.py report --run reports/thetemp_eval
+python maxtemp-engine/thetemp/v1/cli.py predict --data data/export --model models/thetemp/v1/run_001 --output reports/model/thetemp_predictions
+python maxtemp-engine/thetemp/v1/cli.py evaluate --data data/export --output reports/model/thetemp_eval
+python maxtemp-engine/thetemp/v1/cli.py report --run reports/model/thetemp_eval
 ```
 
 ## Template Behavior
@@ -24,4 +24,3 @@ python maxtemp-engine/thetemp/v1/cli.py report --run reports/thetemp_eval
 - Writes the same core output names expected from max-temp models.
 
 Replace the internals before treating a cloned model as a real candidate.
-

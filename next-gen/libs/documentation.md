@@ -18,6 +18,7 @@ Shared reusable code belongs here.
 - `supabase_client.py`: requests-based Supabase REST/Storage client.
 - `kalshi_client.py`, `nws_client.py`, `openmeteo_client.py`: read-only provider clients.
 - `time_utils.py`, `probabilities.py`, `metrics.py`, `validation.py`: reusable domain helpers.
+- `artifacts.py`: versioned model artifact manifests, registry copies, and promotion pointers.
 
 ## Does Not Belong Here
 

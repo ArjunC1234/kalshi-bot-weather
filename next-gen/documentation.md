@@ -9,6 +9,7 @@ This folder contains all new implementation work.
 - `backtest/`: offline replay, Supabase export loading, settlement ingestion, metrics, and charts.
 - `strategy-engine/`: trade decision logic, EV filters, position sizing, fee modeling, and PnL simulation.
 - `production/`: deployable server bot structure and upload scripts.
+- `trends/`: local GUI for exploring collected database values over time.
 - `tests/`: cross-subsystem integration tests only.
 
 ## Rules
