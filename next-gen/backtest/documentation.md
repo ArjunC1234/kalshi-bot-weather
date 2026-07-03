@@ -15,13 +15,17 @@ This subsystem replays point-in-time data and scores models without calling live
 Run from `next-gen/`:
 
 ```powershell
-python -m backtest.cli export --start 2026-07-01 --end 2026-09-30 --output data/export_2026q3
-python -m backtest.cli validate --data data/export_2026q3
-python -m backtest.cli quality --data data/export_2026q3 --output reports/quality/data_quality
-python -m backtest.cli pipeline --start 2026-07-01 --end 2026-09-30 --data-output data/export_2026q3 --report-output reports/model/export_2026q3
-python -m backtest.cli evaluate --data data/export_2026q3 --model baseline --output reports/model/baseline
-python -m backtest.cli report --run reports/model/baseline
+python -m backtest.cli export --start 2026-07-01 --end 2026-09-30
+python -m backtest.cli validate --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ
+python -m backtest.cli quality --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ
+python -m backtest.cli pipeline --start 2026-07-01 --end 2026-09-30
+python -m backtest.cli evaluate --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ --model baseline
+python -m backtest.cli report --run reports/model/baseline_export_20260701_20260930_YYYYMMDDTHHMMSSZ_YYYYMMDDTHHMMSSZ
 ```
+
+`export`, `quality`, `pipeline`, and `evaluate` create timestamped folders by default so
+multiple runs over the same date range do not overwrite each other. Pass `--output`,
+`--data-output`, or `--report-output` only when an exact path is required.
 
 ## Quality Reports
 

@@ -181,6 +181,12 @@ def serve_gui(
         def _send_error_json(self, status: int, message: str) -> None:
             self._send_json({"error": message}, status=status)
 
+        def end_headers(self) -> None:
+            self.send_header("Cache-Control", "no-store, max-age=0")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("Expires", "0")
+            super().end_headers()
+
     with socketserver.TCPServer((host, port), TrendsHandler) as server:
         url = f"http://{host}:{port}"
         print(f"trends GUI: {url}")

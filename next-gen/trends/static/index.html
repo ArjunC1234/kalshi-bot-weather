@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Kalshi Weather Trends Workbench</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=20260703-inspector-scroll" />
   </head>
   <body>
     <main class="shell">
@@ -83,15 +83,20 @@
             <h2 id="modeTitle">Overview</h2>
             <p id="modeSubtitle"></p>
           </div>
-          <div id="metricPills" class="metric-pills"></div>
-          <div id="modeControls" class="mode-controls"></div>
-          <button id="resetFiltersButton" class="ghost reset-button" type="button" hidden>
+          <button id="resetFiltersButton" class="ghost reset-button" type="button">
             Reset View
           </button>
-          <div id="detailsPanel" class="details-panel"></div>
+          <details id="metricSummary" class="inspector-section metric-summary">
+            <summary>
+              <span>Dataset summary</span>
+              <strong id="metricSummaryText"></strong>
+            </summary>
+            <div id="metricPills" class="metric-pills"></div>
+          </details>
+          <div id="modeControls" class="mode-controls"></div>
         </aside>
       </section>
     </main>
-    <script src="/app.js"></script>
+    <script src="/app.js?v=20260703-inspector-scroll"></script>
   </body>
 </html>

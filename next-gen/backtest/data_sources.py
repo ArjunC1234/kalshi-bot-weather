@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -60,11 +61,16 @@ class SupabaseSource(DataSource):
             if table in ("settlements", "final_temperature_labels")
             else "snapshot_time_utc"
         )
+        start = self.start
+        end = self.end
+        if date_column == "snapshot_time_utc":
+            start = _timestamp_start(start)
+            end = _timestamp_end(end)
         filters: list[str] = []
-        if self.start:
-            filters.append(f"{date_column}.gte.{self.start}")
-        if self.end:
-            filters.append(f"{date_column}.lte.{self.end}")
+        if start:
+            filters.append(f"{date_column}.gte.{start}")
+        if end:
+            filters.append(f"{date_column}.lte.{end}")
         if filters:
             params["and"] = f"({','.join(filters)})"
         return self.client.select(table, params)
@@ -72,3 +78,15 @@ class SupabaseSource(DataSource):
 
 def all_tables(source: DataSource) -> dict[str, list[dict]]:
     return {table: source.load_table(table) for table in SUPABASE_TABLES}
+
+
+def _timestamp_start(value: str | None) -> str | None:
+    if value and re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        return f"{value}T00:00:00+00:00"
+    return value
+
+
+def _timestamp_end(value: str | None) -> str | None:
+    if value and re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        return f"{value}T23:59:59.999999+00:00"
+    return value

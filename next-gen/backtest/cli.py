@@ -7,7 +7,13 @@ from pathlib import Path
 
 from backtest.data_sources import LocalExportSource
 from backtest.evaluate import evaluate_bracket_model
-from backtest.export_supabase import export_supabase
+from backtest.export_supabase import (
+    dataset_name,
+    export_supabase,
+    timestamped_export_dir,
+    timestamped_report_dir,
+    utc_filename_timestamp,
+)
 from backtest.load_dataset import load_dataset
 from backtest.pipeline import run_export_validate_pipeline
 from backtest.quality import build_quality_report, write_quality_report
@@ -25,7 +31,11 @@ def main(argv: list[str] | None = None) -> int:
     export_parser = commands.add_parser("export", help="Export Supabase rows to local files.")
     export_parser.add_argument("--start", required=True)
     export_parser.add_argument("--end", required=True)
-    export_parser.add_argument("--output", type=Path, required=True)
+    export_parser.add_argument(
+        "--output",
+        type=Path,
+        help="Output folder. Defaults to data/export_<start>_<end>_<UTC timestamp>.",
+    )
 
     validate_parser = commands.add_parser("validate", help="Validate a frozen local dataset.")
     validate_parser.add_argument("--data", type=Path, required=True)
@@ -33,28 +43,49 @@ def main(argv: list[str] | None = None) -> int:
 
     quality_parser = commands.add_parser("quality", help="Write data quality reports.")
     quality_parser.add_argument("--data", type=Path, required=True)
-    quality_parser.add_argument("--output", type=Path, required=True)
+    quality_parser.add_argument(
+        "--output",
+        type=Path,
+        help="Output folder. Defaults to reports/quality/data_quality_<dataset>_<UTC timestamp>.",
+    )
 
     pipeline_parser = commands.add_parser(
         "pipeline", help="Export Supabase data, validate it, and write quality reports."
     )
     pipeline_parser.add_argument("--start", required=True)
     pipeline_parser.add_argument("--end", required=True)
-    pipeline_parser.add_argument("--data-output", type=Path, required=True)
-    pipeline_parser.add_argument("--report-output", type=Path, required=True)
+    pipeline_parser.add_argument(
+        "--data-output",
+        type=Path,
+        help="Data output folder. Defaults to data/export_<start>_<end>_<UTC timestamp>.",
+    )
+    pipeline_parser.add_argument(
+        "--report-output",
+        type=Path,
+        help=(
+            "Report output folder. Defaults to "
+            "reports/quality/pipeline_<start>_<end>_<UTC timestamp>."
+        ),
+    )
     pipeline_parser.add_argument("--require-settlements", action="store_true")
 
     evaluate_parser = commands.add_parser("evaluate", help="Evaluate stored model probabilities.")
     evaluate_parser.add_argument("--data", type=Path, required=True)
     evaluate_parser.add_argument("--model", required=True)
-    evaluate_parser.add_argument("--output", type=Path, required=True)
+    evaluate_parser.add_argument(
+        "--output",
+        type=Path,
+        help="Output folder. Defaults to reports/model/<model>_<dataset>_<UTC timestamp>.",
+    )
 
     report_parser = commands.add_parser("report", help="Print a compact report summary.")
     report_parser.add_argument("--run", type=Path, required=True)
 
     args = parser.parse_args(argv)
     if args.command == "export":
-        export_supabase(args.start, args.end, args.output)
+        output = args.output or timestamped_export_dir(args.start, args.end)
+        export_supabase(args.start, args.end, output)
+        print(f"export complete: {output}")
         return 0
     if args.command == "validate":
         dataset = load_dataset(LocalExportSource(args.data))
@@ -64,14 +95,25 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "quality":
         source = LocalExportSource(args.data)
         report = build_quality_report(source)
-        write_quality_report(report, args.output)
+        output = args.output or timestamped_report_dir(
+            "quality", f"data_quality_{dataset_name(args.data)}"
+        )
+        write_quality_report(report, output)
+        print(f"quality report complete: {output}")
         return 0
     if args.command == "pipeline":
+        stamp = utc_filename_timestamp()
+        data_output = args.data_output or timestamped_export_dir(args.start, args.end, stamp=stamp)
+        report_output = args.report_output or timestamped_report_dir(
+            "quality",
+            f"pipeline_{args.start}_{args.end}",
+            stamp=stamp,
+        )
         result = run_export_validate_pipeline(
             args.start,
             args.end,
-            args.data_output,
-            args.report_output,
+            data_output,
+            report_output,
             require_settlements=args.require_settlements,
         )
         print(f"pipeline complete: data={result.data_dir} report={result.report_dir}")
@@ -80,8 +122,12 @@ def main(argv: list[str] | None = None) -> int:
         dataset = load_dataset(LocalExportSource(args.data))
         validate_dataset(dataset)
         result = evaluate_bracket_model(dataset, args.model)
-        write_dataset_summary(dataset, args.output)
-        write_result(result, args.output)
+        output = args.output or timestamped_report_dir(
+            "model", f"{args.model}_{dataset_name(args.data)}"
+        )
+        write_dataset_summary(dataset, output)
+        write_result(result, output)
+        print(f"evaluation report complete: {output}")
         return 0
     if args.command == "report":
         import json
