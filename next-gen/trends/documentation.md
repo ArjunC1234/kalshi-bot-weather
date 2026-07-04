@@ -1,15 +1,15 @@
 # Trends
 
-Local GUI workbench for exploring values collected in Supabase exports and optional local model
-reports. The GUI discovers local exports and reports, then loads the selected sources on demand.
+`trends/` is the local GUI workbench for exploring frozen Supabase exports, optional model reports, and optional quality reports. It is for analysis and model design, not production trading.
 
 ## What Belongs Here
 
-- Interactive visualization tooling for frozen exports.
-- Dataset-to-chart transformations and derived analysis tables.
-- Local model report ingestion for predictions, bracket distributions, errors, and metrics.
-- Local web server code and static UI assets.
-- Tests for trend data preparation.
+- Local web server for the analysis workbench.
+- Static HTML/CSS/JS UI assets.
+- Source discovery for local export/report folders.
+- Dataset-to-chart transformations.
+- Derived analysis tables for feature trends, source disagreement, model errors, calibration, and market/model comparison.
+- Tests for Trends data preparation and source discovery.
 
 ## What Does Not Belong Here
 
@@ -17,6 +17,7 @@ reports. The GUI discovers local exports and reports, then loads the selected so
 - Trading or PnL logic.
 - Collector code that writes to Supabase.
 - Long-lived report artifacts.
+- Direct writes back to Supabase.
 
 ## Usage
 
@@ -27,46 +28,51 @@ python -m trends.cli serve
 python -m trends.cli serve --data-root data --report-root reports/model --quality-root reports/quality
 ```
 
-Then open the printed local URL in a browser and select:
+Open the printed local URL and select:
 
-- one local Supabase export folder
+- one frozen local Supabase export folder
 - one exact model report folder, optional
 - one quality report folder, optional
 
-## Report Folder Layout
+The GUI uses a source selector. It does not require pre-generating a giant `trends_data.json` file.
+
+## Source Folder Layout
 
 Keep local reports grouped by report type:
 
-- `reports/model/<model_report_run>` for Raycaster and future model evaluation reports.
-- `reports/quality/<quality_report_run>` for data-quality reports.
+- `data/<export_run>` for frozen Supabase exports.
+- `reports/model/<model_report_run>` for Raycaster and future model reports.
+- `reports/quality/<quality_report_run>` for data-quality and daily-health reports.
 - `reports/trends/<diagnostic_run>` for future Trends-only diagnostics if needed.
 
 ## GUI Modes
 
-- `Overview`: coverage, settlement/final-high completion, report availability, and replayable events.
-- `Trend Explorer`: multi-city line charts for weather, market, settlement, and model metrics.
-- `Event Replay`: one city-day timeline across weather sources, market top bracket, model expected high, final high, and bracket probabilities.
-- `Checkpoint Performance`: heatmaps and grouped bars for Raycaster/backtest metrics.
-- `Feature vs Error`: source/disagreement feature scatter plots against model error.
-- `Source Disagreement`: NWS/observed/HRRR/NBM/ensemble divergence and outlier tables.
-- `Market vs Model`: model probability versus archived ask/midpoint and winner probability paths.
-- `Calibration`: bracket probability reliability buckets.
-- `Settlement Grid`: city-date table for final high, winner, model top bracket, and misses.
-- `Data Quality`: missing city-hours, provider errors, pending labels, and table counts.
+- `Overview`: dataset coverage, snapshot counts, final-high completion, settlement completion, and replayable events.
+- `Data Quality`: missing city-hours, provider errors, pending settlements, pending final highs, and table counts.
+- `Trend Explorer`: multi-metric line charts for weather, market, settlement, and model values over time.
+- `Event Replay`: one city-day timeline across NWS, observations, HRRR, NBM, ensemble, model expected high, final high, and bracket probabilities.
+- `Source Disagreement`: NWS/observed/HRRR/NBM/ensemble divergence, outlier tables, and disagreement trends.
+- `Settlement Grid`: city-date matrix for final high, winner, model top bracket, and miss distance.
+- `Checkpoint Performance`: model metrics by city and checkpoint using heatmaps and supporting views.
+- `Feature vs Error`: scatter plots comparing source/disagreement features to model error.
+- `Calibration`: bracket probability reliability buckets and related summaries.
+- `Market vs Model`: model probabilities versus archived ask/midpoint and winner probability paths.
 
-Model-specific modes degrade gracefully when no report is selected.
+Model-specific modes should degrade gracefully when no model report is selected.
 
 ## Inputs
 
-The GUI reads frozen local exports containing tables like:
+Frozen exports may include:
 
 - `events`
 - `market_snapshots`
 - `weather_snapshots`
 - `settlements`
 - `final_temperature_labels`
+- `provider_errors`
+- `raw_payloads`
 
-Optional report folders may include:
+Model report folders may include:
 
 - `predictions.csv`
 - `bracket_distributions.csv`
@@ -76,6 +82,17 @@ Optional report folders may include:
 - `temperature_metrics.csv`
 - `bracket_metrics.csv`
 - `training_diagnostics.csv`
+
+Quality report folders may include:
+
+- `quality_report.json`
+- `daily_health_report.json`
+- `table_counts.csv`
+- `missing_city_hours.csv`
+- `provider_errors.csv`
+- `city_coverage.csv`
+
+## API Shape
 
 The server exposes split endpoints instead of one large JSON payload:
 
@@ -88,7 +105,15 @@ The server exposes split endpoints instead of one large JSON payload:
 - `/api/event/<city|event_ticker>`
 - `/api/table/<table_name>`
 
+## UX Principles
+
+- Choose exact source folders in the GUI.
+- Keep model selection tied to the selected report folder.
+- Use view-specific controls rather than global filters.
+- Avoid nested scrollbars.
+- Use consistent y-axis domains where changing cities or metrics would otherwise mislead comparison.
+- Use two-axis multi-metric charts only when the selected metrics belong to at most two metric families.
+
 ## Environment
 
-No environment variables are required when using local exports. Direct Supabase querying can be
-added later, but v1 intentionally uses frozen exports for reproducibility.
+No environment variables are required when using local exports. Direct Supabase querying is intentionally not part of v1 because frozen exports make analysis reproducible.
