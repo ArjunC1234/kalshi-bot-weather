@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -27,9 +27,11 @@ class QualityReport:
     pending_final_highs: int
     latest_snapshot_utc: str | None
     storage_bytes: int
+    source_export_id: str | None = None
+    generated_at_utc: str | None = None
 
 
-def build_quality_report(source: DataSource) -> QualityReport:
+def build_quality_report(source: DataSource, source_export_id: str | None = None) -> QualityReport:
     tables = {
         "collector_runs": source.load_table("collector_runs"),
         "raw_payloads": source.load_table("raw_payloads"),
@@ -90,6 +92,8 @@ def build_quality_report(source: DataSource) -> QualityReport:
         pending_final_highs=len(ended_keys - final_high_keys),
         latest_snapshot_utc=latest_snapshot.isoformat() if latest_snapshot else None,
         storage_bytes=storage_bytes,
+        source_export_id=source_export_id,
+        generated_at_utc=datetime.now(UTC).isoformat(),
     )
 
 

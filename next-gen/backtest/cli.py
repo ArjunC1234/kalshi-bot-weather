@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import argparse
+from datetime import UTC, datetime
 from pathlib import Path
 
-from backtest.data_sources import LocalExportSource
+from backtest.data_sources import LocalExportSource, SupabaseSource
 from backtest.evaluate import evaluate_bracket_model
 from backtest.export_supabase import (
     dataset_name,
@@ -14,13 +15,20 @@ from backtest.export_supabase import (
     timestamped_report_dir,
     utc_filename_timestamp,
 )
+from backtest.health import (
+    build_daily_health_report,
+    daily_health_summary,
+    write_daily_health_report,
+)
 from backtest.load_dataset import load_dataset
 from backtest.pipeline import run_export_validate_pipeline
 from backtest.quality import build_quality_report, write_quality_report
 from backtest.reports import write_dataset_summary, write_result
 from backtest.validators import validate_dataset
 from libs.config import load_dotenv
+from libs.errors import SourceError
 from libs.json_utils import write_json
+from libs.supabase_client import SupabaseClient
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -47,6 +55,31 @@ def main(argv: list[str] | None = None) -> int:
         "--output",
         type=Path,
         help="Output folder. Defaults to reports/quality/data_quality_<dataset>_<UTC timestamp>.",
+    )
+
+    daily_health_parser = commands.add_parser(
+        "daily-health",
+        help="Write a day-specific collector health report from a local export or Supabase.",
+    )
+    daily_health_parser.add_argument("--date", required=True, help="Collection date YYYY-MM-DD.")
+    daily_health_parser.add_argument("--data", type=Path, help="Frozen local export folder.")
+    daily_health_parser.add_argument(
+        "--output",
+        type=Path,
+        help=(
+            "Output folder. Defaults to "
+            "reports/quality/daily_health_<date>_<source>_<UTC timestamp>."
+        ),
+    )
+
+    monitor_parser = commands.add_parser(
+        "monitor",
+        help="Print live read-only Supabase collector health for a date.",
+    )
+    monitor_parser.add_argument(
+        "--date",
+        default=datetime.now(UTC).date().isoformat(),
+        help="Collection date YYYY-MM-DD. Defaults to today's UTC date.",
     )
 
     pipeline_parser = commands.add_parser(
@@ -94,12 +127,48 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "quality":
         source = LocalExportSource(args.data)
-        report = build_quality_report(source)
+        report = build_quality_report(source, source_export_id=dataset_name(args.data))
         output = args.output or timestamped_report_dir(
             "quality", f"data_quality_{dataset_name(args.data)}"
         )
         write_quality_report(report, output)
         print(f"quality report complete: {output}")
+        return 0
+    if args.command == "daily-health":
+        if args.data:
+            source = LocalExportSource(args.data)
+            source_id = dataset_name(args.data)
+        else:
+            source = SupabaseSource(SupabaseClient.from_env(), start=args.date, end=args.date)
+            source_id = "supabase"
+        report = build_daily_health_report(source, args.date, source_export_id=source_id)
+        output = args.output or timestamped_report_dir(
+            "quality",
+            f"daily_health_{args.date}_{source_id}",
+        )
+        write_daily_health_report(report, output)
+        print(daily_health_summary(report))
+        print(f"daily health report complete: {output}")
+        return 0
+    if args.command == "monitor":
+        client = SupabaseClient.from_env()
+        try:
+            health_rows = client.select("v_collector_health", {})
+            if health_rows:
+                row = health_rows[0]
+                print(
+                    "collector-health "
+                    f"latest_run_utc={row.get('latest_run_utc')} "
+                    f"cities_seen_last_2h={row.get('cities_seen_last_2h')} "
+                    f"unsettled_events={row.get('unsettled_events')} "
+                    f"provider_errors_24h={row.get('provider_errors_24h')} "
+                    f"pending_final_highs={row.get('pending_final_highs')}"
+                )
+        except SourceError as exc:
+            print(f"collector-health view unavailable: {exc}")
+        source = SupabaseSource(client, start=args.date, end=args.date)
+        report = build_daily_health_report(source, args.date, source_export_id="supabase")
+        print(daily_health_summary(report))
         return 0
     if args.command == "pipeline":
         stamp = utc_filename_timestamp()
@@ -121,7 +190,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "evaluate":
         dataset = load_dataset(LocalExportSource(args.data))
         validate_dataset(dataset)
-        result = evaluate_bracket_model(dataset, args.model)
+        result = evaluate_bracket_model(
+            dataset,
+            args.model,
+            source_export_id=dataset_name(args.data),
+        )
         output = args.output or timestamped_report_dir(
             "model", f"{args.model}_{dataset_name(args.data)}"
         )

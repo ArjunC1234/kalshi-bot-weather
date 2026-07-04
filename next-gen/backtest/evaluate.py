@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from datetime import UTC, datetime
 from typing import Any
 
 from backtest.replay import settled_distributions
@@ -11,7 +12,11 @@ from libs.models import BacktestDataset, BacktestResult, MetricSummary
 from libs.probabilities import normalize
 
 
-def evaluate_bracket_model(dataset: BacktestDataset, model_name: str) -> BacktestResult:
+def evaluate_bracket_model(
+    dataset: BacktestDataset,
+    model_name: str,
+    source_export_id: str | None = None,
+) -> BacktestResult:
     pairs = settled_distributions(dataset, model_name)
     predictions: list[dict[str, Any]] = []
     metric_rows: list[dict[str, float]] = []
@@ -47,7 +52,11 @@ def evaluate_bracket_model(dataset: BacktestDataset, model_name: str) -> Backtes
         model_name=model_name,
         predictions=predictions,
         metrics=metrics,
-        metadata={"forecast_count": len(predictions)},
+        metadata={
+            "forecast_count": len(predictions),
+            "source_export_id": source_export_id,
+            "generated_at_utc": datetime.now(UTC).isoformat(),
+        },
     )
 
 

@@ -26,6 +26,7 @@ Run from `next-gen/`:
 python maxtemp-engine/raycaster/v1/cli.py train --data data/export --output models/raycaster/v1/run_001
 python maxtemp-engine/raycaster/v1/cli.py predict --data data/export --model models/raycaster/v1/run_001 --output reports/model/raycaster_v1_predictions
 python maxtemp-engine/raycaster/v1/cli.py evaluate --data data/export --output reports/model/raycaster_v1_eval
+python maxtemp-engine/raycaster/v1/cli.py rolling-eval --data data/export --output reports/model/raycaster_v1_rolling --train-days 14 --test-days 1
 python maxtemp-engine/raycaster/v1/cli.py report --run reports/model/raycaster_v1_eval
 ```
 
@@ -33,6 +34,10 @@ python maxtemp-engine/raycaster/v1/cli.py report --run reports/model/raycaster_v
 evaluates a fixed saved artifact against the dataset, which is useful for smoke
 tests but should not be treated as a leakage-free backtest unless the artifact
 was trained only on prior data.
+
+`rolling-eval` trains on a fixed number of prior target dates and scores the
+next target date or block. Use this once enough collected days exist to mimic
+the planned weekly retraining workflow.
 
 ## Required Environment
 

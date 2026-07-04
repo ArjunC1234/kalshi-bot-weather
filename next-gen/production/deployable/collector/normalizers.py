@@ -218,6 +218,20 @@ def market_rows(
         market = by_ticker.get(bracket.ticker, {})
         bid = market_float(market, "yes_bid_dollars", "yes_bid")
         ask = market_float(market, "yes_ask_dollars", "yes_ask")
+        no_bid = market_float(market, "no_bid_dollars", "no_bid")
+        no_ask = market_float(market, "no_ask_dollars", "no_ask")
+        yes_bid_size = market_float(market, "yes_bid_size", "yes_bid_size_fp")
+        yes_ask_size = market_float(market, "yes_ask_size", "yes_ask_size_fp")
+        no_bid_size = market_float(market, "no_bid_size", "no_bid_size_fp")
+        no_ask_size = market_float(market, "no_ask_size", "no_ask_size_fp")
+        if no_bid is None and ask is not None:
+            no_bid = max(0.0, 1.0 - ask)
+        if no_ask is None and bid is not None:
+            no_ask = max(0.0, 1.0 - bid)
+        if no_bid_size is None:
+            no_bid_size = yes_ask_size
+        if no_ask_size is None:
+            no_ask_size = yes_bid_size
         rows.append(
             {
                 "market_snapshot_id": deterministic_id(
@@ -244,8 +258,8 @@ def market_rows(
                 "is_upper_tail": bracket.upper_f is None,
                 "yes_bid_dollars": bid,
                 "yes_ask_dollars": ask,
-                "no_bid_dollars": market_float(market, "no_bid_dollars", "no_bid"),
-                "no_ask_dollars": market_float(market, "no_ask_dollars", "no_ask"),
+                "no_bid_dollars": no_bid,
+                "no_ask_dollars": no_ask,
                 "last_price_dollars": market_float(market, "last_price_dollars", "last_price"),
                 "previous_yes_bid_dollars": market_float(market, "previous_yes_bid_dollars"),
                 "previous_yes_ask_dollars": market_float(market, "previous_yes_ask_dollars"),
@@ -254,10 +268,10 @@ def market_rows(
                 "volume_24h": market_float(market, "volume_24h", "volume_24h_fp"),
                 "liquidity_dollars": market_float(market, "liquidity_dollars"),
                 "open_interest": market_float(market, "open_interest", "open_interest_fp"),
-                "yes_bid_size": market_float(market, "yes_bid_size", "yes_bid_size_fp"),
-                "yes_ask_size": market_float(market, "yes_ask_size", "yes_ask_size_fp"),
-                "no_bid_size": market_float(market, "no_bid_size", "no_bid_size_fp"),
-                "no_ask_size": market_float(market, "no_ask_size", "no_ask_size_fp"),
+                "yes_bid_size": yes_bid_size,
+                "yes_ask_size": yes_ask_size,
+                "no_bid_size": no_bid_size,
+                "no_ask_size": no_ask_size,
                 "yes_midpoint": (bid + ask) / 2.0 if bid is not None and ask is not None else None,
                 "yes_spread": ask - bid if bid is not None and ask is not None else None,
                 "normalized_market_midpoint_probability": normalized[index],

@@ -1,0 +1,9 @@
+{
+  "data_dir": "data\\export_20260702_20260703_20260703T171513Z",
+  "end": "2026-07-03",
+  "exported_at_utc": "2026-07-03T17:15:16.058513+00:00",
+  "report_dir": "reports\\quality\\pipeline_20260702_20260703_20260703T171513Z",
+  "require_settlements": false,
+  "start": "2026-07-02",
+  "validation_status": "valid"
+}

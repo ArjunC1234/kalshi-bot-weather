@@ -229,6 +229,8 @@ const state = {
   focusChart: "",
   selectedEventKey: "",
   cache: { series: {}, analysis: {}, tables: {}, events: {}, derived: {} },
+  sourcePicker: { stage: "dataset", exportId: "", reportId: "", qualityId: "", qualityManual: false },
+  axisZoom: {},
 };
 
 async function init() {
@@ -241,14 +243,13 @@ async function init() {
 }
 
 function wireStaticEvents() {
-  document.getElementById("loadSourceButton").addEventListener("click", () => void loadWorkbench(false));
-  document.getElementById("reloadSourcesButton").addEventListener("click", () => void reloadSources());
-  document.getElementById("railLoadSourceButton").addEventListener("click", () => void loadWorkbench(true));
-  document.getElementById("railReloadSourcesButton").addEventListener("click", () => void reloadSources());
   document.getElementById("resetFiltersButton").addEventListener("click", () => {
     resetViewParams(state.mode);
+    resetZoomForMode(state.mode);
     void render();
   });
+  document.getElementById("changeSourceButton").addEventListener("click", () => openSourceModal());
+  wireSourcePickerEvents();
   const modeControls = document.getElementById("modeControls");
   modeControls.addEventListener("change", (event) => handleControlChange(event));
   modeControls.addEventListener("click", (event) => {
@@ -282,10 +283,77 @@ function wireStaticEvents() {
     }
     const eventRow = event.target.closest("[data-event-key]");
     if (eventRow) openEventReplay(eventRow.dataset.eventKey);
+    const zoomReset = event.target.closest("[data-zoom-reset]");
+    if (zoomReset) {
+      resetZoomKey(zoomReset.dataset.zoomReset);
+      void render();
+    }
+  });
+  document.getElementById("content").addEventListener("input", (event) => {
+    const slider = event.target.closest("[data-zoom-slider]");
+    if (!slider) return;
+    // Live-update the stored zoom factor and the readout label while dragging,
+    // but wait for "change" (drag release) before redrawing the whole chart so
+    // dragging stays smooth instead of re-rendering on every tick.
+    setZoomFactor(slider.dataset.zoomSlider, sliderValueToFactor(slider.value));
+    const readout = slider.closest(".zoom-control")?.querySelector(".zoom-value");
+    if (readout) readout.textContent = sliderReadoutText(slider.value);
+  });
+  document.getElementById("content").addEventListener("change", (event) => {
+    const slider = event.target.closest("[data-zoom-slider]");
+    if (!slider) return;
+    setZoomFactor(slider.dataset.zoomSlider, sliderValueToFactor(slider.value));
+    void render();
   });
   document.getElementById("content").addEventListener("mouseover", (event) => {
     const target = event.target.closest("[data-hover-readout]");
     if (target) document.getElementById("hoverReadout").textContent = target.dataset.hoverReadout;
+  });
+}
+
+function wireSourcePickerEvents() {
+  document.addEventListener("click", (event) => {
+    const datasetRow = event.target.closest("[data-picker-dataset]");
+    if (datasetRow) {
+      selectPickerDataset(datasetRow.dataset.pickerDataset);
+      return;
+    }
+    const reportRow = event.target.closest("[data-picker-report]");
+    if (reportRow) {
+      selectPickerReport(reportRow.dataset.pickerReport);
+      return;
+    }
+    const back = event.target.closest("[data-picker-back]");
+    if (back) {
+      state.sourcePicker.stage = "dataset";
+      renderSourcePicker();
+      return;
+    }
+    const reload = event.target.closest("[data-picker-reload]");
+    if (reload) {
+      void reloadSources();
+      return;
+    }
+    const confirm = event.target.closest("[data-picker-confirm]");
+    if (confirm) {
+      void confirmSourcePicker();
+      return;
+    }
+    const close = event.target.closest("[data-picker-close]");
+    if (close) {
+      closeSourceModal();
+      return;
+    }
+    if (event.target.id === "sourceModal") {
+      closeSourceModal();
+    }
+  });
+  document.addEventListener("change", (event) => {
+    const qualitySelect = event.target.closest("[data-picker-quality]");
+    if (qualitySelect) {
+      state.sourcePicker.qualityId = qualitySelect.value;
+      state.sourcePicker.qualityManual = true;
+    }
   });
 }
 
@@ -298,45 +366,195 @@ async function loadSources() {
   state.sources = await apiGet("/api/sources");
 }
 
-function renderSourcePicker() {
-  const exports = state.sources?.exports || [];
-  const reports = state.sources?.reports || [];
-  const qualityReports = state.sources?.quality_reports || [];
-  fillSelectPair("exportSourceSelect", "railExportSourceSelect", exports, { optional: false });
-  fillSelectPair("reportSourceSelect", "railReportSourceSelect", reports, { optional: true, emptyLabel: "No model report" });
-  fillSelectPair("qualitySourceSelect", "railQualitySourceSelect", qualityReports, { optional: true, emptyLabel: "No quality report" });
-  document.getElementById("loadSourceButton").disabled = exports.length === 0;
-  document.getElementById("railLoadSourceButton").disabled = exports.length === 0;
-  suppressAutofill(document.getElementById("unloadedPanel"));
-  suppressAutofill(document.getElementById("workspacePanel"));
-  if (!exports.length) setSourceStatus("No valid exports found under the configured data root.", true);
-  else hideSourceStatus();
+function openSourceModal() {
+  const selection = state.selection || {};
+  state.sourcePicker = {
+    stage: selection.export_id ? "report" : "dataset",
+    exportId: selection.export_id || "",
+    reportId: selection.report_id || "",
+    qualityId: selection.quality_id || "",
+    qualityManual: false,
+  };
+  document.getElementById("sourceModal").hidden = false;
+  hideSourceStatus();
+  renderSourcePicker();
 }
 
-function fillSelectPair(startId, railId, rows, options) {
-  const html = sourceOptionsHtml(rows, options);
-  for (const id of [startId, railId]) {
-    const select = document.getElementById(id);
-    select.innerHTML = html;
+function closeSourceModal() {
+  document.getElementById("sourceModal").hidden = true;
+}
+
+function selectPickerDataset(exportId) {
+  state.sourcePicker = { stage: "report", exportId, reportId: "", qualityId: "", qualityManual: false };
+  renderSourcePicker();
+}
+
+function selectPickerReport(reportId) {
+  state.sourcePicker.reportId = reportId;
+  renderSourcePicker();
+}
+
+async function confirmSourcePicker() {
+  const picker = state.sourcePicker;
+  if (!picker.exportId) {
+    setSourceStatus("Choose a dataset before loading.", true);
+    return;
+  }
+  await loadWorkbench(picker.exportId, picker.reportId, picker.qualityId);
+}
+
+function renderSourcePicker() {
+  const html = sourcePickerHtml();
+  for (const id of ["startPickerRoot", "modalPickerRoot"]) {
+    const root = document.getElementById(id);
+    if (!root) continue;
+    root.innerHTML = html;
+    suppressAutofill(root);
   }
 }
 
-function sourceOptionsHtml(rows, options) {
-  const empty = options.optional ? `<option value="">${escapeHtml(options.emptyLabel || "None")}</option>` : "";
-  return (
-    empty +
-    rows
-      .map((row) => `<option value="${escapeHtml(row.id)}">${escapeHtml(row.name)} (${row.file_count})</option>`)
-      .join("")
-  );
+function sourcePickerHtml() {
+  const picker = state.sourcePicker;
+  const exports = state.sources?.exports || [];
+  if (picker.stage === "report" && !exports.some((item) => item.id === picker.exportId)) {
+    picker.stage = "dataset";
+    picker.exportId = "";
+  }
+  return picker.stage === "report" ? reportStageHtml(picker) : datasetStageHtml(picker);
 }
 
-async function loadWorkbench(fromRail) {
-  const exportId = document.getElementById(fromRail ? "railExportSourceSelect" : "exportSourceSelect").value;
-  const reportId = document.getElementById(fromRail ? "railReportSourceSelect" : "reportSourceSelect").value;
-  const qualityId = document.getElementById(fromRail ? "railQualitySourceSelect" : "qualitySourceSelect").value;
+function datasetStageHtml(picker) {
+  const exports = state.sources?.exports || [];
+  if (!exports.length) {
+    return `<div class="picker-toolbar">
+        <p class="picker-step">Step 1 of 2 — Choose a dataset</p>
+        <button type="button" class="ghost tiny" data-picker-reload>Refresh list</button>
+      </div>
+      ${emptyState("No valid exports found under the configured data root.")}`;
+  }
+  return `
+    <div class="picker-toolbar">
+      <p class="picker-step">Step 1 of 2 — Choose a dataset</p>
+      <button type="button" class="ghost tiny" data-picker-reload>Refresh list</button>
+    </div>
+    <div class="picker-table">${exports.map((item) => datasetRowHtml(item, picker)).join("")}</div>`;
+}
+
+function datasetRowHtml(item, picker) {
+  const active = picker.exportId === item.id;
+  const range = formatDateRange(item.date_start, item.date_end);
+  const created = formatDateTime(item.created_utc || item.modified_utc);
+  const eventCount = item.table_counts?.events;
+  return `<button type="button" class="picker-row ${active ? "active" : ""}" data-picker-dataset="${escapeHtml(item.id)}">
+    <span class="picker-row-main">
+      <strong>${escapeHtml(range)}</strong>
+      <span class="picker-row-sub">${escapeHtml(item.name)}</span>
+    </span>
+    <span class="picker-row-meta">
+      ${eventCount !== undefined ? `<span>${escapeHtml(formatNumber(eventCount))} events</span>` : ""}
+      <span>Created ${escapeHtml(created)}</span>
+    </span>
+  </button>`;
+}
+
+function reportStageHtml(picker) {
+  const exports = state.sources?.exports || [];
+  const dataset = exports.find((item) => item.id === picker.exportId);
+  const allReports = state.sources?.reports || [];
+  const linkedReports = allReports.filter((item) => item.source_export_id === picker.exportId);
+  const otherReports = allReports.filter((item) => item.source_export_id !== picker.exportId);
+  const qualityMatches = (state.sources?.quality_reports || []).filter((item) => item.source_export_id === picker.exportId);
+  if (!picker.qualityManual) picker.qualityId = qualityMatches[0]?.id || "";
+  return `
+    <div class="picker-toolbar">
+      <button type="button" class="ghost tiny" data-picker-back>← Change dataset</button>
+      <p class="picker-step">Step 2 of 2 — Choose a model report</p>
+    </div>
+    <div class="picker-dataset-chip">
+      <strong>${escapeHtml(formatDateRange(dataset?.date_start, dataset?.date_end))}</strong>
+      <span>${escapeHtml(dataset?.name || picker.exportId)}</span>
+    </div>
+    <div class="picker-table">
+      ${noReportRowHtml(picker)}
+      ${linkedReports.map((item) => reportRowHtml(item, picker)).join("")}
+      ${otherReports.length ? otherReportsSectionHtml(otherReports, picker) : ""}
+    </div>
+    ${qualitySectionHtml(qualityMatches, picker)}
+    <div class="picker-footer">
+      <button type="button" class="ghost" data-picker-back>Back</button>
+      <button type="button" data-picker-confirm>Load Workbench</button>
+    </div>`;
+}
+
+function noReportRowHtml(picker) {
+  const active = !picker.reportId;
+  return `<button type="button" class="picker-row ${active ? "active" : ""}" data-picker-report="">
+    <span class="picker-row-main">
+      <strong>No model report</strong>
+      <span class="picker-row-sub">Explore weather and market data only</span>
+    </span>
+  </button>`;
+}
+
+function reportRowHtml(item, picker) {
+  const active = picker.reportId === item.id;
+  const mae = (item.temperature_metrics || []).find((metric) => metric.metric === "mae");
+  const created = formatDateTime(item.created_utc || item.modified_utc);
+  return `<button type="button" class="picker-row ${active ? "active" : ""}" data-picker-report="${escapeHtml(item.id)}">
+    <span class="picker-row-main">
+      <strong>${escapeHtml(titleCase(item.model_name || item.name))}</strong>
+      <span class="picker-row-sub">${escapeHtml(item.mode ? titleCase(item.mode) : item.name)}${item.source_export_inferred ? " · linked by name" : ""}</span>
+    </span>
+    <span class="picker-row-meta">
+      ${mae ? `<span>MAE ${escapeHtml(formatNumber(mae.value))}°F</span>` : ""}
+      <span>Created ${escapeHtml(created)}</span>
+    </span>
+  </button>`;
+}
+
+function otherReportsSectionHtml(reports, picker) {
+  return `<details class="picker-more">
+    <summary>${reports.length} report(s) from other or unlinked datasets</summary>
+    ${reports.map((item) => reportRowHtml(item, picker)).join("")}
+  </details>`;
+}
+
+function qualitySectionHtml(matches, picker) {
+  if (!matches.length) return `<p class="picker-note">No quality report found for this dataset.</p>`;
+  if (matches.length === 1) {
+    return `<p class="picker-note">Quality report: <strong>${escapeHtml(matches[0].name)}</strong> (auto-matched)</p>`;
+  }
+  return `<label class="picker-quality-override">
+    Quality report
+    <select data-picker-quality>
+      ${matches.map((item) => `<option value="${escapeHtml(item.id)}" ${picker.qualityId === item.id ? "selected" : ""}>${escapeHtml(item.name)}</option>`).join("")}
+    </select>
+  </label>`;
+}
+
+function formatDateRange(start, end) {
+  if (!start && !end) return "Unknown date range";
+  if (!end || start === end) return formatDateOnly(start);
+  return `${formatDateOnly(start)} – ${formatDateOnly(end)}`;
+}
+
+function formatDateOnly(value) {
+  if (!value) return "n/a";
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+}
+
+function formatDateTime(value) {
+  if (!value) return "unknown time";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+
+async function loadWorkbench(exportId, reportId, qualityId) {
   if (!exportId) {
-    setSourceStatus("Choose a Supabase export before loading.", true);
+    setSourceStatus("Choose a dataset before loading.", true);
     return;
   }
   setSourceStatus("Loading selected workbench...", false);
@@ -358,26 +576,13 @@ async function loadWorkbench(fromRail) {
     document.getElementById("unloadedPanel").hidden = true;
     document.getElementById("workspacePanel").hidden = false;
     document.body.classList.add("loaded");
-    syncRailSourceSelects(exportId, reportId, qualityId);
+    closeSourceModal();
     hideSourceStatus();
     renderNav();
     renderSourceSummary();
     await render();
   } catch (error) {
     setSourceStatus(error.message, true);
-  }
-}
-
-function syncRailSourceSelects(exportId, reportId, qualityId) {
-  for (const [id, value] of [
-    ["exportSourceSelect", exportId],
-    ["railExportSourceSelect", exportId],
-    ["reportSourceSelect", reportId || ""],
-    ["railReportSourceSelect", reportId || ""],
-    ["qualitySourceSelect", qualityId || ""],
-    ["railQualitySourceSelect", qualityId || ""],
-  ]) {
-    document.getElementById(id).value = value;
   }
 }
 
@@ -415,10 +620,13 @@ function renderNav() {
 
 function renderSourceSummary() {
   const dateText = `${dateStart() || "n/a"} to ${dateEnd() || "n/a"}`;
+  const exportItem = (state.sources?.exports || []).find((item) => item.id === state.selection?.export_id);
+  const reportItem = (state.sources?.reports || []).find((item) => item.id === state.selection?.report_id);
+  const qualityItem = (state.sources?.quality_reports || []).find((item) => item.id === state.selection?.quality_id);
   document.getElementById("sourceSummary").innerHTML = [
-    ["Export", state.selection?.export_id || "n/a"],
-    ["Report", state.selection?.report_id || "none"],
-    ["Quality", state.selection?.quality_id || "none"],
+    ["Dataset", exportItem ? formatDateRange(exportItem.date_start, exportItem.date_end) : state.selection?.export_id || "n/a"],
+    ["Model report", reportItem ? titleCase(reportItem.model_name || reportItem.name) : "none"],
+    ["Quality report", qualityItem ? qualityItem.name : "none"],
     ["Dates", dateText],
   ].map(([label, value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
 }
@@ -479,7 +687,7 @@ function renderControls(def) {
   });
   suppressAutofill(wrap);
   const resetButton = document.getElementById("resetFiltersButton");
-  resetButton.disabled = isDefaultParams();
+  resetButton.disabled = isDefaultParams() && !hasActiveZoomForMode(state.mode);
 }
 
 function renderTabs(tabs) {
@@ -513,6 +721,8 @@ async function renderOverview() {
     ["Pending Settlements", state.overview.pending_settlements || 0],
     ["Pending Final Highs", state.overview.pending_final_highs || 0],
   ];
+  const finalHighsZoomKey = zoomKey("overview-final-highs", "y");
+  const finalHighsDomain = zoomedDomain(finalHighsZoomKey, domainForRows(finalHighSeries, "value", "temperature"), valuesForRows(finalHighSeries, "value"));
   return [
     {
       id: "final-highs",
@@ -520,8 +730,9 @@ async function renderOverview() {
       html: chartCard({
         id: "overview-final-highs",
         title: "Final Highs By Day",
-        chart: lineChart(finalHighSeries, { x: "x", y: "value", group: "group", xLabel: "Date", yLabel: "Final high (F)" }, null, "overview-final-highs"),
+        chart: lineChart(finalHighSeries, { x: "x", y: "value", group: "group", xLabel: "Date", yLabel: "Final high (F)", yDomain: finalHighsDomain }, null, "overview-final-highs"),
         legendGroups: legendForRows(finalHighSeries, "group"),
+        zoomControls: [maybeZoomControl(finalHighsZoomKey, "Final high (F)", finalHighsDomain)],
       }),
     },
     {
@@ -560,7 +771,8 @@ async function renderTrendExplorer() {
     rows.push(...metricRows);
   }
   if (Number(params.smoothing || 0)) rows = smoothRows(rows, Number(params.smoothing));
-  const domains = await trendDomainsForMetrics(selectedMetrics, params.axisOrder || []);
+  const domains = zoomFamilyDomains("trend", await trendDomainsForMetrics(selectedMetrics, params.axisOrder || []), rows);
+  const zoomControls = zoomControlsForFamilies("trend", domains);
   const selectedCities = params.cities?.length ? params.cities : allCities();
   const charts = selectedCities
     .map((city) => {
@@ -576,6 +788,7 @@ async function renderTrendExplorer() {
           xLabel: "Time",
         })}`,
         legendGroups: multiAxisLegend(selectedMetrics, metricOptions, params.axisOrder || []),
+        zoomControls,
       });
     });
   return [{
@@ -601,7 +814,8 @@ async function renderReplay() {
   if (isNumber(event.final_high_f)) {
     fullLineRows.push({ x: timeline.at(-1)?.snapshot_time_utc || event.target_date, group: event.city, metric: "final_high_f", metricLabel: "Final high", value: event.final_high_f, event_key: event.event_key });
   }
-  const replayDomains = domainsForMetricRows(fullLineRows, selectedMetrics, params.axisOrder || []);
+  const replayDomains = zoomFamilyDomains("replay-timeline", domainsForMetricRows(fullLineRows, selectedMetrics, params.axisOrder || []), lineRows);
+  const replayZoomControls = zoomControlsForFamilies("replay-timeline", replayDomains);
   const latestSnapshot = timeline.at(-1)?.snapshot_time_utc;
   const latestProbs = (event.bracket_probabilities || []).filter((row) => row.snapshot_time_utc === latestSnapshot);
   const eventOutcome = eventOutcomeHtml(event, timeline.length);
@@ -621,6 +835,7 @@ async function renderReplay() {
           xLabel: "Snapshot time",
         }),
         legendGroups: multiAxisLegend(selectedMetrics, metricOptions, params.axisOrder || []),
+        zoomControls: replayZoomControls,
       }),
     },
     {
@@ -679,17 +894,23 @@ async function renderPerformance() {
     {
       id: "bars",
       label: "Bars",
-      html: chartGrid(selectedCities
-        .map((city) => {
-          const cityRows = rows.filter((row) => row.city === city);
-          if (!cityRows.length) return "";
-          return chartCard({
-            id: `performance-bars-${city}`,
-            title: `${city.toUpperCase()} Grouped Metrics`,
-            chart: groupedBars(cityRows, "checkpoint", "metric", "value", { xLabel: "Checkpoint", yLabel: "Metric value", yDomain: groupedMetricDomain(rows), chartId: `performance-bars-${city}` }),
-            legendGroups: legendForRows(cityRows, "metric"),
-          });
-        })) || emptyState("No grouped metrics match the selected filters."),
+      html: (() => {
+        const barsZoomKey = zoomKey("performance-bars", "y");
+        const barsDomain = zoomedDomain(barsZoomKey, groupedMetricDomain(rows), valuesForRows(rows, "value"));
+        const barsZoomControls = [maybeZoomControl(barsZoomKey, "Metric value", barsDomain)];
+        return chartGrid(selectedCities
+          .map((city) => {
+            const cityRows = rows.filter((row) => row.city === city);
+            if (!cityRows.length) return "";
+            return chartCard({
+              id: `performance-bars-${city}`,
+              title: `${city.toUpperCase()} Grouped Metrics`,
+              chart: groupedBars(cityRows, "checkpoint", "metric", "value", { xLabel: "Checkpoint", yLabel: "Metric value", yDomain: barsDomain, chartId: `performance-bars-${city}` }),
+              legendGroups: legendForRows(cityRows, "metric"),
+              zoomControls: barsZoomControls,
+            });
+          })) || emptyState("No grouped metrics match the selected filters.");
+      })(),
     },
     {
       id: "table",
@@ -704,8 +925,10 @@ async function renderFeatureError() {
   const allRows = await getAnalysis("feature_error_points");
   const rows = filterRows(allRows, params, { groupKey: "city", timeKey: "snapshot_time_utc" })
     .filter((row) => !params.checkpoints?.length || params.checkpoints.includes(row.checkpoint));
-  const xDomain = featureAxisDomain(allRows, params.xFeature);
-  const yDomain = featureAxisDomain(allRows, params.yError);
+  const xKey = zoomKey("feature-scatter", "x");
+  const yKey = zoomKey("feature-scatter", "y");
+  const xDomain = zoomedDomain(xKey, featureAxisDomain(allRows, params.xFeature), valuesForRows(rows, params.xFeature));
+  const yDomain = zoomedDomain(yKey, featureAxisDomain(allRows, params.yError), valuesForRows(rows, params.yError));
   return [
     {
       id: "scatter",
@@ -715,6 +938,7 @@ async function renderFeatureError() {
         title: "Feature vs Error",
         chart: scatterPlot(rows, params.xFeature, params.yError, "city", { xLabel: params.xFeature, yLabel: params.yError, xDomain, yDomain, chartId: "feature-scatter" }),
         legendGroups: legendForRows(rows, "city"),
+        zoomControls: [maybeZoomControl(xKey, params.xFeature, xDomain), maybeZoomControl(yKey, params.yError, yDomain)],
       }),
     },
     {
@@ -748,8 +972,13 @@ async function renderDisagreement() {
   const threshold = Number(params.threshold || 3);
   const outliers = [...rows].filter((row) => selectedMetrics.some((metric) => Math.abs(Number(row[metric] || 0)) >= threshold))
     .sort((a, b) => Math.max(...selectedMetrics.map((metric) => Math.abs(Number(b[metric] || 0)))) - Math.max(...selectedMetrics.map((metric) => Math.abs(Number(a[metric] || 0)))));
-  const domains = domainsForMetricRows(allMetricRows, selectedMetrics, params.axisOrder || []);
+  const domains = zoomFamilyDomains("disagreement-timeline", domainsForMetricRows(allMetricRows, selectedMetrics, params.axisOrder || []), lineRows);
+  const timelineZoomControls = zoomControlsForFamilies("disagreement-timeline", domains);
+  const scatterXKey = zoomKey("disagreement-scatter", "x");
+  const scatterYKey = zoomKey("disagreement-scatter", "y");
   const sourceTempDomain = sharedSourceDomain(allRows, "nws_anchor_high_f");
+  const scatterXDomain = zoomedDomain(scatterXKey, sourceTempDomain, valuesForRows(rows, "nws_anchor_high_f"));
+  const scatterYDomain = zoomedDomain(scatterYKey, sourceTempDomain, valuesForRows(rows, "hrrr_projected_high_f"));
   const selectedCities = params.cities?.length ? params.cities : allCities();
   const charts = selectedCities
     .map((city) => {
@@ -765,6 +994,7 @@ async function renderDisagreement() {
           xLabel: "Snapshot time",
         })}`,
         legendGroups: multiAxisLegend(selectedMetrics, metricOptions, params.axisOrder || []),
+        zoomControls: timelineZoomControls,
       });
     });
   return [
@@ -779,8 +1009,9 @@ async function renderDisagreement() {
       html: chartCard({
         id: "disagreement-scatter",
         title: "HRRR vs NWS",
-        chart: scatterPlot(rows, "nws_anchor_high_f", "hrrr_projected_high_f", "city", { xLabel: "NWS anchor (F)", yLabel: "HRRR projected high (F)", xDomain: sourceTempDomain, yDomain: sourceTempDomain, chartId: "disagreement-scatter" }),
+        chart: scatterPlot(rows, "nws_anchor_high_f", "hrrr_projected_high_f", "city", { xLabel: "NWS anchor (F)", yLabel: "HRRR projected high (F)", xDomain: scatterXDomain, yDomain: scatterYDomain, chartId: "disagreement-scatter" }),
         legendGroups: legendForRows(rows, "city"),
+        zoomControls: [maybeZoomControl(scatterXKey, "NWS anchor (F)", scatterXDomain), maybeZoomControl(scatterYKey, "HRRR projected high (F)", scatterYDomain)],
       }),
     },
     {
@@ -804,7 +1035,8 @@ async function renderMarketModel() {
   if (params.candidateScope === "model_edge") rows = rows.filter((row) => Number(row.model_minus_ask || 0) > 0);
   const timelineRows = marketTimelineMetricRows(rows, selectedMetrics, metricOptions, params.candidateScope);
   const allTimelineRows = marketTimelineMetricRows(allRows, selectedMetrics, metricOptions, params.candidateScope);
-  const timelineDomains = domainsForMetricRows(allTimelineRows, selectedMetrics, params.axisOrder || []);
+  const timelineDomains = zoomFamilyDomains("market-timeline", domainsForMetricRows(allTimelineRows, selectedMetrics, params.axisOrder || []), timelineRows);
+  const timelineZoomControls = zoomControlsForFamilies("market-timeline", timelineDomains);
   const selectedCities = params.cities?.length ? params.cities : allCities();
   const timelineCharts = selectedCities
     .map((city) => {
@@ -820,6 +1052,7 @@ async function renderMarketModel() {
           xLabel: "Snapshot time",
         })}`,
         legendGroups: multiAxisLegend(selectedMetrics, metricOptions, params.axisOrder || []),
+        zoomControls: timelineZoomControls,
       });
     });
   return [
@@ -1635,13 +1868,14 @@ async function derivedCalibrationRows() {
   return output;
 }
 
-function chartCard({ id, title, chart, legendGroups = [], metaHtml = "" }) {
+function chartCard({ id, title, chart, legendGroups = [], metaHtml = "", zoomControls = [] }) {
   const focused = state.focusChart === id;
   return `<section class="chart-card ${focused ? "focused" : ""}" id="${escapeHtml(id)}">
     <header class="card-head">
       <div class="card-title-block"><h3>${escapeHtml(title)}</h3>${metaHtml}</div>
       <div class="card-actions">${legendHtml(legendGroups)}<button type="button" class="ghost tiny" data-focus-chart="${escapeHtml(id)}">${focused ? "Compact" : "Focus"}</button></div>
     </header>
+    ${zoomToolbarHtml(zoomControls)}
     <div class="chart-body">${chart || emptyState("No chart data available.")}</div>
   </section>`;
 }
@@ -1734,6 +1968,150 @@ function domainForValues(values, type = "auto") {
 
 function domainForRows(rows, key, type = scaleTypeForKey(key)) {
   return domainForValues(valuesForRows(rows, key), type);
+}
+
+// --- Axis zoom -------------------------------------------------------------
+// Lets the user narrow (or widen) any non-fixed, data-dependent axis so
+// small variations aren't dwarfed by an auto-computed "nice" range. Zoom
+// state is a factor per axis key: 1 = the normal auto domain (default),
+// trending toward 0 tightly fits the axis to the actual visible data, and
+// trending toward ZOOM_MAX widens the view beyond the auto domain.
+const ZOOM_DEFAULT = 1;
+const ZOOM_MIN = 0;
+const ZOOM_MAX = 2;
+
+function zoomKey(scope, axis) {
+  return `${state.mode}:${scope}:${axis}`;
+}
+
+function zoomFactor(key) {
+  const value = state.axisZoom[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : ZOOM_DEFAULT;
+}
+
+function isZoomed(key) {
+  return zoomFactor(key) !== ZOOM_DEFAULT;
+}
+
+function hasActiveZoomForMode(mode) {
+  const prefix = `${mode}:`;
+  return Object.keys(state.axisZoom).some((key) => key.startsWith(prefix));
+}
+
+function setZoomFactor(key, factor) {
+  const clamped = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(Number(factor) * 100) / 100));
+  if (clamped === ZOOM_DEFAULT) delete state.axisZoom[key];
+  else state.axisZoom[key] = clamped;
+}
+
+// Sliders read/write an inverted 0-100 scale so dragging right feels like
+// "zoom in" (narrower, tighter axis) and dragging left feels like "zoom out"
+// (wider axis), with the midpoint (50) at the untouched auto domain.
+function factorToSliderValue(factor) {
+  return Math.round(((ZOOM_MAX - factor) / (ZOOM_MAX - ZOOM_MIN)) * 100);
+}
+
+function sliderValueToFactor(sliderValue) {
+  return ZOOM_MAX - (Number(sliderValue) / 100) * (ZOOM_MAX - ZOOM_MIN);
+}
+
+function sliderReadoutText(sliderValue) {
+  const value = Number(sliderValue);
+  if (!Number.isFinite(value)) return "Auto";
+  if (value === 50) return "Auto";
+  return value > 50 ? `Tight ${value}%` : `Wide ${100 - value}%`;
+}
+
+function resetZoomKey(key) {
+  delete state.axisZoom[key];
+}
+
+function resetZoomForMode(mode) {
+  const prefix = `${mode}:`;
+  Object.keys(state.axisZoom).forEach((key) => {
+    if (key.startsWith(prefix)) delete state.axisZoom[key];
+  });
+}
+
+// Recomputes a domain around a zoom factor. Fixed domains (e.g. probability
+// 0-1) are left untouched since they aren't data-dependent. Below factor 1
+// the domain shrinks toward a tight fit around the actual values passed in;
+// above factor 1 it grows outward from the auto domain.
+function zoomedDomain(key, domain, values) {
+  if (!domain || domain.fixed) return domain;
+  const factor = zoomFactor(key);
+  if (factor === ZOOM_DEFAULT) return domain;
+  const numeric = (values || []).map(Number).filter(Number.isFinite);
+  if (!numeric.length) return domain;
+  const dataMin = Math.min(...numeric);
+  const dataMax = Math.max(...numeric);
+  const span = dataMax - dataMin || Math.max(1, Math.abs(dataMin) * 0.1, 1);
+  const pad = Math.max(span * 0.08, 0.05);
+  const tightMin = dataMin - pad;
+  const tightMax = dataMax + pad;
+  let min;
+  let max;
+  if (factor < 1) {
+    min = tightMin + (domain.min - tightMin) * factor;
+    max = tightMax + (domain.max - tightMax) * factor;
+  } else {
+    const extra = factor - 1;
+    const half = (domain.max - domain.min) / 2 || 1;
+    min = domain.min - half * extra;
+    max = domain.max + half * extra;
+  }
+  if (!(max > min)) return domain;
+  return { ...domain, min, max };
+}
+
+// Multi-axis line charts (Trend Explorer, Replay, Disagreement, Market/Model)
+// share one domain per metric "family" across every per-city card in a tab.
+// These helpers zoom each family once so every card in the tab stays in sync.
+function zoomFamilyDomains(scope, domains, rows) {
+  const zoomed = {};
+  for (const family of Object.keys(domains || {})) {
+    const key = zoomKey(scope, family);
+    const values = (rows || []).filter((row) => metricFamilyForKey(row.metric) === family).map((row) => row.value);
+    zoomed[family] = zoomedDomain(key, domains[family], values);
+  }
+  return zoomed;
+}
+
+function zoomControlsForFamilies(scope, domains) {
+  return Object.keys(domains || {})
+    .map((family) => maybeZoomControl(zoomKey(scope, family), metricFamilyLabel(family), domains[family]))
+    .filter(Boolean);
+}
+
+function zoomControlHtml({ key, label, domain }) {
+  const zoomed = isZoomed(key);
+  const rangeText = domain && Number.isFinite(domain.min) && Number.isFinite(domain.max)
+    ? `${formatNumber(domain.min)} – ${formatNumber(domain.max)}`
+    : "auto";
+  const sliderValue = factorToSliderValue(zoomFactor(key));
+  return `<div class="zoom-control${zoomed ? " active" : ""}">
+    <span class="zoom-control-label">${escapeHtml(label)}</span>
+    <span class="zoom-slider-wrap">
+      <span class="zoom-scale-label">Wide</span>
+      <input type="range" class="zoom-slider" min="0" max="100" step="5" value="${sliderValue}" data-zoom-slider="${escapeHtml(key)}" title="Drag right to zoom in" aria-label="Zoom ${escapeHtml(label)}" aria-valuetext="${escapeHtml(sliderReadoutText(sliderValue))}" />
+      <span class="zoom-scale-label">Tight</span>
+    </span>
+    <span class="zoom-value">${escapeHtml(rangeText)}</span>
+    ${zoomed ? `<button type="button" class="zoom-reset" data-zoom-reset="${escapeHtml(key)}" title="Reset zoom">Reset</button>` : ""}
+  </div>`;
+}
+
+function zoomToolbarHtml(controls) {
+  const list = (controls || []).filter(Boolean);
+  if (!list.length) return "";
+  return `<div class="chart-toolbar">${list.map(zoomControlHtml).join("")}</div>`;
+}
+
+// Builds a zoom-control descriptor for a chart axis, or returns null when the
+// domain is fixed (e.g. probability 0-1) and therefore not worth zooming.
+function maybeZoomControl(key, label, domain) {
+  if (!domain || domain.fixed) return null;
+  return { key, label, domain };
 }
 
 function domainArray(domain) {
@@ -1925,7 +2303,10 @@ function multiAxisLineChart(rows, options) {
     const label = metricRows[0]?.metricLabel || metric;
     series.push(`<polyline points="${points}" fill="none" stroke="${color}" stroke-width="2.5"${dash}></polyline>`);
     for (const row of metricRows) {
-      series.push(`<circle cx="${xScale(row.x)}" cy="${yScale(Number(row.value))}" r="4" fill="${color}" data-event-key="${escapeHtml(row.event_key || "")}" data-hover-readout="${escapeHtml(`${axis} / ${label}: ${formatNumber(row.value)} at ${row.x}`)}"></circle>`);
+      const markerStyle = axis === "R"
+        ? `fill="#fffaf0" stroke="${color}" stroke-width="2.4"`
+        : `fill="${color}"`;
+      series.push(`<circle cx="${xScale(row.x)}" cy="${yScale(Number(row.value))}" r="4" ${markerStyle} data-event-key="${escapeHtml(row.event_key || "")}" data-hover-readout="${escapeHtml(`${axis} / ${label}: ${formatNumber(row.value)} at ${row.x}`)}"></circle>`);
     }
   });
   return `<svg class="chart-svg multi-axis-svg" viewBox="0 0 ${width} ${height}" role="img">

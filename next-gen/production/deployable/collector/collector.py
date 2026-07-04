@@ -331,6 +331,9 @@ def settle_pending(
         city = parse_cities(str(event["city"]))[0]
         event_ticker = str(event["event_ticker"])
         target_date = _date_value(event["target_date"])
+        snapshot_time_local = city_clock(
+            city, recorder.snapshot_time_utc, target_date
+        ).snapshot_time_local.isoformat()
         payload = recorder.get_json(
             "kalshi",
             "kalshi_settled_markets",
@@ -339,6 +342,7 @@ def settle_pending(
             city=city.key,
             event_ticker=event_ticker,
             target_date=str(target_date),
+            snapshot_time_local=snapshot_time_local,
             required=False,
         )
         markets = [item for item in (payload or {}).get("markets", []) if isinstance(item, dict)]
@@ -445,6 +449,9 @@ def fetch_nws_final_high_product(
     target_date: date,
 ) -> tuple[dict[str, Any], float, str | None] | None:
     location = city.station_id.removeprefix("K")
+    snapshot_time_local = city_clock(
+        city, recorder.snapshot_time_utc, target_date
+    ).snapshot_time_local.isoformat()
     listing = recorder.get_json(
         "nws",
         "nws_cli_product_listing",
@@ -452,6 +459,7 @@ def fetch_nws_final_high_product(
         city=city.key,
         event_ticker=event_ticker,
         target_date=target_date.isoformat(),
+        snapshot_time_local=snapshot_time_local,
         required=False,
     )
     graph = listing.get("@graph") if isinstance(listing, dict) else None
@@ -472,6 +480,7 @@ def fetch_nws_final_high_product(
             city=city.key,
             event_ticker=event_ticker,
             target_date=target_date.isoformat(),
+            snapshot_time_local=snapshot_time_local,
             required=False,
         )
         if isinstance(product, dict):
@@ -570,7 +579,7 @@ def post_event_collector_run_row(
         "collector_version": "immutable-supabase-v3",
         "collector_source_hash": source_hash(),
         "config_hash": sha256_bytes(json.dumps({"job": job_name}, sort_keys=True).encode("utf-8")),
-        "city_count_attempted": None,
+        "city_count_attempted": 0,
         "city_count_completed": inserted_count,
         "provider_error_count": len(recorder.errors),
         "raw_payload_count": len(recorder.raw_payloads),

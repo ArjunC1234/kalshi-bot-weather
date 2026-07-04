@@ -39,6 +39,7 @@ def evaluate_expanding_window(
     output_dir: str | Path,
     min_training_events: int = DEFAULT_MIN_TRAINING_EVENTS,
     probability_floor: float = 0.001,
+    source_export_id: str | None = None,
 ) -> dict[str, Any]:
     rows = build_feature_rows(dataset)
     grouped_markets = markets_by_snapshot(dataset)
@@ -75,6 +76,72 @@ def evaluate_expanding_window(
         distributions,
         diagnostics,
         mode="expanding_window",
+        source_export_id=source_export_id,
+    )
+
+
+def evaluate_rolling_window(
+    dataset: BacktestDataset,
+    output_dir: str | Path,
+    train_days: int,
+    test_days: int = 1,
+    min_training_events: int = DEFAULT_MIN_TRAINING_EVENTS,
+    probability_floor: float = 0.001,
+    source_export_id: str | None = None,
+) -> dict[str, Any]:
+    if train_days < 1:
+        raise ValueError("train_days must be at least 1")
+    if test_days < 1:
+        raise ValueError("test_days must be at least 1")
+    rows = build_feature_rows(dataset)
+    target_dates = sorted({row.target_date for row in rows})
+    grouped_markets = markets_by_snapshot(dataset)
+    predictions: list[TemperaturePrediction] = []
+    distributions: list[BracketDistribution] = []
+    diagnostics: list[dict[str, Any]] = []
+    start_index = train_days
+    while start_index < len(target_dates):
+        train_dates = target_dates[start_index - train_days : start_index]
+        test_dates = target_dates[start_index : start_index + test_days]
+        train_set = set(train_dates)
+        test_set = set(test_dates)
+        train_rows = [row for row in rows if row.target_date in train_set]
+        test_rows = [row for row in rows if row.target_date in test_set]
+        model = train_raycaster_model(train_rows, min_training_events=min_training_events)
+        batch_predictions, batch_distributions = _predict_rows(
+            test_rows,
+            model,
+            grouped_markets,
+            probability_floor,
+        )
+        predictions.extend(batch_predictions)
+        distributions.extend(batch_distributions)
+        diagnostics.extend(
+            {
+                "target_date": row.target_date.isoformat(),
+                "city": row.city,
+                "event_ticker": row.event_ticker,
+                "snapshot_hour_utc": row.snapshot_hour_utc.isoformat(),
+                "mode": model.mode,
+                "training_rows": model.training_rows,
+                "train_days": train_days,
+                "test_days": test_days,
+                "train_start_date": train_dates[0].isoformat() if train_dates else "",
+                "train_end_date": train_dates[-1].isoformat() if train_dates else "",
+                "test_start_date": test_dates[0].isoformat() if test_dates else "",
+                "test_end_date": test_dates[-1].isoformat() if test_dates else "",
+            }
+            for row in test_rows
+        )
+        start_index += test_days
+    return write_evaluation_outputs(
+        dataset,
+        output_dir,
+        predictions,
+        distributions,
+        diagnostics,
+        mode=f"rolling_window_{train_days}d_train_{test_days}d_test",
+        source_export_id=source_export_id,
     )
 
 
@@ -83,6 +150,7 @@ def evaluate_fixed_model(
     model: RaycasterModel,
     output_dir: str | Path,
     probability_floor: float = 0.001,
+    source_export_id: str | None = None,
 ) -> dict[str, Any]:
     predictions, distributions = predict_dataset(dataset, model, probability_floor)
     diagnostics = [
@@ -103,6 +171,7 @@ def evaluate_fixed_model(
         distributions,
         diagnostics,
         mode="fixed_artifact",
+        source_export_id=source_export_id,
     )
 
 
@@ -113,6 +182,7 @@ def write_evaluation_outputs(
     distributions: list[BracketDistribution],
     diagnostics: list[dict[str, Any]],
     mode: str,
+    source_export_id: str | None = None,
 ) -> dict[str, Any]:
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
@@ -132,7 +202,7 @@ def write_evaluation_outputs(
         _group_metric_rows(temp_rows, bracket_rows, "checkpoint"),
     )
     _write_dict_rows(output / "errors.csv", temp_rows + bracket_rows)
-    _write_summary_json(output, mode, temp_rows, bracket_rows)
+    _write_summary_json(output, mode, temp_rows, bracket_rows, source_export_id=source_export_id)
     _write_charts(output, temp_rows, bracket_rows)
     return {
         "mode": mode,
@@ -376,12 +446,16 @@ def _write_summary_json(
     mode: str,
     temp_rows: list[dict[str, Any]],
     bracket_rows: list[dict[str, Any]],
+    source_export_id: str | None = None,
 ) -> None:
     import json
+    from datetime import UTC, datetime
 
     summary = {
         "model_name": MODEL_NAME,
         "mode": mode,
+        "source_export_id": source_export_id,
+        "generated_at_utc": datetime.now(UTC).isoformat(),
         "temperature_prediction_count": len(temp_rows),
         "bracket_prediction_count": len(bracket_rows),
         "temperature_metrics": _metric_rows(temp_rows, "temperature"),

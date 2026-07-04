@@ -18,6 +18,8 @@ Run from `next-gen/`:
 python -m backtest.cli export --start 2026-07-01 --end 2026-09-30
 python -m backtest.cli validate --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ
 python -m backtest.cli quality --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ
+python -m backtest.cli daily-health --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ --date 2026-07-01
+python -m backtest.cli monitor --date 2026-07-01
 python -m backtest.cli pipeline --start 2026-07-01 --end 2026-09-30
 python -m backtest.cli evaluate --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ --model baseline
 python -m backtest.cli report --run reports/model/baseline_export_20260701_20260930_YYYYMMDDTHHMMSSZ_YYYYMMDDTHHMMSSZ
@@ -37,6 +39,10 @@ multiple runs over the same date range do not overwrite each other. Pass `--outp
 - `provider_errors.csv`
 
 `pipeline` is the standard reproducible entrypoint: export Supabase facts, validate the frozen export, and write data-quality reports before any model work.
+
+`daily-health` writes a date-specific health report for a frozen export or,
+without `--data`, directly from Supabase. `monitor` is read-only and prints the
+current Supabase collector view plus the same daily health summary.
 
 ## Does Not Belong Here
 

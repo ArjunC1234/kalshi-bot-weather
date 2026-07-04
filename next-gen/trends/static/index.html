@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Kalshi Weather Trends Workbench</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="/styles.css?v=20260703-inspector-scroll" />
+    <link rel="stylesheet" href="/styles.css?v=20260703-zoom-sliders" />
   </head>
   <body>
     <main class="shell">
@@ -17,22 +17,7 @@
             Load a local Supabase export and optional model/quality reports, then inspect weather
             sources, model behavior, markets, and data quality in one analysis workspace.
           </p>
-          <form class="source-form start-source-form" id="startSourceForm">
-            <label>
-              Export
-              <select id="exportSourceSelect"></select>
-            </label>
-            <label>
-              Report
-              <select id="reportSourceSelect"></select>
-            </label>
-            <label>
-              Quality
-              <select id="qualitySourceSelect"></select>
-            </label>
-            <button id="loadSourceButton" type="button">Load Workbench</button>
-            <button id="reloadSourcesButton" class="ghost" type="button">Reload Sources</button>
-          </form>
+          <div id="startPickerRoot" class="source-picker-root"></div>
           <div id="sourceStatus" class="notice" hidden></div>
         </div>
       </section>
@@ -44,27 +29,11 @@
             <h1>Weather Workbench</h1>
           </div>
 
-          <details class="source-box" id="sourceBox">
-            <summary>Sources</summary>
-            <form class="source-form">
-              <label>
-                Export
-                <select id="railExportSourceSelect"></select>
-              </label>
-              <label>
-                Report
-                <select id="railReportSourceSelect"></select>
-              </label>
-              <label>
-                Quality
-                <select id="railQualitySourceSelect"></select>
-              </label>
-              <button id="railLoadSourceButton" type="button">Reload Workbench</button>
-              <button id="railReloadSourcesButton" class="ghost" type="button">Refresh List</button>
-            </form>
-          </details>
-
           <div class="source-summary" id="sourceSummary"></div>
+          <button id="changeSourceButton" class="ghost source-change-button" type="button">
+            Change Source
+          </button>
+
           <nav class="mode-nav" id="modeNav"></nav>
         </aside>
 
@@ -96,7 +65,21 @@
           <div id="modeControls" class="mode-controls"></div>
         </aside>
       </section>
+
+      <div class="modal-overlay" id="sourceModal" hidden>
+        <div class="modal-card">
+          <header class="modal-head">
+            <div>
+              <p class="eyebrow">Change Source</p>
+              <h2>Choose a dataset and model report</h2>
+            </div>
+            <button type="button" class="ghost tiny" data-picker-close aria-label="Close">✕</button>
+          </header>
+          <div id="modalPickerRoot" class="source-picker-root"></div>
+          <div id="modalSourceStatus" class="notice" hidden></div>
+        </div>
+      </div>
     </main>
-    <script src="/app.js?v=20260703-inspector-scroll"></script>
+    <script src="/app.js?v=20260703-zoom-sliders"></script>
   </body>
 </html>

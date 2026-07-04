@@ -38,7 +38,7 @@ def run_export_validate_pipeline(
     dataset = load_dataset(source)
     validate_dataset(dataset, require_settlements=require_settlements)
     write_dataset_summary(dataset, data_dir)
-    report = build_quality_report(source)
+    report = build_quality_report(source, source_export_id=data_dir.name)
     write_quality_report(report, report_dir)
     result = PipelineResult(
         data_dir=str(data_dir),

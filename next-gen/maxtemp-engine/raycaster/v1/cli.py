@@ -17,7 +17,7 @@ for path in (CURRENT_DIR, NEXT_GEN_DIR):
 
 from artifacts import write_training_rows
 from dataset import load_local_dataset
-from evaluate import evaluate_expanding_window, evaluate_fixed_model
+from evaluate import evaluate_expanding_window, evaluate_fixed_model, evaluate_rolling_window
 from features import MODEL_NAME, build_feature_rows
 from predict import predict_dataset
 from train import DEFAULT_MIN_TRAINING_EVENTS, load_model, save_model, train_raycaster_model
@@ -29,6 +29,7 @@ def main(argv: list[str] | None = None) -> int:
     _add_train(subparsers)
     _add_predict(subparsers)
     _add_evaluate(subparsers)
+    _add_rolling_eval(subparsers)
     _add_report(subparsers)
     args = parser.parse_args(argv)
     if args.command == "train":
@@ -37,6 +38,8 @@ def main(argv: list[str] | None = None) -> int:
         return _predict(args)
     if args.command == "evaluate":
         return _evaluate(args)
+    if args.command == "rolling-eval":
+        return _rolling_eval(args)
     if args.command == "report":
         return _report(args)
     parser.error(f"unknown command {args.command}")
@@ -63,6 +66,19 @@ def _add_evaluate(subparsers) -> None:
     parser.add_argument("--data", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--model")
+    parser.add_argument("--min-training-events", type=int, default=DEFAULT_MIN_TRAINING_EVENTS)
+    parser.add_argument("--probability-floor", type=float, default=0.001)
+
+
+def _add_rolling_eval(subparsers) -> None:
+    parser = subparsers.add_parser(
+        "rolling-eval",
+        help="evaluate Raycaster v1 using prior N target dates to score the next date",
+    )
+    parser.add_argument("--data", required=True)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--train-days", type=int, default=14)
+    parser.add_argument("--test-days", type=int, default=1)
     parser.add_argument("--min-training-events", type=int, default=DEFAULT_MIN_TRAINING_EVENTS)
     parser.add_argument("--probability-floor", type=float, default=0.001)
 
@@ -113,12 +129,14 @@ def _predict(args) -> int:
 
 def _evaluate(args) -> int:
     dataset = load_local_dataset(args.data)
+    source_export_id = Path(args.data).name
     if args.model:
         summary = evaluate_fixed_model(
             dataset,
             load_model(args.model),
             args.output,
             probability_floor=args.probability_floor,
+            source_export_id=source_export_id,
         )
     else:
         summary = evaluate_expanding_window(
@@ -126,7 +144,27 @@ def _evaluate(args) -> int:
             args.output,
             min_training_events=args.min_training_events,
             probability_floor=args.probability_floor,
+            source_export_id=source_export_id,
         )
+    print(
+        f"evaluated {MODEL_NAME}: mode={summary['mode']} "
+        f"temperature_rows={summary['temperature_rows']} "
+        f"bracket_rows={summary['bracket_rows']} output={summary['output_dir']}"
+    )
+    return 0
+
+
+def _rolling_eval(args) -> int:
+    dataset = load_local_dataset(args.data)
+    summary = evaluate_rolling_window(
+        dataset,
+        args.output,
+        train_days=args.train_days,
+        test_days=args.test_days,
+        min_training_events=args.min_training_events,
+        probability_floor=args.probability_floor,
+        source_export_id=Path(args.data).name,
+    )
     print(
         f"evaluated {MODEL_NAME}: mode={summary['mode']} "
         f"temperature_rows={summary['temperature_rows']} "
