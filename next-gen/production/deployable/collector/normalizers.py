@@ -511,10 +511,14 @@ def parse_nws_cli_final_high(product: dict[str, Any], target_date: date) -> floa
         if in_temperature_section and line.startswith("PRECIPITATION"):
             break
         if in_temperature_section:
-            match = re.match(r"MAXIMUM\s+(-?\d+(?:\.\d+)?)\b", line)
+            match = re.match(r"MAXIMUM\s+(-?\d+(?:\.\d+)?)(?:[A-Z]+)?\b", line)
             if match:
                 return float(match.group(1))
-    match = re.search(r"^\s*MAXIMUM\s+(-?\d+(?:\.\d+)?)\b", normalized, flags=re.MULTILINE)
+    match = re.search(
+        r"^\s*MAXIMUM\s+(-?\d+(?:\.\d+)?)(?:[A-Z]+)?\b",
+        normalized,
+        flags=re.MULTILINE,
+    )
     return float(match.group(1)) if match else None
 
 

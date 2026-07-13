@@ -1,0 +1,36 @@
+{
+  "model_name": "raycaster_v1",
+  "mode": "rolling_window_5d_train_1d_test",
+  "source_export_id": "export_20260623_20260707_20260707T080216Z",
+  "generated_at_utc": "2026-07-07T16:20:15.513932+00:00",
+  "temperature_prediction_count": 96,
+  "bracket_prediction_count": 0,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 3.2116275203090563,
+      "count": 96
+    },
+    {
+      "metric": "rmse",
+      "value": 4.048437451468337,
+      "count": 96
+    },
+    {
+      "metric": "bias",
+      "value": 1.924239968172057,
+      "count": 96
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.10416666666666667,
+      "count": 96
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.4270833333333333,
+      "count": 96
+    }
+  ],
+  "bracket_metrics": []
+}

@@ -15,7 +15,16 @@ for path in (NEXT_GEN, RAYCASTER_V1):
 
 from evaluate import evaluate_expanding_window
 from features import build_feature_rows
-from train import train_raycaster_model
+from train import (
+    ACTIVE_CATEGORICAL_FEATURES,
+    ACTIVE_NUMERIC_FEATURES,
+    PREDICTION_BLEND_WEIGHT,
+    SAMPLE_WEIGHTING,
+    TARGET_MODE,
+    load_model,
+    save_model,
+    train_raycaster_model,
+)
 
 from libs.models import (
     BacktestDataset,
@@ -45,6 +54,28 @@ class TrainingEvaluationTests(unittest.TestCase):
             self.assertTrue((Path(tmp) / "summary.json").exists())
             self.assertGreaterEqual(summary["temperature_rows"], 1)
             self.assertGreaterEqual(summary["bracket_rows"], 1)
+
+    def test_training_schema_excludes_city_and_day_of_year_baselines(self) -> None:
+        self.assertNotIn("city", ACTIVE_CATEGORICAL_FEATURES)
+        self.assertNotIn("target_day_of_year_sin", ACTIVE_NUMERIC_FEATURES)
+        self.assertNotIn("target_day_of_year_cos", ACTIVE_NUMERIC_FEATURES)
+
+    def test_trained_model_records_residual_training_contract(self) -> None:
+        rows = build_feature_rows(_dataset())
+        model = train_raycaster_model(rows, min_training_events=1)
+        self.assertEqual(model.target_mode, TARGET_MODE)
+        self.assertEqual(model.prediction_blend_weight, PREDICTION_BLEND_WEIGHT)
+        self.assertEqual(model.sample_weighting, SAMPLE_WEIGHTING)
+
+    def test_saved_model_reloads_residual_training_contract(self) -> None:
+        rows = build_feature_rows(_dataset())
+        model = train_raycaster_model(rows, min_training_events=1)
+        with tempfile.TemporaryDirectory() as tmp:
+            save_model(model, Path(tmp), manifest={"data_path": "test"})
+            loaded = load_model(Path(tmp))
+            self.assertEqual(loaded.target_mode, TARGET_MODE)
+            self.assertEqual(loaded.prediction_blend_weight, PREDICTION_BLEND_WEIGHT)
+            self.assertEqual(loaded.sample_weighting, SAMPLE_WEIGHTING)
 
 
 def _dataset() -> BacktestDataset:

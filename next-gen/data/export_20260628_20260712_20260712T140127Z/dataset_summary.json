@@ -1,0 +1,9 @@
+{
+  "collector_runs": 756,
+  "events": 1000,
+  "final_temperature_labels": 66,
+  "markets": 1000,
+  "model_outputs": 0,
+  "settlements": 65,
+  "weather": 1000
+}

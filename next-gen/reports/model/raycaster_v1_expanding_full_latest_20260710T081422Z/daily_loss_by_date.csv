@@ -1,0 +1,8 @@
+target_date,temperature_mae,bracket_log_loss,training_rows,temperature_count,bracket_count,mode
+2026-07-01,0.70461538461538,nan,0,13,0,fallback_source_blend
+2026-07-02,0.9462500000000009,nan,13,144,0,fallback_source_blend
+2026-07-03,0.9729934192290054,nan,157,144,0,trained_hist_gradient_boosting
+2026-07-04,1.604581067543592,0.7585119851082026,301,144,85,trained_hist_gradient_boosting
+2026-07-05,3.5356369763596605,2.0345735959321685,445,144,65,trained_hist_gradient_boosting
+2026-07-06,2.227123390118369,0.821292344093006,589,144,17,trained_hist_gradient_boosting
+2026-07-07,0.7657835159832399,nan,733,144,0,trained_hist_gradient_boosting

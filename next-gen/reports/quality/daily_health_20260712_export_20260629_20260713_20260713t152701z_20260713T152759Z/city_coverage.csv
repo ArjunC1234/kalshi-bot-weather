@@ -1,0 +1,7 @@
+city,coverage_ratio,expected_hours,snapshot_hours
+nyc,1.0,24,24
+mia,1.0,24,24
+la,1.0,24,24
+den,1.0,24,24
+aus,1.0,24,24
+okc,1.0,24,24

@@ -1,0 +1,62 @@
+{
+  "model_name": "raycaster_v1",
+  "mode": "expanding_window",
+  "source_export_id": "export_20260624_20260708_20260709T022508Z",
+  "generated_at_utc": "2026-07-10T08:35:54.684964+00:00",
+  "temperature_prediction_count": 877,
+  "bracket_prediction_count": 167,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 1.1515293610719446,
+      "count": 877
+    },
+    {
+      "metric": "rmse",
+      "value": 1.6385105023378486,
+      "count": 877
+    },
+    {
+      "metric": "bias",
+      "value": 0.0991145351825673,
+      "count": 877
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.5872291904218928,
+      "count": 877
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.8129988597491448,
+      "count": 877
+    }
+  ],
+  "bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 1.053455710690957,
+      "count": 167
+    },
+    {
+      "metric": "brier",
+      "value": 0.5599945470055768,
+      "count": 167
+    },
+    {
+      "metric": "rps",
+      "value": 0.07863792192102001,
+      "count": 167
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.5449101796407185,
+      "count": 167
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.4062881975189408,
+      "count": 167
+    }
+  ]
+}

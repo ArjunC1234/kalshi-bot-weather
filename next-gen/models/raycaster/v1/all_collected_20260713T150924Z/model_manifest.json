@@ -1,0 +1,29 @@
+{
+  "data_path": "data/export_20260629_20260713_20260713T141147Z",
+  "feature_row_count": 1000,
+  "model_name": "raycaster_v1",
+  "mode": "trained_hist_gradient_boosting",
+  "min_training_events": 60,
+  "training_rows": 997,
+  "quantile_levels": [
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    0.75,
+    0.9,
+    0.95
+  ],
+  "market_features_used": false,
+  "target_mode": "source_blend_residual",
+  "prediction_blend_weight": 0.65,
+  "sample_weighting": "equal_target_date",
+  "tree_regularization": {
+    "learning_rate": 0.04,
+    "max_leaf_nodes": 15,
+    "min_samples_leaf": 20,
+    "l2_regularization": 0.2,
+    "random_state": 17
+  },
+  "minimum_uncertainty_f": 2.25
+}

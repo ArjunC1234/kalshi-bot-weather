@@ -73,6 +73,41 @@ class HttpRecorder:
         self.raw_payloads: list[RawPayload] = []
         self.errors: list[dict[str, Any]] = []
 
+    def _max_attempts(self, provider: str) -> int:
+        if provider == "open_meteo":
+            return 3
+        return 2
+
+    def _get_with_retries(
+        self,
+        provider: str,
+        url: str,
+        params: dict[str, Any] | None,
+    ) -> tuple[Any, int | None, Exception | None, int]:
+        last_error: Exception | None = None
+        status_code: int | None = None
+        max_attempts = self._max_attempts(provider)
+        for attempt in range(1, max_attempts + 1):
+            try:
+                response = self.session.get(url, params=params, timeout=self.timeout)
+                status_code = response.status_code
+                response.raise_for_status()
+                return response.json(), status_code, None, attempt
+            except requests.HTTPError as exc:
+                last_error = exc
+                if status_code is not None and 400 <= status_code < 500:
+                    break
+            except (requests.Timeout, requests.ConnectionError) as exc:
+                last_error = exc
+            except Exception as exc:  # noqa: BLE001 - preserve unexpected provider failures.
+                last_error = exc
+                break
+
+            if attempt < max_attempts:
+                time.sleep(min(2**attempt, 10))
+
+        return {"error": str(last_error), "attempts": attempt}, status_code, last_error, attempt
+
     def get_json(
         self,
         provider: str,
@@ -91,14 +126,7 @@ class HttpRecorder:
         status_code: int | None = None
         payload: Any = None
         error: Exception | None = None
-        try:
-            response = self.session.get(url, params=params, timeout=self.timeout)
-            status_code = response.status_code
-            response.raise_for_status()
-            payload = response.json()
-        except Exception as exc:  # noqa: BLE001 - record provider details.
-            error = exc
-            payload = {"error": str(exc)}
+        payload, status_code, error, _attempts = self._get_with_retries(provider, url, params)
         received = datetime.now(UTC)
         compressed = gzip_json_bytes(payload)
         digest = sha256_bytes(compressed)

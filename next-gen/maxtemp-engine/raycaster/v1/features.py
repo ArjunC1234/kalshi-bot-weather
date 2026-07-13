@@ -59,6 +59,19 @@ NUMERIC_FEATURES = [
 CATEGORICAL_FEATURES = ["city", "checkpoint"]
 FEATURE_COLUMNS = NUMERIC_FEATURES + CATEGORICAL_FEATURES
 
+# These features mostly act as priors about "what this city/date usually does."
+# With only a handful of labeled target dates, they can overpower the live
+# weather sources and create the hot-city baseline failure seen in evaluation.
+BASELINE_NUMERIC_FEATURES = ("target_day_of_year_sin", "target_day_of_year_cos")
+BASELINE_CATEGORICAL_FEATURES = ("city",)
+ACTIVE_NUMERIC_FEATURES = [
+    feature for feature in NUMERIC_FEATURES if feature not in BASELINE_NUMERIC_FEATURES
+]
+ACTIVE_CATEGORICAL_FEATURES = [
+    feature for feature in CATEGORICAL_FEATURES if feature not in BASELINE_CATEGORICAL_FEATURES
+]
+ACTIVE_FEATURE_COLUMNS = ACTIVE_NUMERIC_FEATURES + ACTIVE_CATEGORICAL_FEATURES
+
 
 @dataclass(frozen=True)
 class FeatureRow:

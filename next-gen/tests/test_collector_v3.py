@@ -219,6 +219,23 @@ PRECIPITATION (IN)
         self.assertIsNone(parse_nws_cli_final_high(valid_as_of_product, date(2026, 7, 1)))
         self.assertIsNone(parse_nws_cli_final_high(final_product, date(2026, 7, 2)))
 
+    def test_nws_cli_final_high_parser_accepts_record_suffix(self) -> None:
+        product = {
+            "id": "product-record",
+            "issuanceTime": "2026-07-03T06:19:00+00:00",
+            "productText": """
+...THE CENTRAL PARK NY CLIMATE SUMMARY FOR JULY 2 2026...
+
+TEMPERATURE (F)
+ TODAY
+  MAXIMUM        100R   247 PM 100    1901  84     16       84
+  MINIMUM         78    525 AM  52    1943  69      9       73
+
+PRECIPITATION (IN)
+""",
+        }
+        self.assertEqual(parse_nws_cli_final_high(product, date(2026, 7, 2)), 100.0)
+
     def test_select_nws_cli_final_high_product_chooses_latest_parseable(self) -> None:
         older = {
             "id": "older",

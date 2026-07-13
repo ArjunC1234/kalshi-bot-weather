@@ -1,0 +1,10 @@
+{
+  "model_name": "raycaster_v1",
+  "mode": "rolling_window_14d_train_1d_test",
+  "source_export_id": "export_20260623_20260707_20260707T080216Z",
+  "generated_at_utc": "2026-07-07T16:11:42.059541+00:00",
+  "temperature_prediction_count": 0,
+  "bracket_prediction_count": 0,
+  "temperature_metrics": [],
+  "bracket_metrics": []
+}
