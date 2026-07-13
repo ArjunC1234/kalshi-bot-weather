@@ -1,0 +1,26 @@
+{
+  "mode": "paper_strategy_backtest",
+  "data_path": "data/export_20260629_20260713_20260713T152701Z",
+  "model_report": "reports/model/cloudcaster_v1_corrected_20260713T_temp_scaled",
+  "config": {
+    "edge_threshold": 0.08,
+    "max_spread": 0.15,
+    "stake": 1.0,
+    "max_positions_per_event": 1,
+    "min_price": 0.02,
+    "max_price": 0.98
+  },
+  "trades": 69,
+  "total_pnl": -2.9000000000000004,
+  "roi": -0.16201117318435757,
+  "hit_rate": 0.21739130434782608,
+  "average_entry_price": 0.2594202898550725,
+  "average_model_probability": 0.44288188250954136,
+  "average_edge": 0.1834615926544689,
+  "max_drawdown": -4.23,
+  "mean_clv": -0.01697642630124991,
+  "median_clv": -0.20509803921568626,
+  "positive_clv_rate": 0.2608695652173913,
+  "signals": 9936,
+  "orders": 69
+}
