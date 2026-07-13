@@ -1,0 +1,2 @@
+brier,calibration_bias,calibration_mae,count,empirical_win_rate,log_loss,mean_top_probability,model_name,top_one_accuracy
+0.45653658450513074,0.0005143997987907585,0.0849201630386484,1597,0.6487163431433939,0.8877116125179655,0.6492307429421846,raycaster_cloudcaster,0.6487163431433939

@@ -198,9 +198,18 @@ def write_evaluation_outputs(
     _write_dict_rows(output / "bracket_metrics.csv", _metric_rows(bracket_rows, "bracket"))
     _write_dict_rows(output / "by_city.csv", _group_metric_rows(temp_rows, bracket_rows, "city"))
     _write_dict_rows(
+        output / "daily_metrics.csv",
+        _group_metric_rows(temp_rows, bracket_rows, "target_date"),
+    )
+    _write_dict_rows(
+        output / "city_day_metrics.csv",
+        _group_metric_rows(temp_rows, bracket_rows, "city_day"),
+    )
+    _write_dict_rows(
         output / "by_checkpoint.csv",
         _group_metric_rows(temp_rows, bracket_rows, "checkpoint"),
     )
+    _write_dict_rows(output / "calibration_bins.csv", _calibration_rows(bracket_rows))
     _write_dict_rows(output / "errors.csv", temp_rows + bracket_rows)
     _write_summary_json(output, mode, temp_rows, bracket_rows, source_export_id=source_export_id)
     _write_charts(output, temp_rows, bracket_rows)
@@ -283,10 +292,14 @@ def _temperature_score_rows(
         actual = float(actual_high)
         error = prediction.expected_high_f - actual
         event = events.get(prediction.event_ticker)
+        target_date = event.target_date.isoformat() if event else ""
         rows.append(
             {
                 "metric_type": "temperature",
+                "model_name": prediction.model_name,
                 "city": prediction.city,
+                "target_date": target_date,
+                "city_day": _city_day(prediction.city, target_date),
                 "checkpoint": _checkpoint(prediction, event),
                 "event_ticker": prediction.event_ticker,
                 "snapshot_hour_utc": prediction.snapshot_hour_utc.isoformat(),
@@ -330,16 +343,21 @@ def _bracket_score_rows(
         top = top_ticker(distribution.probabilities)
         top_index = next((bracket.index for bracket in brackets if bracket.ticker == top), None)
         event = events.get(distribution.event_ticker)
+        target_date = event.target_date.isoformat() if event else ""
         rows.append(
             {
                 "metric_type": "bracket",
+                "model_name": distribution.model_name,
                 "city": distribution.city,
+                "target_date": target_date,
+                "city_day": _city_day(distribution.city, target_date),
                 "checkpoint": _checkpoint(distribution, event),
                 "event_ticker": distribution.event_ticker,
                 "snapshot_hour_utc": distribution.snapshot_hour_utc.isoformat(),
                 "winner_ticker": settlement.winner_ticker,
                 "winner_probability": distribution.probabilities[settlement.winner_ticker],
                 "top_ticker": top,
+                "top_probability": distribution.probabilities[top],
                 "top_one_accuracy": top_one_accuracy(
                     distribution.probabilities,
                     settlement.winner_ticker,
@@ -427,6 +445,52 @@ def _group_metric_rows(
         for group, group_rows in sorted(grouped.items()):
             for metric in _metric_rows(group_rows, metric_type):
                 output.append({"group": group, "metric_type": metric_type, **metric})
+    return output
+
+
+def _calibration_rows(bracket_rows: list[dict[str, Any]], bins: int = 10) -> list[dict[str, Any]]:
+    if not bracket_rows:
+        return []
+    grouped: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    for row in bracket_rows:
+        probability = float(row["top_probability"])
+        index = min(bins - 1, max(0, int(probability * bins)))
+        grouped[index].append(row)
+    output = []
+    for index in range(bins):
+        rows = grouped.get(index, [])
+        lower = index / bins
+        upper = (index + 1) / bins
+        if not rows:
+            output.append(
+                {
+                    "bin": f"{lower:.1f}-{upper:.1f}",
+                    "lower": lower,
+                    "upper": upper,
+                    "count": 0,
+                    "mean_top_probability": "",
+                    "mean_winner_probability": "",
+                    "empirical_win_rate": "",
+                    "log_loss": "",
+                    "brier": "",
+                    "top_one_accuracy": "",
+                }
+            )
+            continue
+        output.append(
+            {
+                "bin": f"{lower:.1f}-{upper:.1f}",
+                "lower": lower,
+                "upper": upper,
+                "count": len(rows),
+                "mean_top_probability": mean(float(row["top_probability"]) for row in rows),
+                "mean_winner_probability": mean(float(row["winner_probability"]) for row in rows),
+                "empirical_win_rate": mean(float(row["top_one_accuracy"]) for row in rows),
+                "log_loss": mean(float(row["log_loss"]) for row in rows),
+                "brier": mean(float(row["brier"]) for row in rows),
+                "top_one_accuracy": mean(float(row["top_one_accuracy"]) for row in rows),
+            }
+        )
     return output
 
 
@@ -533,6 +597,10 @@ def _distribution_row(distribution: BracketDistribution) -> dict[str, Any]:
 def _observed(row: FeatureRow) -> float | None:
     value = row.features.get("observed_high_so_far_f")
     return float(value) if value is not None else None
+
+
+def _city_day(city: str, target_date: str) -> str:
+    return f"{city}:{target_date}" if target_date else city
 
 
 def _checkpoint(item, event) -> str:

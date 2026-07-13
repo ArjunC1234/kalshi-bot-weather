@@ -16,6 +16,8 @@ for path in (CURRENT_DIR, NEXT_GEN_DIR):
         sys.path.insert(0, str(path))
 
 from artifacts import write_training_rows
+from baselines import DEFAULT_ESTIMATORS
+from benchmark import benchmark_expanding_window
 from dataset import load_local_dataset
 from evaluate import evaluate_expanding_window, evaluate_fixed_model, evaluate_rolling_window
 from features import MODEL_NAME, build_feature_rows
@@ -30,6 +32,7 @@ def main(argv: list[str] | None = None) -> int:
     _add_predict(subparsers)
     _add_evaluate(subparsers)
     _add_rolling_eval(subparsers)
+    _add_benchmark(subparsers)
     _add_report(subparsers)
     args = parser.parse_args(argv)
     if args.command == "train":
@@ -40,6 +43,8 @@ def main(argv: list[str] | None = None) -> int:
         return _evaluate(args)
     if args.command == "rolling-eval":
         return _rolling_eval(args)
+    if args.command == "benchmark":
+        return _benchmark(args)
     if args.command == "report":
         return _report(args)
     parser.error(f"unknown command {args.command}")
@@ -79,6 +84,23 @@ def _add_rolling_eval(subparsers) -> None:
     parser.add_argument("--output", required=True)
     parser.add_argument("--train-days", type=int, default=14)
     parser.add_argument("--test-days", type=int, default=1)
+    parser.add_argument("--min-training-events", type=int, default=DEFAULT_MIN_TRAINING_EVENTS)
+    parser.add_argument("--probability-floor", type=float, default=0.001)
+
+
+def _add_benchmark(subparsers) -> None:
+    parser = subparsers.add_parser(
+        "benchmark",
+        help="compare Raycaster against source and MOS baselines using expanding windows",
+    )
+    parser.add_argument("--data", required=True)
+    parser.add_argument("--output", required=True)
+    parser.add_argument(
+        "--estimators",
+        nargs="+",
+        default=list(DEFAULT_ESTIMATORS),
+        help=f"Estimator names. Defaults to: {', '.join(DEFAULT_ESTIMATORS)}",
+    )
     parser.add_argument("--min-training-events", type=int, default=DEFAULT_MIN_TRAINING_EVENTS)
     parser.add_argument("--probability-floor", type=float, default=0.001)
 
@@ -167,6 +189,24 @@ def _rolling_eval(args) -> int:
     )
     print(
         f"evaluated {MODEL_NAME}: mode={summary['mode']} "
+        f"temperature_rows={summary['temperature_rows']} "
+        f"bracket_rows={summary['bracket_rows']} output={summary['output_dir']}"
+    )
+    return 0
+
+
+def _benchmark(args) -> int:
+    dataset = load_local_dataset(args.data)
+    summary = benchmark_expanding_window(
+        dataset,
+        args.output,
+        estimator_names=args.estimators,
+        min_training_events=args.min_training_events,
+        probability_floor=args.probability_floor,
+        source_export_id=Path(args.data).name,
+    )
+    print(
+        f"benchmarked {MODEL_NAME}: models={summary['models']} "
         f"temperature_rows={summary['temperature_rows']} "
         f"bracket_rows={summary['bracket_rows']} output={summary['output_dir']}"
     )

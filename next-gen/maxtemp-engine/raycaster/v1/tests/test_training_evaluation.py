@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 # ruff: noqa: E402
+import csv
 import sys
 import tempfile
 import unittest
@@ -13,6 +14,7 @@ for path in (NEXT_GEN, RAYCASTER_V1):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
+from benchmark import benchmark_expanding_window
 from evaluate import evaluate_expanding_window
 from features import build_feature_rows
 from train import (
@@ -52,8 +54,69 @@ class TrainingEvaluationTests(unittest.TestCase):
             )
             self.assertEqual(summary["mode"], "expanding_window")
             self.assertTrue((Path(tmp) / "summary.json").exists())
+            self.assertTrue((Path(tmp) / "daily_metrics.csv").exists())
+            self.assertTrue((Path(tmp) / "city_day_metrics.csv").exists())
+            self.assertTrue((Path(tmp) / "calibration_bins.csv").exists())
             self.assertGreaterEqual(summary["temperature_rows"], 1)
             self.assertGreaterEqual(summary["bracket_rows"], 1)
+
+    def test_benchmark_writes_leakage_safe_comparison(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            summary = benchmark_expanding_window(
+                _dataset(),
+                Path(tmp),
+                estimator_names=[
+                    "source_blend",
+                    "raycaster",
+                    "raycaster_source_blend_hybrid",
+                ],
+                min_training_events=1,
+                probability_floor=0.0,
+            )
+            self.assertEqual(summary["mode"], "benchmark_expanding_window")
+            self.assertTrue((Path(tmp) / "model_comparison.csv").exists())
+            self.assertTrue((Path(tmp) / "weighted_model_comparison.csv").exists())
+            self.assertTrue((Path(tmp) / "bootstrap_confidence_intervals.csv").exists())
+            self.assertTrue((Path(tmp) / "calibration_summary.csv").exists())
+            self.assertTrue((Path(tmp) / "model_decision.md").exists())
+            self.assertTrue((Path(tmp) / "daily_metrics.csv").exists())
+            self.assertEqual(summary["headline_weighting"], "city_day_weighted")
+            weighted_path = Path(tmp) / "weighted_model_comparison.csv"
+            with weighted_path.open(newline="", encoding="utf-8") as handle:
+                weighted_rows = list(csv.DictReader(handle))
+            self.assertIn(
+                "city_day_weighted",
+                {row["weighting"] for row in weighted_rows},
+            )
+            city_rows = {
+                row["model_name"]: row
+                for row in weighted_rows
+                if row["weighting"] == "city_day_weighted"
+            }
+            self.assertIn("raycaster_source_blend_hybrid", city_rows)
+            self.assertEqual(
+                city_rows["source_blend"]["log_loss"],
+                city_rows["raycaster_source_blend_hybrid"]["log_loss"],
+            )
+            diagnostics_path = Path(tmp) / "training_diagnostics.csv"
+            with diagnostics_path.open(newline="", encoding="utf-8") as handle:
+                diagnostics = list(csv.DictReader(handle))
+            self.assertEqual(
+                {
+                    row["training_rows"]
+                    for row in diagnostics
+                    if row["target_date"] == "2026-07-01"
+                },
+                {"0"},
+            )
+            self.assertEqual(
+                {
+                    row["training_rows"]
+                    for row in diagnostics
+                    if row["target_date"] == "2026-07-03"
+                },
+                {"2"},
+            )
 
     def test_training_schema_excludes_city_and_day_of_year_baselines(self) -> None:
         self.assertNotIn("city", ACTIVE_CATEGORICAL_FEATURES)

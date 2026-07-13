@@ -1,0 +1,46 @@
+"""Discovery shim for Cloudcaster v1 tests under the hyphenated maxtemp-engine path."""
+
+from __future__ import annotations
+
+import sys
+import unittest
+from importlib import util
+from pathlib import Path
+
+
+def load_tests(loader: unittest.TestLoader, tests: unittest.TestSuite, pattern: str):
+    next_gen = Path(__file__).resolve().parents[1]
+    cloudcaster_v1 = next_gen / "maxtemp-engine" / "cloudcaster" / "v1"
+    raycaster_v1 = next_gen / "maxtemp-engine" / "raycaster" / "v1"
+    test_dir = cloudcaster_v1 / "tests"
+    for path in (cloudcaster_v1, raycaster_v1, next_gen):
+        if str(path) not in sys.path:
+            sys.path.insert(0, str(path))
+    suite = unittest.TestSuite()
+    for path in sorted(test_dir.glob(pattern or "test*.py")):
+        _clear_model_modules()
+        module_name = f"cloudcaster_v1_{path.stem}"
+        spec = util.spec_from_file_location(module_name, path)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"cannot load {path}")
+        module = util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
+        suite.addTests(loader.loadTestsFromModule(module))
+    return suite
+
+
+def _clear_model_modules() -> None:
+    for name in (
+        "baselines",
+        "cloud_evaluate",
+        "cloud_features",
+        "cloud_temperature",
+        "cloud_train",
+        "dataset",
+        "distribution",
+        "evaluate",
+        "features",
+        "train",
+    ):
+        sys.modules.pop(name, None)
