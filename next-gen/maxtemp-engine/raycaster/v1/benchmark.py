@@ -60,6 +60,8 @@ def benchmark_expanding_window(
     weighted_comparison = _weighted_model_comparison_rows(names, all_temp_rows, all_bracket_rows)
     confidence_intervals = _bootstrap_confidence_rows(names, all_temp_rows, all_bracket_rows)
     daily = _grouped_by_model(names, all_temp_rows, all_bracket_rows, "target_date")
+    by_city = _grouped_by_model(names, all_temp_rows, all_bracket_rows, "city")
+    by_checkpoint = _grouped_by_model(names, all_temp_rows, all_bracket_rows, "checkpoint")
     city_day = _grouped_by_model(names, all_temp_rows, all_bracket_rows, "city_day")
     calibration = _calibration_by_model(names, all_bracket_rows)
     calibration_summary = _calibration_summary_rows(names, calibration)
@@ -67,6 +69,8 @@ def benchmark_expanding_window(
     _write_dict_rows(output / "weighted_model_comparison.csv", weighted_comparison)
     _write_dict_rows(output / "bootstrap_confidence_intervals.csv", confidence_intervals)
     _write_dict_rows(output / "daily_metrics.csv", daily)
+    _write_dict_rows(output / "by_city.csv", by_city)
+    _write_dict_rows(output / "by_checkpoint.csv", by_checkpoint)
     _write_dict_rows(output / "city_day_metrics.csv", city_day)
     _write_dict_rows(output / "calibration_bins.csv", calibration)
     _write_dict_rows(output / "calibration_summary.csv", calibration_summary)
@@ -294,8 +298,7 @@ def _weighted_metric_values(
 
 def _metric_values(rows: list[dict[str, Any]], metric_type: str) -> dict[str, float]:
     return {
-        str(metric["metric"]): float(metric["value"])
-        for metric in _metric_rows(rows, metric_type)
+        str(metric["metric"]): float(metric["value"]) for metric in _metric_rows(rows, metric_type)
     }
 
 
@@ -428,8 +431,7 @@ def _calibration_summary_rows(
             {
                 "model_name": name,
                 "count": total,
-                "calibration_mae": sum(count * abs(diff) for count, diff in weighted_diffs)
-                / total,
+                "calibration_mae": sum(count * abs(diff) for count, diff in weighted_diffs) / total,
                 "calibration_bias": sum(count * diff for count, diff in weighted_diffs) / total,
                 "mean_top_probability": _weighted_average(rows, "mean_top_probability"),
                 "empirical_win_rate": _weighted_average(rows, "empirical_win_rate"),
@@ -453,9 +455,7 @@ def _write_summary(
     comparison: list[dict[str, Any]],
     weighted_comparison: list[dict[str, Any]],
 ) -> None:
-    headline = [
-        row for row in weighted_comparison if row["weighting"] == "city_day_weighted"
-    ]
+    headline = [row for row in weighted_comparison if row["weighting"] == "city_day_weighted"]
     summary = {
         "mode": "benchmark_expanding_window",
         "source_export_id": source_export_id,

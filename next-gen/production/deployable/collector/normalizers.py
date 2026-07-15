@@ -12,6 +12,8 @@ from config import City
 from ids import deterministic_id
 from time_utils import SnapshotClock, parse_datetime
 
+from libs.source_families import source_family_features
+
 MONTHS = {
     "JAN": 1,
     "FEB": 2,
@@ -336,6 +338,17 @@ def weather_row(
         )
         if isinstance(value, (int, float))
     ]
+    family_features = source_family_features(
+        {
+            "nws_anchor_high_f": nws_anchor,
+            "nws_daily_daytime_high_f": daily_high,
+            "nws_hourly_window_max_f": hourly_high,
+            "observed_high_so_far_f": observed_high,
+            "hrrr_projected_high_f": hrrr_features.get("hrrr_projected_high_f"),
+            "nbm_projected_high_f": nbm_features.get("nbm_projected_high_f"),
+            "ensemble_raw_median_high_f": ensemble_features.get("ensemble_raw_median_high_f"),
+        }
+    )
     return {
         "weather_snapshot_id": deterministic_id(
             "weather", city.key, event_ticker, clock.snapshot_time_utc.isoformat()
@@ -402,6 +415,7 @@ def weather_row(
         "hrrr_nbm_disagreement_f": diff(
             hrrr_features.get("hrrr_projected_high_f"), nbm_features.get("nbm_projected_high_f")
         ),
+        **family_features,
         "source_payload_ids": source_payload_ids,
         "features": {
             "nws_daily_update_time": (daily or {}).get("properties", {}).get("updateTime"),

@@ -10,6 +10,7 @@ from pathlib import Path
 from libs.models import Bracket, MarketSnapshot, Settlement
 from strategy.backtest import run_backtest
 from strategy.fills import settle_order
+from strategy.live_replay import LiveReplayConfig, build_slice_allowlist, run_live_replay
 from strategy.metrics import edge_bucket, max_drawdown
 from strategy.orders import PaperOrder
 from strategy.signals import StrategyConfig, signal_for_market
@@ -21,6 +22,22 @@ class StrategyTests(unittest.TestCase):
         signal = signal_for_market(market, 0.70, StrategyConfig(max_spread=0.10))
         self.assertEqual(signal.decision, "skip")
         self.assertEqual(signal.skip_reason, "spread_too_wide")
+
+    def test_signal_respects_max_edge_filter(self) -> None:
+        market = _market("MKT-WIN", yes_bid=0.20, yes_ask=0.30)
+        signal = signal_for_market(market, 0.60, StrategyConfig(max_edge=0.20))
+        self.assertEqual(signal.decision, "skip")
+        self.assertEqual(signal.skip_reason, "edge_above_max")
+
+    def test_signal_respects_model_probability_filter(self) -> None:
+        market = _market("MKT-WIN", yes_bid=0.20, yes_ask=0.30)
+        signal = signal_for_market(
+            market,
+            0.60,
+            StrategyConfig(max_model_probability=0.50),
+        )
+        self.assertEqual(signal.decision, "skip")
+        self.assertEqual(signal.skip_reason, "model_probability_too_high")
 
     def test_settlement_pnl_and_clv(self) -> None:
         order = PaperOrder(
@@ -81,6 +98,308 @@ class StrategyTests(unittest.TestCase):
             with (output / "trades.csv").open(newline="", encoding="utf-8") as handle:
                 rows = list(csv.DictReader(handle))
             self.assertEqual(rows[0]["market_ticker"], "MKT-WIN")
+
+    def test_budget_sizing_uses_integer_contracts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            export = root / "export"
+            report = root / "model"
+            output = root / "out"
+            export.mkdir()
+            report.mkdir()
+            _write_export(export)
+            _write_model_report(report)
+            run_backtest(
+                export,
+                report,
+                output,
+                StrategyConfig(
+                    edge_threshold=0.05,
+                    max_spread=0.20,
+                    daily_budget=10.0,
+                    base_budget_fraction=0.10,
+                ),
+            )
+            with (output / "trades.csv").open(newline="", encoding="utf-8") as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(float(rows[0]["contracts"]), 2.0)
+
+    def test_edge_tier_budget_sizing_increases_contracts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            export = root / "export"
+            report = root / "model"
+            output = root / "out"
+            export.mkdir()
+            report.mkdir()
+            _write_export(export)
+            _write_model_report(report)
+            run_backtest(
+                export,
+                report,
+                output,
+                StrategyConfig(
+                    edge_threshold=0.05,
+                    max_spread=0.20,
+                    daily_budget=10.0,
+                    sizing_policy="edge-tier",
+                    base_budget_fraction=0.10,
+                ),
+            )
+            with (output / "trades.csv").open(newline="", encoding="utf-8") as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(float(rows[0]["contracts"]), 5.0)
+
+    def test_live_replay_supports_no_side_and_settlement(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            export = root / "export"
+            report = root / "model"
+            output = root / "out"
+            export.mkdir()
+            report.mkdir()
+            _write_no_replay_export(export)
+            _write_no_replay_model_report(report)
+            summary = run_live_replay(
+                export,
+                report,
+                output,
+                LiveReplayConfig(
+                    edge_threshold=0.08,
+                    max_edge=0.20,
+                    daily_budget=10.0,
+                    max_order_cost=3.0,
+                    enable_no_trading=True,
+                    no_entry_mode="model",
+                ),
+            )
+            self.assertEqual(summary["trades"], 1)
+            self.assertGreater(summary["total_pnl"], 0.0)
+            self.assertTrue((output / "fills.csv").exists())
+            self.assertTrue((output / "side_metrics.csv").exists())
+            self.assertTrue((output / "side_edge_buckets.csv").exists())
+            with (output / "fills.csv").open(newline="", encoding="utf-8") as handle:
+                fills = list(csv.DictReader(handle))
+            self.assertEqual(fills[0]["side"], "no")
+            self.assertEqual(fills[0]["blocked"], "False")
+            with (output / "trades.csv").open(newline="", encoding="utf-8") as handle:
+                trades = list(csv.DictReader(handle))
+            self.assertEqual(float(trades[0]["settlement_value"]), 1.0)
+            self.assertEqual(trades[0]["side"], "no")
+
+    def test_live_replay_blocks_worse_execution_quote_with_lag(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            export = root / "export"
+            report = root / "model"
+            output = root / "out"
+            export.mkdir()
+            report.mkdir()
+            _write_lagged_execution_export(export)
+            _write_lagged_execution_model_report(report)
+            summary = run_live_replay(
+                export,
+                report,
+                output,
+                LiveReplayConfig(
+                    edge_threshold=0.08,
+                    daily_budget=10.0,
+                    execution_lag_hours=1,
+                    block_worse_execution_price=True,
+                ),
+            )
+            self.assertEqual(summary["trades"], 0)
+            self.assertEqual(summary["blocked_orders"], 1)
+            with (output / "fills.csv").open(newline="", encoding="utf-8") as handle:
+                fills = list(csv.DictReader(handle))
+            self.assertEqual(fills[0]["block_reason"], "execution_price_worse_than_signal")
+
+    def test_live_replay_blocks_entries_after_final_label_is_available(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            export = root / "export"
+            report = root / "model"
+            output = root / "out"
+            export.mkdir()
+            report.mkdir()
+            _write_final_labeled_replay_export(export)
+            _write_lagged_execution_model_report(report)
+            summary = run_live_replay(
+                export,
+                report,
+                output,
+                LiveReplayConfig(edge_threshold=0.08, daily_budget=10.0),
+            )
+            self.assertEqual(summary["trades"], 0)
+            self.assertEqual(summary["signals"], 0)
+
+    def test_live_replay_early_entry_gate_blocks_weak_early_yes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            export = root / "export"
+            report = root / "model"
+            output = root / "out"
+            export.mkdir()
+            report.mkdir()
+            _write_early_entry_export(export)
+            _write_early_entry_model_report(report, 0.43)
+            summary = run_live_replay(
+                export,
+                report,
+                output,
+                LiveReplayConfig(
+                    edge_threshold=0.08,
+                    max_edge=0.20,
+                    daily_budget=10.0,
+                    enable_early_entry_gate=True,
+                    early_entry_edge_threshold=0.18,
+                    early_entry_min_source_confirmations=2,
+                    min_entry_price=0.25,
+                    max_entry_price=0.50,
+                ),
+            )
+            self.assertEqual(summary["signals"], 0)
+            self.assertEqual(summary["trades"], 0)
+
+    def test_live_replay_early_entry_gate_allows_confirmed_high_edge_yes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            export = root / "export"
+            report = root / "model"
+            output = root / "out"
+            export.mkdir()
+            report.mkdir()
+            _write_early_entry_export(export)
+            _write_early_entry_model_report(report, 0.49)
+            summary = run_live_replay(
+                export,
+                report,
+                output,
+                LiveReplayConfig(
+                    edge_threshold=0.08,
+                    max_edge=0.20,
+                    daily_budget=10.0,
+                    enable_early_entry_gate=True,
+                    early_entry_edge_threshold=0.18,
+                    early_entry_min_source_confirmations=2,
+                    min_entry_price=0.25,
+                    max_entry_price=0.50,
+                ),
+            )
+            self.assertEqual(summary["signals"], 1)
+            self.assertEqual(summary["trades"], 1)
+
+    def test_live_replay_slice_allowlist_blocks_unproven_slice(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            export = root / "export"
+            report = root / "model"
+            output = root / "out"
+            allowlist = root / "slice_allowlist.csv"
+            export.mkdir()
+            report.mkdir()
+            _write_early_entry_export(export)
+            _write_early_entry_model_report(report, 0.49)
+            _write_slice_allowlist(allowlist, city="la")
+            summary = run_live_replay(
+                export,
+                report,
+                output,
+                LiveReplayConfig(
+                    edge_threshold=0.08,
+                    max_edge=0.20,
+                    daily_budget=10.0,
+                    enable_early_entry_gate=True,
+                    early_entry_edge_threshold=0.18,
+                    early_entry_min_source_confirmations=2,
+                    min_entry_price=0.25,
+                    max_entry_price=0.50,
+                    slice_allowlist_path=str(allowlist),
+                ),
+            )
+            self.assertEqual(summary["signals"], 0)
+            self.assertEqual(summary["trades"], 0)
+            self.assertTrue(summary["slice_gate_enabled"])
+
+    def test_live_replay_slice_allowlist_allows_matching_slice(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            export = root / "export"
+            report = root / "model"
+            output = root / "out"
+            allowlist = root / "slice_allowlist.csv"
+            export.mkdir()
+            report.mkdir()
+            _write_early_entry_export(export)
+            _write_early_entry_model_report(report, 0.49)
+            _write_slice_allowlist(allowlist, city="nyc")
+            summary = run_live_replay(
+                export,
+                report,
+                output,
+                LiveReplayConfig(
+                    edge_threshold=0.08,
+                    max_edge=0.20,
+                    daily_budget=10.0,
+                    enable_early_entry_gate=True,
+                    early_entry_edge_threshold=0.18,
+                    early_entry_min_source_confirmations=2,
+                    min_entry_price=0.25,
+                    max_entry_price=0.50,
+                    slice_allowlist_path=str(allowlist),
+                ),
+            )
+            self.assertEqual(summary["signals"], 1)
+            self.assertEqual(summary["trades"], 1)
+            with (output / "trades.csv").open(newline="", encoding="utf-8") as handle:
+                trades = list(csv.DictReader(handle))
+            self.assertEqual(trades[0]["bracket_type"], "bounded")
+
+    def test_build_slice_allowlist_marks_positive_clv_pnl_slice(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            trades = root / "trades.csv"
+            output = root / "slice_allowlist.csv"
+            with trades.open("w", newline="", encoding="utf-8") as handle:
+                writer = csv.DictWriter(
+                    handle,
+                    fieldnames=[
+                        "city",
+                        "checkpoint",
+                        "side",
+                        "bracket_type",
+                        "pnl",
+                        "entry_price",
+                        "contracts",
+                        "clv",
+                        "hit",
+                    ],
+                )
+                writer.writeheader()
+                writer.writerow(
+                    {
+                        "city": "nyc",
+                        "checkpoint": "utc_07",
+                        "side": "yes",
+                        "bracket_type": "bounded",
+                        "pnl": "0.7",
+                        "entry_price": "0.3",
+                        "contracts": "1",
+                        "clv": "0.1",
+                        "hit": "1",
+                    }
+                )
+            summary = build_slice_allowlist(
+                trades,
+                output,
+                min_trades=1,
+                min_pnl=0.0,
+                min_avg_clv=0.0,
+            )
+            self.assertEqual(summary["allowed_groups"], 1)
+            with output.open(newline="", encoding="utf-8") as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(rows[0]["allowed"], "True")
 
 
 def _market(market_ticker: str, yes_bid: float, yes_ask: float) -> MarketSnapshot:
@@ -165,6 +484,192 @@ def _write_export(path: Path) -> None:
     (path / "settlements.json").write_text(json.dumps(settlement_rows), encoding="utf-8")
 
 
+def _write_no_replay_export(path: Path) -> None:
+    market_rows = [
+        {
+            "city": "nyc",
+            "event_ticker": "EVT",
+            "market_ticker": "MKT-WIN",
+            "target_date": "2026-07-01",
+            "snapshot_time_utc": "2026-07-01T12:00:00+00:00",
+            "bracket_label": "Win",
+            "bracket_lower_f": 80,
+            "bracket_upper_f": 80,
+            "bracket_index": 1,
+            "yes_bid_dollars": 0.10,
+            "yes_ask_dollars": 0.20,
+            "no_bid_dollars": 0.80,
+            "no_ask_dollars": 0.85,
+            "yes_bid_size": 20,
+            "yes_ask_size": 20,
+            "no_bid_size": 20,
+            "no_ask_size": 20,
+            "normalized_market_midpoint_probability": 0.15,
+        },
+        {
+            "city": "nyc",
+            "event_ticker": "EVT",
+            "market_ticker": "MKT-LOSE",
+            "target_date": "2026-07-01",
+            "snapshot_time_utc": "2026-07-01T12:00:00+00:00",
+            "bracket_label": "Lose",
+            "bracket_lower_f": 81,
+            "bracket_upper_f": 81,
+            "bracket_index": 2,
+            "yes_bid_dollars": 0.70,
+            "yes_ask_dollars": 0.80,
+            "no_bid_dollars": 0.20,
+            "no_ask_dollars": 0.30,
+            "yes_bid_size": 20,
+            "yes_ask_size": 20,
+            "no_bid_size": 20,
+            "no_ask_size": 20,
+            "normalized_market_midpoint_probability": 0.75,
+        },
+    ]
+    settlement_rows = [
+        {
+            "city": "nyc",
+            "event_ticker": "EVT",
+            "target_date": "2026-07-01",
+            "settled_at_utc": "2026-07-02T00:00:00+00:00",
+            "winner_ticker": "MKT-LOSE",
+        }
+    ]
+    (path / "market_snapshots.json").write_text(json.dumps(market_rows), encoding="utf-8")
+    (path / "settlements.json").write_text(json.dumps(settlement_rows), encoding="utf-8")
+
+
+def _write_lagged_execution_export(path: Path) -> None:
+    market_rows = [
+        {
+            "city": "nyc",
+            "event_ticker": "EVT",
+            "market_ticker": "MKT-WIN",
+            "target_date": "2026-07-01",
+            "snapshot_time_utc": "2026-07-01T12:00:00+00:00",
+            "bracket_label": "Win",
+            "bracket_lower_f": 80,
+            "bracket_upper_f": 80,
+            "bracket_index": 1,
+            "yes_bid_dollars": 0.10,
+            "yes_ask_dollars": 0.20,
+            "yes_ask_size": 20,
+            "normalized_market_midpoint_probability": 0.15,
+        },
+        {
+            "city": "nyc",
+            "event_ticker": "EVT",
+            "market_ticker": "MKT-WIN",
+            "target_date": "2026-07-01",
+            "snapshot_time_utc": "2026-07-01T13:00:00+00:00",
+            "bracket_label": "Win",
+            "bracket_lower_f": 80,
+            "bracket_upper_f": 80,
+            "bracket_index": 1,
+            "yes_bid_dollars": 0.40,
+            "yes_ask_dollars": 0.50,
+            "yes_ask_size": 20,
+            "normalized_market_midpoint_probability": 0.45,
+        },
+    ]
+    (path / "market_snapshots.json").write_text(json.dumps(market_rows), encoding="utf-8")
+
+
+def _write_final_labeled_replay_export(path: Path) -> None:
+    market_rows = [
+        {
+            "city": "nyc",
+            "event_ticker": "EVT",
+            "market_ticker": "MKT-WIN",
+            "target_date": "2026-07-01",
+            "snapshot_time_utc": "2026-07-01T12:00:00+00:00",
+            "bracket_label": "Win",
+            "bracket_lower_f": 80,
+            "bracket_upper_f": 80,
+            "bracket_index": 1,
+            "yes_bid_dollars": 0.10,
+            "yes_ask_dollars": 0.20,
+            "yes_bid_size": 20,
+            "yes_ask_size": 20,
+            "normalized_market_midpoint_probability": 0.15,
+        }
+    ]
+    event_rows = [
+        {
+            "city": "nyc",
+            "event_ticker": "EVT",
+            "target_date": "2026-07-01",
+            "snapshot_time_utc": "2026-07-01T12:00:00+00:00",
+            "climate_day_start_utc": "2026-07-01T05:00:00+00:00",
+            "climate_day_end_utc": "2026-07-02T05:00:00+00:00",
+            "station_id": "KNYC",
+        }
+    ]
+    label_rows = [
+        {
+            "city": "nyc",
+            "event_ticker": "EVT",
+            "target_date": "2026-07-01",
+            "station_id": "KNYC",
+            "final_high_f": 80,
+            "source_provider": "nws_cli",
+            "issued_at_utc": "2026-07-01T11:00:00+00:00",
+            "validation_status": "valid",
+        }
+    ]
+    (path / "market_snapshots.json").write_text(json.dumps(market_rows), encoding="utf-8")
+    (path / "events.json").write_text(json.dumps(event_rows), encoding="utf-8")
+    (path / "final_temperature_labels.json").write_text(json.dumps(label_rows), encoding="utf-8")
+
+
+def _write_early_entry_export(path: Path) -> None:
+    market_rows = [
+        {
+            "city": "nyc",
+            "event_ticker": "EVT",
+            "market_ticker": "MKT-WIN",
+            "target_date": "2026-07-01",
+            "snapshot_time_utc": "2026-07-01T07:00:00+00:00",
+            "bracket_label": "Win",
+            "bracket_lower_f": 80,
+            "bracket_upper_f": 81,
+            "bracket_index": 1,
+            "yes_bid_dollars": 0.24,
+            "yes_ask_dollars": 0.30,
+            "yes_bid_size": 20,
+            "yes_ask_size": 20,
+            "normalized_market_midpoint_probability": 0.27,
+        }
+    ]
+    weather_rows = [
+        {
+            "city": "nyc",
+            "event_ticker": "EVT",
+            "target_date": "2026-07-01",
+            "snapshot_time_utc": "2026-07-01T07:00:00+00:00",
+            "nws_anchor_high_f": 80.0,
+            "hrrr_projected_high_f": 81.0,
+            "nbm_projected_high_f": 81.0,
+            "ensemble_raw_median_high_f": 79.0,
+            "observed_high_so_far_f": 72.0,
+            "features": {"hours_elapsed": 2.0, "nws_hourly_window_max_f": 80.0},
+        }
+    ]
+    settlement_rows = [
+        {
+            "city": "nyc",
+            "event_ticker": "EVT",
+            "target_date": "2026-07-01",
+            "settled_at_utc": "2026-07-02T00:00:00+00:00",
+            "winner_ticker": "MKT-WIN",
+        }
+    ]
+    (path / "market_snapshots.json").write_text(json.dumps(market_rows), encoding="utf-8")
+    (path / "weather_snapshots.json").write_text(json.dumps(weather_rows), encoding="utf-8")
+    (path / "settlements.json").write_text(json.dumps(settlement_rows), encoding="utf-8")
+
+
 def _write_model_report(path: Path) -> None:
     with (path / "bracket_distributions.csv").open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(
@@ -179,6 +684,78 @@ def _write_model_report(path: Path) -> None:
                 "model_name": "test",
                 "probabilities": "{'MKT-WIN': 0.55, 'MKT-LOSE': 0.45}",
                 "snapshot_hour_utc": "2026-07-01T12:00:00+00:00",
+            }
+        )
+
+
+def _write_no_replay_model_report(path: Path) -> None:
+    with (path / "bracket_distributions.csv").open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=["city", "event_ticker", "model_name", "probabilities", "snapshot_hour_utc"],
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "city": "nyc",
+                "event_ticker": "EVT",
+                "model_name": "test",
+                "probabilities": "{'MKT-WIN': 0.05, 'MKT-LOSE': 0.95}",
+                "snapshot_hour_utc": "2026-07-01T12:00:00+00:00",
+            }
+        )
+
+
+def _write_lagged_execution_model_report(path: Path) -> None:
+    with (path / "bracket_distributions.csv").open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=["city", "event_ticker", "model_name", "probabilities", "snapshot_hour_utc"],
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "city": "nyc",
+                "event_ticker": "EVT",
+                "model_name": "test",
+                "probabilities": "{'MKT-WIN': 0.30}",
+                "snapshot_hour_utc": "2026-07-01T12:00:00+00:00",
+            }
+        )
+
+
+def _write_early_entry_model_report(path: Path, probability: float) -> None:
+    with (path / "bracket_distributions.csv").open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=["city", "event_ticker", "model_name", "probabilities", "snapshot_hour_utc"],
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "city": "nyc",
+                "event_ticker": "EVT",
+                "model_name": "test",
+                "probabilities": f"{{'MKT-WIN': {probability}}}",
+                "snapshot_hour_utc": "2026-07-01T07:00:00+00:00",
+            }
+        )
+
+
+def _write_slice_allowlist(path: Path, city: str) -> None:
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=["city", "checkpoint", "side", "bracket_type", "allowed"],
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "city": city,
+                "checkpoint": "utc_07",
+                "side": "yes",
+                "bracket_type": "bounded",
+                "allowed": "true",
             }
         )
 

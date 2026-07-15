@@ -16,7 +16,7 @@ for path in (NEXT_GEN, RAYCASTER_V1):
 
 from benchmark import benchmark_expanding_window
 from evaluate import evaluate_expanding_window
-from features import build_feature_rows
+from features import build_feature_rows, feature_profile
 from train import (
     ACTIVE_CATEGORICAL_FEATURES,
     ACTIVE_NUMERIC_FEATURES,
@@ -102,19 +102,11 @@ class TrainingEvaluationTests(unittest.TestCase):
             with diagnostics_path.open(newline="", encoding="utf-8") as handle:
                 diagnostics = list(csv.DictReader(handle))
             self.assertEqual(
-                {
-                    row["training_rows"]
-                    for row in diagnostics
-                    if row["target_date"] == "2026-07-01"
-                },
+                {row["training_rows"] for row in diagnostics if row["target_date"] == "2026-07-01"},
                 {"0"},
             )
             self.assertEqual(
-                {
-                    row["training_rows"]
-                    for row in diagnostics
-                    if row["target_date"] == "2026-07-03"
-                },
+                {row["training_rows"] for row in diagnostics if row["target_date"] == "2026-07-03"},
                 {"2"},
             )
 
@@ -122,6 +114,20 @@ class TrainingEvaluationTests(unittest.TestCase):
         self.assertNotIn("city", ACTIVE_CATEGORICAL_FEATURES)
         self.assertNotIn("target_day_of_year_sin", ACTIVE_NUMERIC_FEATURES)
         self.assertNotIn("target_day_of_year_cos", ACTIVE_NUMERIC_FEATURES)
+        self.assertNotIn("city", feature_profile("weather_only").categorical_features)
+        self.assertIn("city", feature_profile("city").categorical_features)
+        self.assertIn("city_checkpoint", feature_profile("city_checkpoint").categorical_features)
+
+    def test_city_residual_profile_records_calibrator(self) -> None:
+        rows = build_feature_rows(_multi_city_dataset())
+        model = train_raycaster_model(
+            rows,
+            min_training_events=1,
+            feature_profile_name="city_residual",
+        )
+        self.assertEqual(model.feature_profile_name, "city_residual")
+        self.assertIsNotNone(model.residual_calibrator)
+        self.assertNotIn("city", model.active_categorical_features or [])
 
     def test_trained_model_records_residual_training_contract(self) -> None:
         rows = build_feature_rows(_dataset())
@@ -132,13 +138,19 @@ class TrainingEvaluationTests(unittest.TestCase):
 
     def test_saved_model_reloads_residual_training_contract(self) -> None:
         rows = build_feature_rows(_dataset())
-        model = train_raycaster_model(rows, min_training_events=1)
+        model = train_raycaster_model(
+            rows,
+            min_training_events=1,
+            feature_profile_name="city_residual",
+        )
         with tempfile.TemporaryDirectory() as tmp:
             save_model(model, Path(tmp), manifest={"data_path": "test"})
             loaded = load_model(Path(tmp))
             self.assertEqual(loaded.target_mode, TARGET_MODE)
             self.assertEqual(loaded.prediction_blend_weight, PREDICTION_BLEND_WEIGHT)
             self.assertEqual(loaded.sample_weighting, SAMPLE_WEIGHTING)
+            self.assertEqual(loaded.feature_profile_name, "city_residual")
+            self.assertIsNotNone(loaded.residual_calibrator)
 
 
 def _dataset() -> BacktestDataset:
@@ -196,6 +208,73 @@ def _dataset() -> BacktestDataset:
         settlements.append(
             Settlement(
                 city="nyc",
+                event_ticker=event_ticker,
+                target_date=target,
+                settled_at_utc=start + timedelta(hours=26),
+                winner_ticker=f"{event_ticker}-WIN",
+                settlement_temperature_f=high,
+                settlement_bracket_index=1,
+            )
+        )
+    return BacktestDataset(events=events, weather=weather, markets=markets, settlements=settlements)
+
+
+def _multi_city_dataset() -> BacktestDataset:
+    base = _dataset()
+    events = list(base.events)
+    weather = list(base.weather)
+    markets = list(base.markets)
+    settlements = list(base.settlements)
+    for offset, high in enumerate((70, 72, 74), start=1):
+        target = date(2026, 7, offset)
+        event_ticker = f"LA-{offset}"
+        snapshot = datetime(2026, 7, offset, 18, tzinfo=UTC)
+        start = datetime(2026, 7, offset, 5, tzinfo=UTC)
+        events.append(
+            EventSnapshot(
+                city="la",
+                event_ticker=event_ticker,
+                target_date=target,
+                snapshot_hour_utc=snapshot,
+                climate_window_start_utc=start,
+                climate_window_end_utc=start + timedelta(hours=24),
+                station_id="KLAX",
+            )
+        )
+        weather.append(
+            WeatherSnapshot(
+                city="la",
+                event_ticker=event_ticker,
+                target_date=target,
+                snapshot_hour_utc=snapshot,
+                nws_anchor_high_f=high + 3,
+                observed_high_so_far_f=high - 2,
+                hrrr_projected_high_f=high + 2,
+                nbm_projected_high_f=high,
+                ensemble_raw_median_high_f=high + 1,
+            )
+        )
+        brackets = [
+            Bracket(f"{event_ticker}-LOW", "Low", None, high - 1, 0),
+            Bracket(f"{event_ticker}-WIN", "Win", high, high, 1),
+            Bracket(f"{event_ticker}-HIGH", "High", high + 1, None, 2),
+        ]
+        markets.extend(
+            MarketSnapshot(
+                city="la",
+                event_ticker=event_ticker,
+                market_ticker=bracket.ticker,
+                target_date=target,
+                snapshot_hour_utc=snapshot,
+                bracket=bracket,
+                yes_bid=0.2,
+                yes_ask=0.4,
+            )
+            for bracket in brackets
+        )
+        settlements.append(
+            Settlement(
+                city="la",
                 event_ticker=event_ticker,
                 target_date=target,
                 settled_at_utc=start + timedelta(hours=26),

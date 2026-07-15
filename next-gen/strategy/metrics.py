@@ -15,12 +15,28 @@ EDGE_BUCKETS = (
     (0.08, 0.12, "0.08-0.12"),
     (0.12, float("inf"), "0.12+"),
 )
+PROBABILITY_BUCKETS = (
+    (0.00, 0.20, "0.00-0.20"),
+    (0.20, 0.35, "0.20-0.35"),
+    (0.35, 0.50, "0.35-0.50"),
+    (0.50, 0.65, "0.50-0.65"),
+    (0.65, 1.01, "0.65-1.00"),
+)
+PRICE_BUCKETS = (
+    (0.00, 0.15, "0.00-0.15"),
+    (0.15, 0.25, "0.15-0.25"),
+    (0.25, 0.35, "0.25-0.35"),
+    (0.35, 0.50, "0.35-0.50"),
+    (0.50, 1.01, "0.50-1.00"),
+)
 
 
 def summary_metrics(trades: list[PaperTrade]) -> dict[str, Any]:
     if not trades:
         return {
             "trades": 0,
+            "total_contracts": 0.0,
+            "total_risk": 0.0,
             "total_pnl": 0.0,
             "roi": 0.0,
             "hit_rate": 0.0,
@@ -32,6 +48,8 @@ def summary_metrics(trades: list[PaperTrade]) -> dict[str, Any]:
     clv_values = [trade.clv for trade in trades if trade.clv is not None]
     return {
         "trades": len(trades),
+        "total_contracts": sum(trade.contracts for trade in trades),
+        "total_risk": risk,
         "total_pnl": sum(trade.pnl for trade in trades),
         "roi": sum(trade.pnl for trade in trades) / max(1e-9, risk),
         "hit_rate": mean(trade.hit for trade in trades),
@@ -85,11 +103,34 @@ def edge_bucket_rows(trades: list[PaperTrade]) -> list[dict[str, Any]]:
     return [_trade_group_row(bucket, bucket_trades) for bucket, bucket_trades in grouped.items()]
 
 
+def probability_bucket_rows(trades: list[PaperTrade]) -> list[dict[str, Any]]:
+    return _bucket_rows(trades, "model_probability", PROBABILITY_BUCKETS)
+
+
+def price_bucket_rows(trades: list[PaperTrade]) -> list[dict[str, Any]]:
+    return _bucket_rows(trades, "entry_price", PRICE_BUCKETS)
+
+
 def edge_bucket(edge: float) -> str:
     for low, high, label in EDGE_BUCKETS:
         if low <= edge < high:
             return label
     return "unknown"
+
+
+def _bucket_rows(
+    trades: list[PaperTrade],
+    field: str,
+    buckets: tuple[tuple[float, float, str], ...],
+) -> list[dict[str, Any]]:
+    grouped: dict[str, list[PaperTrade]] = {label: [] for _, _, label in buckets}
+    for trade in trades:
+        value = float(getattr(trade, field))
+        for low, high, label in buckets:
+            if low <= value < high:
+                grouped[label].append(trade)
+                break
+    return [_trade_group_row(bucket, bucket_trades) for bucket, bucket_trades in grouped.items()]
 
 
 def max_drawdown(trades: list[PaperTrade]) -> float:

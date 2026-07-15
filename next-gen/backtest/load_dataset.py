@@ -93,6 +93,12 @@ def _market(row: dict[str, Any]) -> MarketSnapshot:
         bracket=bracket,
         yes_bid=_optional_float(row.get("yes_bid_dollars")),
         yes_ask=_optional_float(row.get("yes_ask_dollars")),
+        no_bid=_optional_float(row.get("no_bid_dollars")),
+        no_ask=_optional_float(row.get("no_ask_dollars")),
+        yes_bid_size=_optional_float(row.get("yes_bid_size")),
+        yes_ask_size=_optional_float(row.get("yes_ask_size")),
+        no_bid_size=_optional_float(row.get("no_bid_size")),
+        no_ask_size=_optional_float(row.get("no_ask_size")),
         last_price=_optional_float(row.get("last_price_dollars")),
         normalized_market_midpoint_probability=_optional_float(
             row.get("normalized_market_midpoint_probability")

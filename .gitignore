@@ -9,3 +9,4 @@ backtest_data/
 collector_spool/
 collector_spool_*/
 *.log
+next-gen/production/deployable/logs/

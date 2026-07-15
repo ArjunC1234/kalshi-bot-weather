@@ -1,0 +1,81 @@
+{
+  "mode": "marketedge_v2_expanding_walk_forward",
+  "data_path": "data\\export_20260630_20260714_20260714T140338Z",
+  "config": {
+    "min_training_dates": 5,
+    "ridge_alpha": 20.0,
+    "blend_penalty": 0.05,
+    "minimum_ev": 0.03,
+    "max_spread": 0.1,
+    "daily_budget": 40.0,
+    "max_order_cost": 3.0,
+    "max_contracts_per_order": 20,
+    "min_quote_size": 1.0,
+    "required_confirmations": 2,
+    "fee_mode": "taker",
+    "weather_feature_profile": "family_v2"
+  },
+  "independent_city_events": 78,
+  "target_dates": 13,
+  "weather_snapshot_rows": 1741,
+  "market_snapshot_rows": 10446,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 1.546471522742118,
+      "count": 1741
+    },
+    {
+      "metric": "rmse",
+      "value": 2.2329168472041996,
+      "count": 1741
+    },
+    {
+      "metric": "bias",
+      "value": 0.10792387556749908,
+      "count": 1741
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.5074786324786325,
+      "count": 1741
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.7094017094017093,
+      "count": 1741
+    }
+  ],
+  "probability_metrics": {
+    "market": {
+      "count": 1521,
+      "log_loss": 0.6440538015226511,
+      "brier": 0.3965573377841406,
+      "top_one_accuracy": 0.7219575613597353,
+      "winner_probability": 0.6323590648860916
+    },
+    "weather": {
+      "count": 1521,
+      "log_loss": 2.289143023891364,
+      "brier": 0.8090290176245712,
+      "top_one_accuracy": 0.4714104551954953,
+      "winner_probability": 0.327197579104258
+    },
+    "marketedge": {
+      "count": 1521,
+      "log_loss": 0.6444855453223414,
+      "brier": 0.39671508824282653,
+      "top_one_accuracy": 0.7219575613597353,
+      "winner_probability": 0.632018292199064
+    }
+  },
+  "strategy": {
+    "trades": 12,
+    "total_pnl": -1.1400000000000001,
+    "total_fees": 0.34,
+    "roi": -0.09390444810543658,
+    "hit_rate": 0.5833333333333334,
+    "max_drawdown": -2.17,
+    "mean_expected_value": 0.18814826676642188
+  }
+}

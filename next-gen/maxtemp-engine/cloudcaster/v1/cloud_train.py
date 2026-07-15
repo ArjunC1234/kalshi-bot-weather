@@ -9,9 +9,9 @@ from typing import Any
 import pandas as pd
 from cloud_features import (
     CATEGORICAL_FEATURES,
-    FEATURE_COLUMNS,
     NUMERIC_FEATURES,
     CloudcasterRow,
+    cloud_feature_columns,
     feature_dicts,
     labeled_rows,
 )
@@ -36,12 +36,16 @@ class CloudcasterModel:
     min_training_rows: int
     training_rows: int
     feature_columns: list[str]
+    feature_profile_name: str = "legacy"
 
 
 def train_cloudcaster_model(
     rows: list[CloudcasterRow],
     min_training_rows: int = DEFAULT_MIN_TRAINING_ROWS,
+    feature_profile_name: str = "legacy",
 ) -> CloudcasterModel:
+    feature_columns = cloud_feature_columns(feature_profile_name)
+    numeric_features = [column for column in feature_columns if column not in CATEGORICAL_FEATURES]
     training_rows = labeled_rows(rows)
     targets = [int(row.target) for row in training_rows if row.target is not None]
     if len(training_rows) < min_training_rows or len(set(targets)) < 2:
@@ -50,18 +54,20 @@ def train_cloudcaster_model(
             classifier=None,
             min_training_rows=min_training_rows,
             training_rows=len(training_rows),
-            feature_columns=FEATURE_COLUMNS,
+            feature_columns=feature_columns,
+            feature_profile_name=feature_profile_name,
         )
-    x = pd.DataFrame(feature_dicts(training_rows), columns=FEATURE_COLUMNS)
+    x = pd.DataFrame(feature_dicts(training_rows, feature_columns), columns=feature_columns)
     y = targets
-    model = _pipeline()
+    model = _pipeline(numeric_features)
     model.fit(x, y, model__sample_weight=_sample_weights(training_rows))
     return CloudcasterModel(
         mode="trained_hist_gradient_boosting_classifier",
         classifier=model,
         min_training_rows=min_training_rows,
         training_rows=len(training_rows),
-        feature_columns=FEATURE_COLUMNS,
+        feature_columns=feature_columns,
+        feature_profile_name=feature_profile_name,
     )
 
 
@@ -108,23 +114,20 @@ def predict_distributions(
 
 def _apply_temperature(scores: dict[str, float], temperature: float) -> dict[str, float]:
     power = 1.0 / max(float(temperature), 1e-6)
-    return {
-        ticker: max(float(score), 1e-12) ** power
-        for ticker, score in scores.items()
-    }
+    return {ticker: max(float(score), 1e-12) ** power for ticker, score in scores.items()}
 
 
 def _positive_scores(model: CloudcasterModel, rows: list[CloudcasterRow]) -> list[float]:
     if model.classifier is None:
         return [1.0 for _ in rows]
-    x = pd.DataFrame(feature_dicts(rows), columns=FEATURE_COLUMNS)
+    x = pd.DataFrame(feature_dicts(rows, model.feature_columns), columns=model.feature_columns)
     probabilities = model.classifier.predict_proba(x)
     classes = list(model.classifier.named_steps["model"].classes_)
     positive_index = classes.index(1)
     return [max(1e-9, float(row[positive_index])) for row in probabilities]
 
 
-def _pipeline() -> Pipeline:
+def _pipeline(numeric_features: list[str] = NUMERIC_FEATURES) -> Pipeline:
     preprocessor = ColumnTransformer(
         transformers=[
             (
@@ -135,7 +138,7 @@ def _pipeline() -> Pipeline:
                         ("scaler", StandardScaler()),
                     ]
                 ),
-                NUMERIC_FEATURES,
+                numeric_features,
             ),
             (
                 "categorical",
@@ -183,5 +186,6 @@ def model_manifest(model: CloudcasterModel) -> dict[str, Any]:
         "min_training_rows": model.min_training_rows,
         "training_rows": model.training_rows,
         "feature_columns": model.feature_columns,
+        "feature_profile": model.feature_profile_name,
         "objective": "binary bracket winner classification with per-snapshot normalization",
     }

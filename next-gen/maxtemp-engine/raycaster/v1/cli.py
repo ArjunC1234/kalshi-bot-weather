@@ -20,7 +20,7 @@ from baselines import DEFAULT_ESTIMATORS
 from benchmark import benchmark_expanding_window
 from dataset import load_local_dataset
 from evaluate import evaluate_expanding_window, evaluate_fixed_model, evaluate_rolling_window
-from features import MODEL_NAME, build_feature_rows
+from features import FEATURE_PROFILES, MODEL_NAME, build_feature_rows
 from predict import predict_dataset
 from train import DEFAULT_MIN_TRAINING_EVENTS, load_model, save_model, train_raycaster_model
 
@@ -56,6 +56,7 @@ def _add_train(subparsers) -> None:
     parser.add_argument("--data", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--min-training-events", type=int, default=DEFAULT_MIN_TRAINING_EVENTS)
+    parser.add_argument("--feature-profile", choices=FEATURE_PROFILES, default="weather_only")
 
 
 def _add_predict(subparsers) -> None:
@@ -73,6 +74,7 @@ def _add_evaluate(subparsers) -> None:
     parser.add_argument("--model")
     parser.add_argument("--min-training-events", type=int, default=DEFAULT_MIN_TRAINING_EVENTS)
     parser.add_argument("--probability-floor", type=float, default=0.001)
+    parser.add_argument("--feature-profile", choices=FEATURE_PROFILES, default="weather_only")
 
 
 def _add_rolling_eval(subparsers) -> None:
@@ -86,6 +88,7 @@ def _add_rolling_eval(subparsers) -> None:
     parser.add_argument("--test-days", type=int, default=1)
     parser.add_argument("--min-training-events", type=int, default=DEFAULT_MIN_TRAINING_EVENTS)
     parser.add_argument("--probability-floor", type=float, default=0.001)
+    parser.add_argument("--feature-profile", choices=FEATURE_PROFILES, default="weather_only")
 
 
 def _add_benchmark(subparsers) -> None:
@@ -113,13 +116,18 @@ def _add_report(subparsers) -> None:
 def _train(args) -> int:
     dataset = load_local_dataset(args.data)
     rows = build_feature_rows(dataset)
-    model = train_raycaster_model(rows, min_training_events=args.min_training_events)
+    model = train_raycaster_model(
+        rows,
+        min_training_events=args.min_training_events,
+        feature_profile_name=args.feature_profile,
+    )
     save_model(
         model,
         args.output,
         manifest={
             "data_path": str(args.data),
             "feature_row_count": len(rows),
+            "feature_profile": args.feature_profile,
         },
     )
     write_training_rows(rows, args.output)
@@ -167,6 +175,7 @@ def _evaluate(args) -> int:
             min_training_events=args.min_training_events,
             probability_floor=args.probability_floor,
             source_export_id=source_export_id,
+            feature_profile_name=args.feature_profile,
         )
     print(
         f"evaluated {MODEL_NAME}: mode={summary['mode']} "
@@ -186,6 +195,7 @@ def _rolling_eval(args) -> int:
         min_training_events=args.min_training_events,
         probability_floor=args.probability_floor,
         source_export_id=Path(args.data).name,
+        feature_profile_name=args.feature_profile,
     )
     print(
         f"evaluated {MODEL_NAME}: mode={summary['mode']} "
@@ -240,10 +250,7 @@ def _write_prediction_csv(path: Path, predictions) -> None:
             "expected_high_f": prediction.expected_high_f,
         }
         row.update(
-            {
-                f"q{int(level * 100):02d}": value
-                for level, value in prediction.quantiles.items()
-            }
+            {f"q{int(level * 100):02d}": value for level, value in prediction.quantiles.items()}
         )
         rows.append(row)
     _write_rows(path, rows)

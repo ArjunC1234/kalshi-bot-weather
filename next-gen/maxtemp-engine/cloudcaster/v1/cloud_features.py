@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any
 
-from features import FeatureRow, source_blend_prediction
+from features import FeatureRow, family_blend_prediction, source_blend_prediction
 
 from libs.models import Bracket, MarketSnapshot
 
@@ -37,6 +37,26 @@ NUMERIC_FEATURES = [
 ]
 CATEGORICAL_FEATURES = ["city", "checkpoint", "is_open_low", "is_open_high"]
 FEATURE_COLUMNS = NUMERIC_FEATURES + CATEGORICAL_FEATURES
+FAMILY_NUMERIC_FEATURES = NUMERIC_FEATURES + [
+    "family_blend_expected_high_f",
+    "source_minus_family_blend_f",
+    "family_nws_minus_nbm_f",
+    "family_hrrr_minus_nbm_f",
+    "family_ensemble_minus_nbm_f",
+    "family_numerical_disagreement_f",
+    "family_disagreement_range_f",
+    "family_forecast_count",
+]
+CLOUD_FEATURE_PROFILES = ("legacy", "family_v2")
+
+
+def cloud_feature_columns(profile_name: str = "legacy") -> list[str]:
+    normalized = profile_name.strip().lower().replace("-", "_")
+    if normalized == "legacy":
+        return list(FEATURE_COLUMNS)
+    if normalized == "family_v2":
+        return list(FAMILY_NUMERIC_FEATURES) + list(CATEGORICAL_FEATURES)
+    raise ValueError(f"unknown Cloudcaster feature profile: {profile_name}")
 
 
 @dataclass(frozen=True)
@@ -102,8 +122,11 @@ def build_cloudcaster_rows(
     return output
 
 
-def feature_dicts(rows: list[CloudcasterRow]) -> list[dict[str, float | str | None]]:
-    return [{column: row.features.get(column) for column in FEATURE_COLUMNS} for row in rows]
+def feature_dicts(
+    rows: list[CloudcasterRow], feature_columns: list[str] | None = None
+) -> list[dict[str, float | str | None]]:
+    columns = feature_columns or FEATURE_COLUMNS
+    return [{column: row.features.get(column) for column in columns} for row in rows]
 
 
 def labeled_rows(rows: list[CloudcasterRow]) -> list[CloudcasterRow]:
@@ -123,6 +146,7 @@ def _features_for_market(
 ) -> dict[str, float | str | None]:
     bracket = market.bracket
     source_expected = source_blend_prediction(row)
+    family_expected = family_blend_prediction(row)
     observed = _finite_float(row.features.get("observed_high_so_far_f"))
     lower = _filled_lower(bracket, raycaster_expected)
     upper = _filled_upper(bracket, raycaster_expected)
@@ -135,12 +159,26 @@ def _features_for_market(
         "is_open_high": str(bracket.upper_f is None),
         "raycaster_expected_high_f": raycaster_expected,
         "source_blend_expected_high_f": source_expected,
+        "family_blend_expected_high_f": family_expected,
+        "source_minus_family_blend_f": source_expected - family_expected,
         "raycaster_minus_source_blend": raycaster_expected - source_expected,
         "raycaster_iqr_f": _quantile_width(raycaster_quantiles, 0.25, 0.75),
         "raycaster_p80_width_f": _quantile_width(raycaster_quantiles, 0.10, 0.90),
         "raycaster_p90_width_f": _quantile_width(raycaster_quantiles, 0.05, 0.95),
         "source_std_f": _finite_float(row.features.get("source_std_f")),
         "source_range_f": _finite_float(row.features.get("source_range_f")),
+        "family_nws_minus_nbm_f": _finite_float(row.features.get("family_nws_minus_nbm_f")),
+        "family_hrrr_minus_nbm_f": _finite_float(row.features.get("family_hrrr_minus_nbm_f")),
+        "family_ensemble_minus_nbm_f": _finite_float(
+            row.features.get("family_ensemble_minus_nbm_f")
+        ),
+        "family_numerical_disagreement_f": _finite_float(
+            row.features.get("family_numerical_disagreement_f")
+        ),
+        "family_disagreement_range_f": _finite_float(
+            row.features.get("family_disagreement_range_f")
+        ),
+        "family_forecast_count": _finite_float(row.features.get("family_forecast_count")),
         "observed_high_so_far_f": observed,
         "hours_elapsed": _finite_float(row.features.get("hours_elapsed")),
         "hours_remaining": _finite_float(row.features.get("hours_remaining")),

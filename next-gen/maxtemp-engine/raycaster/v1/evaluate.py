@@ -40,6 +40,7 @@ def evaluate_expanding_window(
     min_training_events: int = DEFAULT_MIN_TRAINING_EVENTS,
     probability_floor: float = 0.001,
     source_export_id: str | None = None,
+    feature_profile_name: str = "weather_only",
 ) -> dict[str, Any]:
     rows = build_feature_rows(dataset)
     grouped_markets = markets_by_snapshot(dataset)
@@ -49,7 +50,11 @@ def evaluate_expanding_window(
     for target_date in sorted({row.target_date for row in rows}):
         train_rows = [row for row in rows if row.target_date < target_date]
         test_rows = [row for row in rows if row.target_date == target_date]
-        model = train_raycaster_model(train_rows, min_training_events=min_training_events)
+        model = train_raycaster_model(
+            train_rows,
+            min_training_events=min_training_events,
+            feature_profile_name=feature_profile_name,
+        )
         batch_predictions, batch_distributions = _predict_rows(
             test_rows,
             model,
@@ -66,6 +71,7 @@ def evaluate_expanding_window(
                 "snapshot_hour_utc": row.snapshot_hour_utc.isoformat(),
                 "mode": model.mode,
                 "training_rows": model.training_rows,
+                "feature_profile": model.feature_profile_name,
             }
             for row in test_rows
         )
@@ -88,6 +94,7 @@ def evaluate_rolling_window(
     min_training_events: int = DEFAULT_MIN_TRAINING_EVENTS,
     probability_floor: float = 0.001,
     source_export_id: str | None = None,
+    feature_profile_name: str = "weather_only",
 ) -> dict[str, Any]:
     if train_days < 1:
         raise ValueError("train_days must be at least 1")
@@ -107,7 +114,11 @@ def evaluate_rolling_window(
         test_set = set(test_dates)
         train_rows = [row for row in rows if row.target_date in train_set]
         test_rows = [row for row in rows if row.target_date in test_set]
-        model = train_raycaster_model(train_rows, min_training_events=min_training_events)
+        model = train_raycaster_model(
+            train_rows,
+            min_training_events=min_training_events,
+            feature_profile_name=feature_profile_name,
+        )
         batch_predictions, batch_distributions = _predict_rows(
             test_rows,
             model,
@@ -124,6 +135,7 @@ def evaluate_rolling_window(
                 "snapshot_hour_utc": row.snapshot_hour_utc.isoformat(),
                 "mode": model.mode,
                 "training_rows": model.training_rows,
+                "feature_profile": model.feature_profile_name,
                 "train_days": train_days,
                 "test_days": test_days,
                 "train_start_date": train_dates[0].isoformat() if train_dates else "",
@@ -342,6 +354,11 @@ def _bracket_score_rows(
             ).index
         top = top_ticker(distribution.probabilities)
         top_index = next((bracket.index for bracket in brackets if bracket.ticker == top), None)
+        winner_bracket = next(
+            (bracket for bracket in brackets if bracket.ticker == settlement.winner_ticker),
+            None,
+        )
+        top_bracket = next((bracket for bracket in brackets if bracket.ticker == top), None)
         event = events.get(distribution.event_ticker)
         target_date = event.target_date.isoformat() if event else ""
         rows.append(
@@ -355,8 +372,10 @@ def _bracket_score_rows(
                 "event_ticker": distribution.event_ticker,
                 "snapshot_hour_utc": distribution.snapshot_hour_utc.isoformat(),
                 "winner_ticker": settlement.winner_ticker,
+                "winner_bracket_type": _bracket_type(winner_bracket),
                 "winner_probability": distribution.probabilities[settlement.winner_ticker],
                 "top_ticker": top,
+                "top_bracket_type": _bracket_type(top_bracket),
                 "top_probability": distribution.probabilities[top],
                 "top_one_accuracy": top_one_accuracy(
                     distribution.probabilities,
@@ -601,6 +620,16 @@ def _observed(row: FeatureRow) -> float | None:
 
 def _city_day(city: str, target_date: str) -> str:
     return f"{city}:{target_date}" if target_date else city
+
+
+def _bracket_type(bracket) -> str:
+    if bracket is None:
+        return "unknown"
+    if bracket.lower_f is None:
+        return "lower_tail"
+    if bracket.upper_f is None:
+        return "upper_tail"
+    return "bounded"
 
 
 def _checkpoint(item, event) -> str:

@@ -16,8 +16,10 @@ for path in (CURRENT_DIR, RAYCASTER_DIR, NEXT_GEN_DIR):
         sys.path.insert(0, str(path))
 
 from cloud_evaluate import evaluate_expanding_window
+from cloud_features import CLOUD_FEATURE_PROFILES
 from cloud_train import DEFAULT_MIN_TRAINING_ROWS
 from dataset import load_local_dataset
+from features import FEATURE_PROFILES
 from train import DEFAULT_MIN_TRAINING_EVENTS
 
 
@@ -41,6 +43,16 @@ def main(argv: list[str] | None = None) -> int:
         default=DEFAULT_MIN_TRAINING_ROWS,
     )
     evaluate.add_argument("--probability-floor", type=float, default=0.001)
+    evaluate.add_argument(
+        "--raycaster-feature-profile",
+        choices=FEATURE_PROFILES,
+        default="city_residual",
+    )
+    evaluate.add_argument(
+        "--cloudcaster-feature-profile",
+        choices=CLOUD_FEATURE_PROFILES,
+        default="legacy",
+    )
     args = parser.parse_args(argv)
     if args.command == "evaluate":
         return _evaluate(args)
@@ -57,6 +69,8 @@ def _evaluate(args) -> int:
         min_cloudcaster_training_rows=args.min_cloudcaster_training_rows,
         probability_floor=args.probability_floor,
         source_export_id=Path(args.data).name,
+        raycaster_feature_profile=args.raycaster_feature_profile,
+        cloudcaster_feature_profile=args.cloudcaster_feature_profile,
     )
     print(
         f"evaluated cloudcaster_v1: mode={summary['mode']} "

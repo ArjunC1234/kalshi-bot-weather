@@ -1,0 +1,14 @@
+conformal_scale_f,market_residual_weight,probability_training_dates,target_date,warning,weather_mode,weather_training_dates,weather_training_events
+2.0,0.0,0,2026-07-01,,family_v2_blend_fallback,0,0
+0.75,0.0,1,2026-07-02,,family_v2_blend_fallback,1,6
+1.2160000000000055,0.0,0,2026-07-03,no_market_rows_for_labeled_target_date,family_v2_blend_fallback,2,12
+1.2999999999999972,0.0,2,2026-07-04,,family_v2_blend_fallback,3,18
+1.5999999999999943,0.0,3,2026-07-05,,family_v2_blend_fallback,4,24
+2.389322705731068,0.0,4,2026-07-06,,regularized_weather_residual,5,30
+2.1879508249857955,0.0,5,2026-07-07,,regularized_weather_residual,6,36
+2.2075155418006447,0.0,6,2026-07-08,,regularized_weather_residual,7,42
+2.031538341854798,0.0,7,2026-07-09,,regularized_weather_residual,8,48
+1.986247573403272,0.0,8,2026-07-10,,regularized_weather_residual,9,54
+1.9126021738100796,0.0,9,2026-07-11,,regularized_weather_residual,10,60
+1.789098569305774,0.05,10,2026-07-12,,regularized_weather_residual,11,66
+1.7057292293838104,0.05,11,2026-07-13,,regularized_weather_residual,12,72

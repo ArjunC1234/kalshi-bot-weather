@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 
-from strategy.signals import Signal, StrategyConfig
+from strategy.signals import Signal
 
 
 @dataclass(frozen=True)
@@ -43,9 +43,15 @@ class PaperTrade:
     closing_mid: float | None
     clv: float | None
     checkpoint: str
+    side: str = "yes"
+    bracket_type: str = "unknown"
 
 
-def order_from_signal(signal: Signal, config: StrategyConfig, sequence: int) -> PaperOrder:
+def order_from_signal(
+    signal: Signal,
+    contracts: float,
+    sequence: int,
+) -> PaperOrder:
     if signal.yes_ask is None or signal.buy_edge is None:
         raise ValueError("buy order requires ask and buy edge")
     return PaperOrder(
@@ -59,5 +65,5 @@ def order_from_signal(signal: Signal, config: StrategyConfig, sequence: int) -> 
         model_probability=signal.model_probability,
         entry_price=float(signal.yes_ask),
         edge=float(signal.buy_edge),
-        contracts=config.stake,
+        contracts=contracts,
     )

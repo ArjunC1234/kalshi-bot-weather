@@ -1,0 +1,5 @@
+allowed,avg_clv,bracket_type,checkpoint,city,hit_rate,pnl,positive_clv_rate,roi,side,trades
+False,-0.265,unknown,utc_19,aus,0.0,-0.27,0.0,-1.0,yes,1
+True,0.665,unknown,utc_09,den,1.0,1.25558,1.0,2.03030303030303,yes,1
+False,-0.325,unknown,utc_10,la,0.0,-1.749,0.0,-1.0,yes,1
+True,0.685,unknown,utc_14,la,1.0,0.702075,1.0,2.225806451612903,yes,1

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import math
 from collections import Counter
 from dataclasses import dataclass
-import math
 from pathlib import Path
 from typing import Any
 
@@ -15,12 +15,16 @@ from features import (
     ACTIVE_FEATURE_COLUMNS,
     ACTIVE_NUMERIC_FEATURES,
     CATEGORICAL_FEATURES,
+    DEFAULT_FEATURE_PROFILE,
     FEATURE_COLUMNS,
     NUMERIC_FEATURES,
+    RESIDUAL_FEATURE_PROFILE,
+    FeatureProfile,
     FeatureRow,
+    baseline_prediction,
     feature_dicts,
+    feature_profile,
     rows_with_temperature,
-    source_blend_prediction,
 )
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import HistGradientBoostingRegressor
@@ -46,6 +50,34 @@ THIN_HISTORY_EVENTS = 180
 
 
 @dataclass
+class ResidualOffset:
+    offset_f: float
+    count: int
+
+
+@dataclass
+class CityResidualCalibrator:
+    alpha: float = 12.0
+    global_offset_f: float = 0.0
+    city_checkpoint_offsets: dict[tuple[str, str], ResidualOffset] | None = None
+    city_offsets: dict[str, ResidualOffset] | None = None
+    checkpoint_offsets: dict[str, ResidualOffset] | None = None
+
+    def correction(self, row: FeatureRow) -> float:
+        checkpoint = str(row.features.get("checkpoint") or "")
+        city_checkpoint = (row.city, checkpoint)
+        for store, key in (
+            (self.city_checkpoint_offsets or {}, city_checkpoint),
+            (self.city_offsets or {}, row.city),
+            (self.checkpoint_offsets or {}, checkpoint),
+        ):
+            offset = store.get(key)
+            if offset is not None:
+                return offset.offset_f
+        return self.global_offset_f
+
+
+@dataclass
 class RaycasterModel:
     mode: str
     point_model: Pipeline | None
@@ -56,12 +88,18 @@ class RaycasterModel:
     prediction_blend_weight: float = PREDICTION_BLEND_WEIGHT
     sample_weighting: str = SAMPLE_WEIGHTING
     tree_regularization: dict[str, Any] | None = None
+    feature_profile_name: str = DEFAULT_FEATURE_PROFILE
+    active_numeric_features: list[str] | None = None
+    active_categorical_features: list[str] | None = None
+    residual_calibrator: CityResidualCalibrator | None = None
 
 
 def train_raycaster_model(
     rows: list[FeatureRow],
     min_training_events: int = DEFAULT_MIN_TRAINING_EVENTS,
+    feature_profile_name: str = DEFAULT_FEATURE_PROFILE,
 ) -> RaycasterModel:
+    profile = feature_profile(feature_profile_name)
     training_rows = rows_with_temperature(rows)
     if len(training_rows) < min_training_events:
         return RaycasterModel(
@@ -70,17 +108,39 @@ def train_raycaster_model(
             quantile_models={},
             min_training_events=min_training_events,
             training_rows=len(training_rows),
+            feature_profile_name=profile.name,
+            active_numeric_features=profile.numeric_features,
+            active_categorical_features=profile.categorical_features,
         )
-    x = pd.DataFrame(feature_dicts(training_rows), columns=FEATURE_COLUMNS)[ACTIVE_FEATURE_COLUMNS]
-    y = [_residual_target(row) for row in training_rows]
+    x = pd.DataFrame(feature_dicts(training_rows), columns=FEATURE_COLUMNS)[profile.feature_columns]
+    y = [_residual_target(row, profile.name) for row in training_rows]
     weights = _equal_target_date_weights(training_rows)
-    point_model = _pipeline(_regressor(loss="squared_error"))
+    point_model = _pipeline(_regressor(loss="squared_error"), profile)
     point_model.fit(x, y, model__sample_weight=weights)
     quantile_models: dict[float, Pipeline] = {}
     for level in QUANTILE_LEVELS:
-        model = _pipeline(_regressor(loss="quantile", quantile=level))
+        model = _pipeline(_regressor(loss="quantile", quantile=level), profile)
         model.fit(x, y, model__sample_weight=weights)
         quantile_models[level] = model
+    base_model = RaycasterModel(
+        mode="trained_hist_gradient_boosting",
+        point_model=point_model,
+        quantile_models=quantile_models,
+        min_training_events=min_training_events,
+        training_rows=len(training_rows),
+        target_mode=TARGET_MODE,
+        prediction_blend_weight=PREDICTION_BLEND_WEIGHT,
+        sample_weighting=SAMPLE_WEIGHTING,
+        tree_regularization=TREE_REGULARIZATION,
+        feature_profile_name=profile.name,
+        active_numeric_features=profile.numeric_features,
+        active_categorical_features=profile.categorical_features,
+    )
+    calibrator = (
+        _fit_city_residual_calibrator(training_rows, base_model)
+        if profile.name == RESIDUAL_FEATURE_PROFILE
+        else None
+    )
     return RaycasterModel(
         mode="trained_hist_gradient_boosting",
         point_model=point_model,
@@ -91,31 +151,41 @@ def train_raycaster_model(
         prediction_blend_weight=PREDICTION_BLEND_WEIGHT,
         sample_weighting=SAMPLE_WEIGHTING,
         tree_regularization=TREE_REGULARIZATION,
+        feature_profile_name=profile.name,
+        active_numeric_features=profile.numeric_features,
+        active_categorical_features=profile.categorical_features,
+        residual_calibrator=calibrator,
     )
 
 
 def predict_expected_high(model: RaycasterModel, rows: list[FeatureRow]) -> list[float]:
     if model.point_model is None:
-        return [source_blend_prediction(row) for row in rows]
+        return [baseline_prediction(row, model.feature_profile_name) for row in rows]
     x = pd.DataFrame(feature_dicts(rows), columns=FEATURE_COLUMNS)
-    x = x[ACTIVE_FEATURE_COLUMNS]
+    x = x[_model_feature_columns(model)]
     values = [float(value) for value in model.point_model.predict(x)]
     if model.target_mode == TARGET_MODE:
-        return [
+        predictions = [
             _respect_observed_floor(
-                _blend_with_source(source_blend_prediction(row), residual, model),
+                _blend_with_source(
+                    baseline_prediction(row, model.feature_profile_name), residual, model
+                ),
                 row,
             )
             for residual, row in zip(values, rows, strict=True)
         ]
-    return [_respect_observed_floor(value, row) for value, row in zip(values, rows, strict=True)]
+    else:
+        predictions = [
+            _respect_observed_floor(value, row) for value, row in zip(values, rows, strict=True)
+        ]
+    return _apply_city_residual_corrections(model, rows, predictions)
 
 
 def predict_quantiles(model: RaycasterModel, rows: list[FeatureRow]) -> list[dict[float, float]]:
     expected = predict_expected_high(model, rows)
     if not model.quantile_models:
         return [_fallback_quantiles(value, row) for value, row in zip(expected, rows, strict=True)]
-    x = pd.DataFrame(feature_dicts(rows), columns=FEATURE_COLUMNS)[ACTIVE_FEATURE_COLUMNS]
+    x = pd.DataFrame(feature_dicts(rows), columns=FEATURE_COLUMNS)[_model_feature_columns(model)]
     per_level = {
         level: [float(value) for value in quantile_model.predict(x)]
         for level, quantile_model in model.quantile_models.items()
@@ -123,7 +193,7 @@ def predict_quantiles(model: RaycasterModel, rows: list[FeatureRow]) -> list[dic
     output: list[dict[float, float]] = []
     for index, row in enumerate(rows):
         if model.target_mode == TARGET_MODE:
-            source_prediction = source_blend_prediction(row)
+            source_prediction = baseline_prediction(row, model.feature_profile_name)
             quantiles = {
                 level: _blend_with_source(source_prediction, values[index], model)
                 for level, values in per_level.items()
@@ -158,6 +228,10 @@ def save_model(model: RaycasterModel, output_dir: str | Path, manifest: dict[str
                 "active_numeric_features": ACTIVE_NUMERIC_FEATURES,
                 "active_categorical_features": ACTIVE_CATEGORICAL_FEATURES,
                 "active_feature_columns": ACTIVE_FEATURE_COLUMNS,
+                "feature_profile": model.feature_profile_name,
+                "profile_numeric_features": _model_numeric_features(model),
+                "profile_categorical_features": _model_categorical_features(model),
+                "profile_feature_columns": _model_feature_columns(model),
             },
             indent=2,
         ),
@@ -175,9 +249,7 @@ def load_model(model_dir: str | Path) -> RaycasterModel:
 
     manifest_path = model_path / "model_manifest.json"
     manifest = (
-        json.loads(manifest_path.read_text(encoding="utf-8"))
-        if manifest_path.exists()
-        else {}
+        json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
     )
     point_path = model_path / "point_model.joblib"
     quantile_path = model_path / "quantile_models.joblib"
@@ -198,6 +270,20 @@ def load_model(model_dir: str | Path) -> RaycasterModel:
         ),
         sample_weighting=str(manifest.get("sample_weighting") or SAMPLE_WEIGHTING),
         tree_regularization=dict(manifest.get("tree_regularization") or TREE_REGULARIZATION),
+        feature_profile_name=str(manifest.get("feature_profile") or DEFAULT_FEATURE_PROFILE),
+        active_numeric_features=list(
+            manifest.get("profile_numeric_features")
+            or feature_profile(
+                str(manifest.get("feature_profile") or DEFAULT_FEATURE_PROFILE)
+            ).numeric_features
+        ),
+        active_categorical_features=list(
+            manifest.get("profile_categorical_features")
+            or feature_profile(
+                str(manifest.get("feature_profile") or DEFAULT_FEATURE_PROFILE)
+            ).categorical_features
+        ),
+        residual_calibrator=_load_residual_calibrator(manifest.get("residual_calibrator")),
     )
 
 
@@ -208,7 +294,7 @@ def _regressor(loss: str, quantile: float | None = None) -> HistGradientBoosting
     return HistGradientBoostingRegressor(**kwargs)
 
 
-def _pipeline(regressor: HistGradientBoostingRegressor) -> Pipeline:
+def _pipeline(regressor: HistGradientBoostingRegressor, profile: FeatureProfile) -> Pipeline:
     preprocessor = ColumnTransformer(
         transformers=[
             (
@@ -219,7 +305,7 @@ def _pipeline(regressor: HistGradientBoostingRegressor) -> Pipeline:
                         ("scaler", StandardScaler()),
                     ]
                 ),
-                ACTIVE_NUMERIC_FEATURES,
+                profile.numeric_features,
             ),
             (
                 "categorical",
@@ -229,7 +315,7 @@ def _pipeline(regressor: HistGradientBoostingRegressor) -> Pipeline:
                         ("encoder", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
                     ]
                 ),
-                ACTIVE_CATEGORICAL_FEATURES,
+                profile.categorical_features,
             ),
         ],
         remainder="drop",
@@ -237,10 +323,10 @@ def _pipeline(regressor: HistGradientBoostingRegressor) -> Pipeline:
     return Pipeline(steps=[("preprocessor", preprocessor), ("model", regressor)])
 
 
-def _residual_target(row: FeatureRow) -> float:
+def _residual_target(row: FeatureRow, feature_profile_name: str = DEFAULT_FEATURE_PROFILE) -> float:
     if row.settlement_temperature_f is None:
         raise ValueError("residual target requires a final temperature")
-    return float(row.settlement_temperature_f) - source_blend_prediction(row)
+    return float(row.settlement_temperature_f) - baseline_prediction(row, feature_profile_name)
 
 
 def _equal_target_date_weights(rows: list[FeatureRow]) -> list[float]:
@@ -265,6 +351,96 @@ def _fallback_quantiles(expected_high_f: float, row: FeatureRow) -> dict[float, 
         0.95: expected_high_f + 2.25 * spread,
     }
     return _calibrated_quantiles(expected_high_f, row, quantiles, training_rows=0)
+
+
+def _model_numeric_features(model: RaycasterModel) -> list[str]:
+    profile = feature_profile(model.feature_profile_name)
+    return list(model.active_numeric_features or profile.numeric_features)
+
+
+def _model_categorical_features(model: RaycasterModel) -> list[str]:
+    return list(
+        model.active_categorical_features
+        or feature_profile(model.feature_profile_name).categorical_features
+    )
+
+
+def _model_feature_columns(model: RaycasterModel) -> list[str]:
+    return _model_numeric_features(model) + _model_categorical_features(model)
+
+
+def _apply_city_residual_corrections(
+    model: RaycasterModel,
+    rows: list[FeatureRow],
+    predictions: list[float],
+) -> list[float]:
+    if model.residual_calibrator is None:
+        return predictions
+    return [
+        _respect_observed_floor(prediction + model.residual_calibrator.correction(row), row)
+        for row, prediction in zip(rows, predictions, strict=True)
+    ]
+
+
+def _fit_city_residual_calibrator(
+    rows: list[FeatureRow],
+    model: RaycasterModel,
+    alpha: float = 12.0,
+) -> CityResidualCalibrator:
+    predictions = predict_expected_high(model, rows)
+    residual_rows = [
+        (row, float(row.settlement_temperature_f) - prediction)
+        for row, prediction in zip(rows, predictions, strict=True)
+        if row.settlement_temperature_f is not None
+    ]
+    global_offset = (
+        sum(residual for _, residual in residual_rows) / len(residual_rows)
+        if residual_rows
+        else 0.0
+    )
+    return CityResidualCalibrator(
+        alpha=alpha,
+        global_offset_f=_shrunk_mean([residual for _, residual in residual_rows], alpha),
+        city_checkpoint_offsets=_offsets(
+            residual_rows,
+            lambda row: (row.city, str(row.features.get("checkpoint") or "")),
+            alpha,
+            global_offset,
+        ),
+        city_offsets=_offsets(residual_rows, lambda row: row.city, alpha, global_offset),
+        checkpoint_offsets=_offsets(
+            residual_rows,
+            lambda row: str(row.features.get("checkpoint") or ""),
+            alpha,
+            global_offset,
+        ),
+    )
+
+
+def _offsets(
+    residual_rows: list[tuple[FeatureRow, float]],
+    key_func,
+    alpha: float,
+    global_offset: float,
+) -> dict[Any, ResidualOffset]:
+    grouped: dict[Any, list[float]] = {}
+    for row, residual in residual_rows:
+        grouped.setdefault(key_func(row), []).append(residual)
+    return {
+        key: ResidualOffset(
+            offset_f=_shrunk_mean(values, alpha, global_offset),
+            count=len(values),
+        )
+        for key, values in grouped.items()
+        if values
+    }
+
+
+def _shrunk_mean(values: list[float], alpha: float, prior: float = 0.0) -> float:
+    if not values:
+        return prior
+    weight = len(values) / (len(values) + alpha)
+    return prior + weight * ((sum(values) / len(values)) - prior)
 
 
 def _calibrated_quantiles(
@@ -344,4 +520,68 @@ def _model_manifest(model: RaycasterModel) -> dict[str, Any]:
         "sample_weighting": model.sample_weighting,
         "tree_regularization": model.tree_regularization or TREE_REGULARIZATION,
         "minimum_uncertainty_f": MIN_UNCERTAINTY_F,
+        "feature_profile": model.feature_profile_name,
+        "profile_numeric_features": _model_numeric_features(model),
+        "profile_categorical_features": _model_categorical_features(model),
+        "residual_calibrator": _residual_calibrator_manifest(model.residual_calibrator),
     }
+
+
+def _residual_calibrator_manifest(
+    calibrator: CityResidualCalibrator | None,
+) -> dict[str, Any] | None:
+    if calibrator is None:
+        return None
+    return {
+        "alpha": calibrator.alpha,
+        "global_offset_f": calibrator.global_offset_f,
+        "city_checkpoint_offsets": [
+            {
+                "city": city,
+                "checkpoint": checkpoint,
+                "offset_f": offset.offset_f,
+                "count": offset.count,
+            }
+            for (city, checkpoint), offset in sorted(
+                (calibrator.city_checkpoint_offsets or {}).items()
+            )
+        ],
+        "city_offsets": [
+            {"city": city, "offset_f": offset.offset_f, "count": offset.count}
+            for city, offset in sorted((calibrator.city_offsets or {}).items())
+        ],
+        "checkpoint_offsets": [
+            {"checkpoint": checkpoint, "offset_f": offset.offset_f, "count": offset.count}
+            for checkpoint, offset in sorted((calibrator.checkpoint_offsets or {}).items())
+        ],
+    }
+
+
+def _load_residual_calibrator(payload: Any) -> CityResidualCalibrator | None:
+    if not isinstance(payload, dict):
+        return None
+    return CityResidualCalibrator(
+        alpha=float(payload.get("alpha") or 12.0),
+        global_offset_f=float(payload.get("global_offset_f") or 0.0),
+        city_checkpoint_offsets={
+            (str(row["city"]), str(row["checkpoint"])): ResidualOffset(
+                offset_f=float(row["offset_f"]),
+                count=int(row["count"]),
+            )
+            for row in payload.get("city_checkpoint_offsets", [])
+        },
+        city_offsets={
+            str(row["city"]): ResidualOffset(
+                offset_f=float(row["offset_f"]),
+                count=int(row["count"]),
+            )
+            for row in payload.get("city_offsets", [])
+        },
+        checkpoint_offsets={
+            str(row["checkpoint"]): ResidualOffset(
+                offset_f=float(row["offset_f"]),
+                count=int(row["count"]),
+            )
+            for row in payload.get("checkpoint_offsets", [])
+        },
+    )

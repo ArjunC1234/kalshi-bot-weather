@@ -1,0 +1,3 @@
+action,block_reason,blocked,city,edge,event_ticker,exchange_price,execution_time_utc,fill_id,filled_contracts,market_ticker,model_probability,outcome_price,reason,requested_contracts,side,signal_time_utc,target_date
+buy,,False,den,0.1313185364588757,KXHIGHDEN-26JUL07,0.33,2026-07-07 09:00:00+00:00,live-replay-000001,1.874,KXHIGHDEN-26JUL07-T96,0.4613185364588757,0.33,entry,9.0,yes,2026-07-07 09:00:00+00:00,2026-07-07
+buy,,False,la,0.1662429030313518,KXHIGHLAX-26JUL12,0.31,2026-07-12 14:00:00+00:00,live-replay-000002,1.0175,KXHIGHLAX-26JUL12-B76.5,0.4762429030313518,0.31,entry,9.0,yes,2026-07-12 14:00:00+00:00,2026-07-12

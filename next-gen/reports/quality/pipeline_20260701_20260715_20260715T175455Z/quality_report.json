@@ -1,0 +1,34 @@
+{
+  "actual_city_hours": 1956,
+  "cities": [
+    "aus",
+    "den",
+    "la",
+    "mia",
+    "nyc",
+    "okc"
+  ],
+  "expected_city_hours": 1956,
+  "generated_at_utc": "2026-07-15T17:55:08.404388+00:00",
+  "latest_snapshot_utc": "2026-07-15T17:00:00+00:00",
+  "missing_city_hours": [],
+  "pending_final_highs": 0,
+  "pending_settlements": 0,
+  "provider_errors": {
+    "nws": 1,
+    "open_meteo": 84
+  },
+  "snapshot_hours": 326,
+  "source_export_id": "export_20260701_20260715_20260715T175455Z",
+  "storage_bytes": 61668968,
+  "table_counts": {
+    "collector_runs": 981,
+    "events": 1956,
+    "final_temperature_labels": 84,
+    "market_snapshots": 11736,
+    "provider_errors": 85,
+    "raw_payloads": 17745,
+    "settlements": 84,
+    "weather_snapshots": 1956
+  }
+}

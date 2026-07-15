@@ -1,0 +1,80 @@
+{
+  "mode": "marketedge_v2_expanding_walk_forward",
+  "data_path": "data\\export_20260630_20260714_20260714T140338Z",
+  "config": {
+    "min_training_dates": 5,
+    "ridge_alpha": 20.0,
+    "blend_penalty": 0.05,
+    "minimum_ev": 0.03,
+    "max_spread": 0.1,
+    "daily_budget": 40.0,
+    "max_order_cost": 3.0,
+    "max_contracts_per_order": 20,
+    "min_quote_size": 1.0,
+    "required_confirmations": 2,
+    "fee_mode": "taker"
+  },
+  "independent_city_events": 78,
+  "target_dates": 13,
+  "weather_snapshot_rows": 1741,
+  "market_snapshot_rows": 10446,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 1.3661105100643034,
+      "count": 1741
+    },
+    {
+      "metric": "rmse",
+      "value": 1.8665292308742325,
+      "count": 1741
+    },
+    {
+      "metric": "bias",
+      "value": 0.22735772474174298,
+      "count": 1741
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.5293803418803419,
+      "count": 1741
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.7334401709401709,
+      "count": 1741
+    }
+  ],
+  "probability_metrics": {
+    "market": {
+      "count": 1521,
+      "log_loss": 0.6440538015226511,
+      "brier": 0.3965573377841406,
+      "top_one_accuracy": 0.7219575613597353,
+      "winner_probability": 0.6323590648860916
+    },
+    "weather": {
+      "count": 1521,
+      "log_loss": 2.2297960244316197,
+      "brier": 0.7788747383828316,
+      "top_one_accuracy": 0.5012913356877888,
+      "winner_probability": 0.3460220909407031
+    },
+    "marketedge": {
+      "count": 1521,
+      "log_loss": 0.6440538015226511,
+      "brier": 0.3965573377841406,
+      "top_one_accuracy": 0.7219575613597353,
+      "winner_probability": 0.6323590648860916
+    }
+  },
+  "strategy": {
+    "trades": 12,
+    "total_pnl": -1.1400000000000001,
+    "total_fees": 0.34,
+    "roi": -0.09390444810543658,
+    "hit_rate": 0.5833333333333334,
+    "max_drawdown": -2.17,
+    "mean_expected_value": 0.18814826676642188
+  }
+}

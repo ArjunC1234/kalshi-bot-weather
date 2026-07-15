@@ -1,0 +1,19 @@
+feature,layer,role,use
+nws_anchor_high_f,weather,forecast level,primary deterministic forecast anchor
+nws_hourly_window_max_f,weather,forecast level,short-horizon NWS peak
+nws_remaining_day_max_f,weather,forecast level,remaining-day NWS maximum
+hrrr_projected_high_f,weather,forecast level,high-resolution model peak
+nbm_projected_high_f,weather,forecast level,blended numerical model peak
+ensemble_raw_median_high_f,weather,forecast level,ensemble central estimate
+observed_high_so_far_f,weather,hard constraint,final high cannot be lower
+warming_rate_last_1h_f_per_hour,weather,trajectory,short-term observed trend
+hours_until_climate_end,weather,lead time,remaining opportunity to warm
+weather_source_stddev_f,weather,uncertainty,widens conformal forecast scale
+all_weather_sources_range_f,weather,uncertainty,source disagreement diagnostic
+city,weather,regularized intercept,shrunk station-level bias only
+normalized_market_midpoint_probability,probability,market prior,base contract probability
+bracket_lower_f/bracket_upper_f,probability,geometry,integrates temperature distribution
+yes_ask_dollars/no_ask_dollars,execution,cost,executable entry price
+yes_spread,execution,liquidity,blocks expensive execution
+yes_ask_size/no_ask_size,execution,capacity,caps simulated fill size
+liquidity_dollars/volume/open_interest,execution,diagnostic,reported but not fitted

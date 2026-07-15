@@ -14,6 +14,8 @@ from libs.models import (
     Settlement,
     WeatherSnapshot,
 )
+from libs.source_families import family_blend_prediction as _family_blend_prediction
+from libs.source_families import source_family_features, weather_values
 from libs.time_utils import checkpoint_label
 
 MODEL_NAME = "raycaster_v1"
@@ -43,6 +45,8 @@ NUMERIC_FEATURES = [
     "nbm_slope_3h_f_per_hour",
     "nbm_slope_6h_f_per_hour",
     "nbm_slope_8h_f_per_hour",
+    "warming_rate_last_1h_f_per_hour",
+    "warming_rate_last_3h_f_per_hour",
     "ensemble_spread_f",
     "ensemble_family_count",
     "ensemble_member_count",
@@ -54,9 +58,18 @@ NUMERIC_FEATURES = [
     "observed_minus_nws",
     "hrrr_minus_observed",
     "nbm_minus_observed",
+    "family_baseline_high_f",
+    "family_numerical_anchor_high_f",
+    "family_nws_minus_nbm_f",
+    "family_hrrr_minus_nbm_f",
+    "family_ensemble_minus_nbm_f",
+    "family_numerical_disagreement_f",
+    "family_forecast_count",
+    "family_disagreement_range_f",
+    "family_disagreement_std_f",
 ]
 
-CATEGORICAL_FEATURES = ["city", "checkpoint"]
+CATEGORICAL_FEATURES = ["city", "checkpoint", "city_checkpoint"]
 FEATURE_COLUMNS = NUMERIC_FEATURES + CATEGORICAL_FEATURES
 
 # These features mostly act as priors about "what this city/date usually does."
@@ -71,6 +84,83 @@ ACTIVE_CATEGORICAL_FEATURES = [
     feature for feature in CATEGORICAL_FEATURES if feature not in BASELINE_CATEGORICAL_FEATURES
 ]
 ACTIVE_FEATURE_COLUMNS = ACTIVE_NUMERIC_FEATURES + ACTIVE_CATEGORICAL_FEATURES
+
+FEATURE_PROFILES = (
+    "weather_only",
+    "city",
+    "city_checkpoint",
+    "city_residual",
+    "family_v2",
+)
+DEFAULT_FEATURE_PROFILE = "weather_only"
+RESIDUAL_FEATURE_PROFILE = "city_residual"
+
+
+@dataclass(frozen=True)
+class FeatureProfile:
+    name: str
+    numeric_features: list[str]
+    categorical_features: list[str]
+
+    @property
+    def feature_columns(self) -> list[str]:
+        return self.numeric_features + self.categorical_features
+
+
+def feature_profile(name: str = DEFAULT_FEATURE_PROFILE) -> FeatureProfile:
+    normalized = name.strip().lower().replace("-", "_")
+    if normalized not in FEATURE_PROFILES:
+        raise ValueError(
+            f"unknown Raycaster feature profile {name!r}; "
+            f"expected one of {', '.join(FEATURE_PROFILES)}"
+        )
+    if normalized == "weather_only":
+        return FeatureProfile(
+            name=normalized,
+            numeric_features=list(ACTIVE_NUMERIC_FEATURES),
+            categorical_features=["checkpoint"],
+        )
+    if normalized == "city":
+        return FeatureProfile(
+            name=normalized,
+            numeric_features=list(ACTIVE_NUMERIC_FEATURES),
+            categorical_features=["city", "checkpoint"],
+        )
+    if normalized == "city_checkpoint":
+        return FeatureProfile(
+            name=normalized,
+            numeric_features=list(ACTIVE_NUMERIC_FEATURES),
+            categorical_features=["city", "checkpoint", "city_checkpoint"],
+        )
+    if normalized == "family_v2":
+        return FeatureProfile(
+            name=normalized,
+            numeric_features=[
+                "snapshot_hour_utc",
+                "hours_elapsed",
+                "hours_remaining",
+                "observed_high_so_far_f",
+                "observation_age_hours",
+                "family_baseline_high_f",
+                "family_numerical_anchor_high_f",
+                "family_nws_minus_nbm_f",
+                "family_hrrr_minus_nbm_f",
+                "family_ensemble_minus_nbm_f",
+                "family_numerical_disagreement_f",
+                "family_forecast_count",
+                "family_disagreement_range_f",
+                "family_disagreement_std_f",
+                "ensemble_spread_f",
+                "warming_rate_last_1h_f_per_hour",
+                "warming_rate_last_3h_f_per_hour",
+            ],
+            categorical_features=["checkpoint"],
+        )
+    return FeatureProfile(
+        name=normalized,
+        numeric_features=list(ACTIVE_NUMERIC_FEATURES),
+        categorical_features=["checkpoint"],
+    )
 
 
 @dataclass(frozen=True)
@@ -88,9 +178,7 @@ class FeatureRow:
 def build_feature_rows(dataset: BacktestDataset) -> list[FeatureRow]:
     events = _events_by_snapshot(dataset.events)
     settlements = {settlement.event_ticker: settlement for settlement in dataset.settlements}
-    final_labels = {
-        label.event_ticker: label for label in dataset.final_temperature_labels
-    }
+    final_labels = {label.event_ticker: label for label in dataset.final_temperature_labels}
     rows: list[FeatureRow] = []
     for weather in dataset.weather:
         settlement = settlements.get(weather.event_ticker)
@@ -112,6 +200,7 @@ def feature_row_from_snapshot(
     features: dict[str, float | str | None] = {
         "city": weather.city,
         "checkpoint": _checkpoint(weather, event),
+        "city_checkpoint": f"{weather.city}:{_checkpoint(weather, event)}",
         "snapshot_hour_utc": float(weather.snapshot_hour_utc.hour),
         "target_day_of_year_sin": _day_sin(weather.target_date),
         "target_day_of_year_cos": _day_cos(weather.target_date),
@@ -146,6 +235,12 @@ def feature_row_from_snapshot(
         "nbm_slope_3h_f_per_hour": _first_number(raw_features, "nbm_slope_3h_f_per_hour"),
         "nbm_slope_6h_f_per_hour": _first_number(raw_features, "nbm_slope_6h_f_per_hour"),
         "nbm_slope_8h_f_per_hour": _first_number(raw_features, "nbm_slope_8h_f_per_hour"),
+        "warming_rate_last_1h_f_per_hour": _first_number(
+            raw_features, "warming_rate_last_1h_f_per_hour"
+        ),
+        "warming_rate_last_3h_f_per_hour": _first_number(
+            raw_features, "warming_rate_last_3h_f_per_hour"
+        ),
         "ensemble_spread_f": _first_number(
             raw_features,
             "ensemble_spread_f",
@@ -156,6 +251,7 @@ def feature_row_from_snapshot(
         "ensemble_member_count": _first_number(raw_features, "ensemble_member_count"),
     }
     _add_source_disagreement(features)
+    features.update(source_family_features(weather_values(weather)))
     return FeatureRow(
         city=weather.city,
         event_ticker=weather.event_ticker,
@@ -197,6 +293,19 @@ def source_blend_prediction(row: FeatureRow) -> float:
     else:
         prediction = 75.0
     return max(prediction, observed) if observed is not None else prediction
+
+
+def family_blend_prediction(row: FeatureRow) -> float:
+    """NBM-anchored blend that does not count correlated feeds twice."""
+    return _family_blend_prediction(row.features)
+
+
+def baseline_prediction(row: FeatureRow, feature_profile_name: str) -> float:
+    return (
+        family_blend_prediction(row)
+        if feature_profile_name == "family_v2"
+        else source_blend_prediction(row)
+    )
 
 
 def feature_dicts(rows: list[FeatureRow]) -> list[dict[str, float | str | None]]:

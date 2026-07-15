@@ -88,6 +88,12 @@ class MarketSnapshot:
     bracket: Bracket
     yes_bid: float | None
     yes_ask: float | None
+    no_bid: float | None = None
+    no_ask: float | None = None
+    yes_bid_size: float | None = None
+    yes_ask_size: float | None = None
+    no_bid_size: float | None = None
+    no_ask_size: float | None = None
     last_price: float | None = None
     normalized_market_midpoint_probability: float | None = None
 

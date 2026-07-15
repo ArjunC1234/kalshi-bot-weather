@@ -1,0 +1,3 @@
+bracket_type,checkpoint,city,contracts_requested,edge,entry_ask,entry_bid,event_ticker,market_ticker,model_probability,order_cost_requested,side,snapshot_hour_utc,spread,target_date
+upper_tail,utc_09,den,9.0,0.1313185364588757,0.33,0.31,KXHIGHDEN-26JUL07,KXHIGHDEN-26JUL07-T96,0.4613185364588757,2.97,yes,2026-07-07 09:00:00+00:00,0.020000000000000018,2026-07-07
+bounded,utc_14,la,9.0,0.1662429030313518,0.31,0.3,KXHIGHLAX-26JUL12,KXHIGHLAX-26JUL12-B76.5,0.4762429030313518,2.79,yes,2026-07-12 14:00:00+00:00,0.010000000000000009,2026-07-12

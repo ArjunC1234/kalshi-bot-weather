@@ -7,7 +7,7 @@ Wants=network-online.target
 Type=simple
 WorkingDirectory=/opt/kalshi-weather-next-gen
 EnvironmentFile=/opt/kalshi-weather-next-gen/.env
-ExecStart=/opt/kalshi-weather-next-gen/.venv/bin/python /opt/kalshi-weather-next-gen/bot.py
+ExecStart=/opt/kalshi-weather-next-gen/.venv/bin/python /opt/kalshi-weather-next-gen/bot.py daemon --place-orders
 Restart=always
 RestartSec=30
 

@@ -57,14 +57,7 @@ def load_model(model_dir: str | Path) -> TheTempModel:
 
 
 def _source_blend(row: FeatureRow) -> float:
-    values = sorted(row.source_values_f)
-    if not values:
-        prediction = row.observed_high_so_far_f if row.observed_high_so_far_f is not None else 75.0
-    elif len(values) % 2:
-        prediction = values[len(values) // 2]
-    else:
-        midpoint = len(values) // 2
-        prediction = (values[midpoint - 1] + values[midpoint]) / 2.0
+    prediction = row.family_baseline_high_f
     if row.observed_high_so_far_f is not None:
         return max(float(prediction), row.observed_high_so_far_f)
     return float(prediction)

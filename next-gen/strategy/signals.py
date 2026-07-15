@@ -16,6 +16,19 @@ class StrategyConfig:
     max_positions_per_event: int = 1
     min_price: float = 0.02
     max_price: float = 0.98
+    min_model_probability: float | None = None
+    max_model_probability: float | None = None
+    max_edge: float | None = None
+    min_entry_hour_utc: int | None = None
+    max_entry_hour_utc: int | None = None
+    include_cities: tuple[str, ...] = ()
+    exclude_cities: tuple[str, ...] = ()
+    entry_policy: str = "first"
+    sizing_policy: str = "fixed"
+    daily_budget: float | None = None
+    base_budget_fraction: float = 0.10
+    max_budget_fraction: float = 0.25
+    kelly_fraction: float = 0.25
 
 
 @dataclass(frozen=True)
@@ -57,7 +70,7 @@ def signal_for_market(
         if market.yes_bid is not None
         else None
     )
-    decision, reason = _decision(market, buy_edge, spread, config)
+    decision, reason = _decision(market, model_probability, buy_edge, spread, config)
     return Signal(
         city=market.city,
         event_ticker=market.event_ticker,
@@ -88,6 +101,7 @@ def market_midpoint(market: MarketSnapshot) -> float | None:
 
 def _decision(
     market: MarketSnapshot,
+    model_probability: float,
     buy_edge: float | None,
     spread: float | None,
     config: StrategyConfig,
@@ -102,6 +116,32 @@ def _decision(
         return "skip", "spread_too_wide"
     if market.yes_ask < config.min_price or market.yes_ask > config.max_price:
         return "skip", "price_out_of_range"
+    if (
+        config.min_model_probability is not None
+        and model_probability < config.min_model_probability
+    ):
+        return "skip", "model_probability_too_low"
+    if (
+        config.max_model_probability is not None
+        and model_probability >= config.max_model_probability
+    ):
+        return "skip", "model_probability_too_high"
     if buy_edge is None or buy_edge < config.edge_threshold:
         return "skip", "edge_below_threshold"
+    if config.max_edge is not None and buy_edge >= config.max_edge:
+        return "skip", "edge_above_max"
+    if (
+        config.min_entry_hour_utc is not None
+        and market.snapshot_hour_utc.hour < config.min_entry_hour_utc
+    ):
+        return "skip", "before_entry_window"
+    if (
+        config.max_entry_hour_utc is not None
+        and market.snapshot_hour_utc.hour > config.max_entry_hour_utc
+    ):
+        return "skip", "after_entry_window"
+    if config.include_cities and market.city not in config.include_cities:
+        return "skip", "city_not_included"
+    if config.exclude_cities and market.city in config.exclude_cities:
+        return "skip", "city_excluded"
     return "buy_yes", ""

@@ -13,6 +13,7 @@ from features import (
     ACTIVE_NUMERIC_FEATURES,
     FEATURE_COLUMNS,
     FeatureRow,
+    family_blend_prediction,
     feature_dicts,
     rows_with_temperature,
     source_blend_prediction,
@@ -43,10 +44,16 @@ DEFAULT_ESTIMATORS = (
     "nbm_projected",
     "ensemble_median",
     "source_blend",
+    "family_blend",
     "mos_ridge",
     "mos_elastic_net",
     "raycaster",
+    "raycaster_family_v2",
+    "raycaster_city",
+    "raycaster_city_checkpoint",
+    "raycaster_city_residual",
     "raycaster_source_blend_hybrid",
+    "raycaster_city_residual_hybrid",
 )
 
 
@@ -85,6 +92,8 @@ class SourceBaseline:
         for row in rows:
             if self.feature_key is None:
                 value = source_blend_prediction(row)
+            elif self.feature_key == "__family_blend__":
+                value = family_blend_prediction(row)
             else:
                 value = _finite_float(row.features.get(self.feature_key))
                 if value is None:
@@ -139,8 +148,7 @@ class MosResidualModel:
         base = [source_blend_prediction(row) for row in rows]
         if self.model is None:
             return [
-                _respect_observed_floor(value, row)
-                for value, row in zip(base, rows, strict=True)
+                _respect_observed_floor(value, row) for value, row in zip(base, rows, strict=True)
             ]
         x = pd.DataFrame(feature_dicts(rows), columns=FEATURE_COLUMNS)[ACTIVE_FEATURE_COLUMNS]
         residuals = [float(value) for value in self.model.predict(x)]
@@ -169,10 +177,15 @@ class MosResidualModel:
 class RaycasterEstimator:
     name: str = "raycaster"
     min_training_events: int = DEFAULT_MIN_TRAINING_EVENTS
+    feature_profile_name: str = "weather_only"
     model: RaycasterModel | None = None
 
     def fit(self, rows: list[FeatureRow]) -> None:
-        self.model = train_raycaster_model(rows, min_training_events=self.min_training_events)
+        self.model = train_raycaster_model(
+            rows,
+            min_training_events=self.min_training_events,
+            feature_profile_name=self.feature_profile_name,
+        )
 
     def predict_expected_high(self, rows: list[FeatureRow]) -> list[float]:
         if self.model is None:
@@ -197,11 +210,15 @@ class RaycasterEstimator:
 class RaycasterSourceBlendHybrid:
     name: str = "raycaster_source_blend_hybrid"
     min_training_events: int = DEFAULT_MIN_TRAINING_EVENTS
+    feature_profile_name: str = "weather_only"
     raycaster: RaycasterEstimator = field(init=False)
     source_blend: SourceBaseline = field(init=False)
 
     def __post_init__(self) -> None:
-        self.raycaster = RaycasterEstimator(min_training_events=self.min_training_events)
+        self.raycaster = RaycasterEstimator(
+            min_training_events=self.min_training_events,
+            feature_profile_name=self.feature_profile_name,
+        )
         self.source_blend = SourceBaseline(name="source_blend")
 
     def fit(self, rows: list[FeatureRow]) -> None:
@@ -237,6 +254,8 @@ def create_estimator(
         return SourceBaseline(name=name, feature_key=RAW_BASELINES[name])
     if name == "source_blend":
         return SourceBaseline(name=name)
+    if name == "family_blend":
+        return SourceBaseline(name=name, feature_key="__family_blend__")
     if name == "mos_ridge":
         return MosResidualModel(name=name, kind="ridge", min_training_events=min_training_events)
     if name == "mos_elastic_net":
@@ -247,8 +266,38 @@ def create_estimator(
         )
     if name == "raycaster":
         return RaycasterEstimator(min_training_events=min_training_events)
+    if name == "raycaster_family_v2":
+        return RaycasterEstimator(
+            name=name,
+            min_training_events=min_training_events,
+            feature_profile_name="family_v2",
+        )
+    if name == "raycaster_city":
+        return RaycasterEstimator(
+            name=name,
+            min_training_events=min_training_events,
+            feature_profile_name="city",
+        )
+    if name == "raycaster_city_checkpoint":
+        return RaycasterEstimator(
+            name=name,
+            min_training_events=min_training_events,
+            feature_profile_name="city_checkpoint",
+        )
+    if name == "raycaster_city_residual":
+        return RaycasterEstimator(
+            name=name,
+            min_training_events=min_training_events,
+            feature_profile_name="city_residual",
+        )
     if name == "raycaster_source_blend_hybrid":
         return RaycasterSourceBlendHybrid(min_training_events=min_training_events)
+    if name == "raycaster_city_residual_hybrid":
+        return RaycasterSourceBlendHybrid(
+            name=name,
+            min_training_events=min_training_events,
+            feature_profile_name="city_residual",
+        )
     raise ValueError(f"unknown estimator: {name}")
 
 
@@ -333,8 +382,7 @@ def _residual_quantiles(
         }
     else:
         quantiles = {
-            level: expected_high_f + _sample_quantile(residuals, level)
-            for level in QUANTILE_LEVELS
+            level: expected_high_f + _sample_quantile(residuals, level) for level in QUANTILE_LEVELS
         }
         quantiles[0.50] = expected_high_f
     observed = _finite_float(row.features.get("observed_high_so_far_f"))
