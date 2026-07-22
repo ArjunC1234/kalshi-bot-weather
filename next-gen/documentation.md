@@ -11,6 +11,7 @@
 - `production/`: deployment scripts and the server-ready `deployable/` tree.
 - `production/deployable/collector/`: collector v3, the currently deployed hourly immutable fact collector.
 - `trends/`: local GUI workbench for exports, quality reports, model reports, and feature/model analysis.
+- `control/`: registry-driven control plane for discoverable exports, model/strategy runs, jobs, artifacts, schemas, and future bot monitoring.
 - `reports/`: local generated report folders grouped by report type.
 - `data/`: local frozen Supabase exports.
 - `models/`: local model artifacts.

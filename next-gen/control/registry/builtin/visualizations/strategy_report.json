@@ -1,0 +1,16 @@
+{
+  "id": "strategy_report.v1",
+  "kind": "visualization",
+  "version": 1,
+  "label": "Strategy Report",
+  "artifact_type": "strategy_report",
+  "description": "Default strategy lab visualizations for PnL, gates, buckets, and trade diagnostics.",
+  "views": {
+    "strategy_lab": {
+      "title": "Strategy Lab",
+      "requires_tables": ["daily_pnl", "threshold_sweep"],
+      "charts": ["equity_curve", "gate_sweep", "bucket_bars", "trade_table"]
+    }
+  }
+}
+

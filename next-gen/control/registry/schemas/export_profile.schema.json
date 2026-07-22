@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "control.export_profile.schema.json",
+  "title": "Control Export Profile Registry Entry",
+  "type": "object",
+  "required": ["id", "kind", "label", "source", "tables"],
+  "properties": {
+    "id": { "type": "string" },
+    "kind": { "const": "export_profile" },
+    "version": { "type": "integer" },
+    "label": { "type": "string" },
+    "source": { "type": "string" },
+    "description": { "type": "string" },
+    "tables": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "include": { "type": "boolean" },
+          "source_table": { "type": "string" },
+          "required": { "type": "boolean" },
+          "protected_columns": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "required_columns": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "include_columns": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "exclude_columns": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "features_include_keys": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  }
+}

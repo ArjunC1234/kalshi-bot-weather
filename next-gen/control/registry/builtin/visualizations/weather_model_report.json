@@ -1,0 +1,31 @@
+{
+  "id": "weather_model_report.v1",
+  "kind": "visualization",
+  "version": 1,
+  "label": "Weather Model Report",
+  "artifact_type": "model_report",
+  "description": "Default model-performance visualizations for weather point and bracket probability reports.",
+  "views": {
+    "trend_explorer": {
+      "title": "Trend Explorer",
+      "requires_roles": ["time.snapshot", "dimension.city"],
+      "charts": ["line", "small_multiples"]
+    },
+    "checkpoint_performance": {
+      "title": "Checkpoint Performance",
+      "requires_tables": ["by_checkpoint"],
+      "charts": ["heatmap", "table"]
+    },
+    "calibration": {
+      "title": "Calibration",
+      "requires_tables": ["bracket_distributions"],
+      "charts": ["calibration_curve", "table"]
+    },
+    "feature_error": {
+      "title": "Feature vs Error",
+      "requires_tables": ["errors"],
+      "charts": ["scatter", "density"]
+    }
+  }
+}
+

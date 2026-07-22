@@ -1,0 +1,19 @@
+{
+  "id": "supabase.weather",
+  "kind": "data_source",
+  "version": 1,
+  "label": "Supabase Weather Facts",
+  "provider": "supabase",
+  "description": "Immutable weather, market, settlement, raw payload, and collector facts from Supabase.",
+  "date_columns": {
+    "collector_runs": "run_started_at_utc",
+    "raw_payloads": "snapshot_time_utc",
+    "events": "snapshot_time_utc",
+    "market_snapshots": "snapshot_time_utc",
+    "weather_snapshots": "snapshot_time_utc",
+    "settlements": "target_date",
+    "final_temperature_labels": "target_date",
+    "provider_errors": "snapshot_time_utc"
+  }
+}
+

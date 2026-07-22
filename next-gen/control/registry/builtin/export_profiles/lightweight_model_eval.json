@@ -1,0 +1,50 @@
+{
+  "id": "lightweight_model_eval",
+  "kind": "export_profile",
+  "version": 1,
+  "label": "Lightweight Model Evaluation",
+  "source": "supabase.weather",
+  "description": "Compact export for model development that excludes raw payloads and collector internals.",
+  "tables": {
+    "collector_runs": {
+      "include": false,
+      "reason": "Collector metadata is not needed for model evaluation."
+    },
+    "raw_payloads": {
+      "include": false,
+      "reason": "Raw payloads are large and not needed for most model evaluation."
+    },
+    "events": {
+      "source_table": "events",
+      "required": true,
+      "protected_columns": ["city", "event_ticker", "target_date", "snapshot_time_utc"],
+      "required_columns": ["climate_day_start_utc", "climate_day_end_utc", "station_id"]
+    },
+    "market_snapshots": {
+      "source_table": "market_snapshots",
+      "required": true,
+      "protected_columns": ["city", "event_ticker", "market_ticker", "target_date", "snapshot_time_utc"],
+      "required_columns": ["bracket_index", "bracket_lower_f", "bracket_upper_f", "yes_bid_dollars", "yes_ask_dollars", "no_bid_dollars", "no_ask_dollars", "normalized_market_midpoint_probability"],
+      "exclude_columns": ["raw_payload_id"]
+    },
+    "weather_snapshots": {
+      "source_table": "weather_snapshots",
+      "required": true,
+      "protected_columns": ["city", "event_ticker", "target_date", "snapshot_time_utc"],
+      "required_columns": ["nws_anchor_high_f", "observed_high_so_far_f", "hrrr_projected_high_f", "nbm_projected_high_f", "ensemble_raw_median_high_f", "features"],
+      "exclude_columns": ["raw_payload_id"]
+    },
+    "settlements": {
+      "source_table": "settlements",
+      "required": false
+    },
+    "final_temperature_labels": {
+      "source_table": "final_temperature_labels",
+      "required": false
+    },
+    "provider_errors": {
+      "include": false,
+      "reason": "Provider failures are quality diagnostics, not model features."
+    }
+  }
+}

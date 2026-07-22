@@ -1,0 +1,90 @@
+{
+  "id": "raycaster_v1",
+  "kind": "model",
+  "version": 1,
+  "label": "Raycaster v1",
+  "description": "Weather-only final high model with bracket probability outputs.",
+  "code": {
+    "working_directory": "."
+  },
+  "entrypoints": {
+    "evaluate": {
+      "label": "Evaluate",
+      "command": [
+        "python",
+        "maxtemp-engine/raycaster/v1/cli.py",
+        "evaluate",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["expanding", "rolling", "fixed"],
+            "default": "expanding"
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "model_report",
+        "contract": "weather_model_report.v1"
+      }
+    },
+    "rolling_eval": {
+      "label": "Rolling Evaluation",
+      "command": [
+        "python",
+        "maxtemp-engine/raycaster/v1/cli.py",
+        "rolling-eval",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "properties": {
+          "train_days": {
+            "type": "integer",
+            "default": 14
+          },
+          "test_days": {
+            "type": "integer",
+            "default": 1
+          },
+          "feature_profile": {
+            "type": "string",
+            "default": "weather_only"
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "model_report",
+        "contract": "weather_model_report.v1"
+      }
+    }
+  },
+  "inputs": {
+    "dataset": {
+      "type": "local_export",
+      "required_tables": ["events", "weather_snapshots", "market_snapshots"],
+      "optional_tables": ["settlements", "final_temperature_labels"]
+    }
+  },
+  "artifact_contract": {
+    "required_files": ["summary.json", "predictions.csv", "bracket_distributions.csv"],
+    "optional_files": ["errors.csv", "by_checkpoint.csv", "by_city.csv", "temperature_metrics.csv", "bracket_metrics.csv", "training_diagnostics.csv"]
+  },
+  "semantic_outputs": {
+    "prediction_time": "snapshot_time_utc",
+    "target_date": "target_date",
+    "city": "city",
+    "event": "event_ticker",
+    "point_prediction": "expected_high_f",
+    "probability_distribution": "probabilities"
+  }
+}

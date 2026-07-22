@@ -1,0 +1,15 @@
+{
+  "id": "deployed_weather_bot",
+  "kind": "bot_runtime",
+  "version": 1,
+  "label": "Deployed Weather Bot",
+  "provider": "supabase",
+  "description": "Read-only runtime monitoring for the deployed weather trading bot and collector facts.",
+  "views": {
+    "status": "v_collector_health",
+    "positions": "bot_positions",
+    "orders": "bot_orders",
+    "decisions": "bot_decisions"
+  }
+}
+

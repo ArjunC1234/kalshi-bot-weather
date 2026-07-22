@@ -1,0 +1,106 @@
+{
+  "id": "edgecaster_v2",
+  "kind": "strategy",
+  "version": 2,
+  "label": "Edgecaster v2",
+  "description": "Candidate-set edge and reward strategy evaluator.",
+  "code": {
+    "working_directory": "."
+  },
+  "entrypoints": {
+    "fixed_window": {
+      "label": "Fixed Window",
+      "command": [
+        "python",
+        "-m",
+        "edgecaster.v2.cli",
+        "fixed-window",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--model-report",
+        "{{ inputs.model_report.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "properties": {
+          "min_predicted_reward": {
+            "type": "number",
+            "default": 0.03
+          },
+          "daily_budget": {
+            "type": "number",
+            "default": 40.0
+          },
+          "train_start": {
+            "type": "string",
+            "format": "date"
+          },
+          "train_end": {
+            "type": "string",
+            "format": "date"
+          },
+          "test_start": {
+            "type": "string",
+            "format": "date"
+          },
+          "test_end": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "strategy_report",
+        "contract": "strategy_report.v1"
+      }
+    },
+    "rolling_eval": {
+      "label": "Rolling Evaluation",
+      "command": [
+        "python",
+        "-m",
+        "edgecaster.v2.cli",
+        "rolling-eval",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--model-report",
+        "{{ inputs.model_report.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "properties": {
+          "train_days": {
+            "type": "integer",
+            "default": 7
+          },
+          "min_predicted_reward": {
+            "type": "number",
+            "default": 0.03
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "strategy_report",
+        "contract": "strategy_report.v1"
+      }
+    }
+  },
+  "inputs": {
+    "dataset": {
+      "type": "local_export",
+      "required_tables": ["events", "market_snapshots", "weather_snapshots"]
+    },
+    "model_report": {
+      "type": "model_report",
+      "required_tables": ["predictions", "bracket_distributions"]
+    }
+  },
+  "artifact_contract": {
+    "required_files": ["summary.json"],
+    "optional_files": ["trades.csv", "daily_pnl.csv", "threshold_sweep.csv", "validation_threshold_sweep.csv", "policy_calibration.csv", "predictions.csv", "candidates.csv"]
+  }
+}

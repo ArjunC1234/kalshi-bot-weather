@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "control.model.schema.json",
+  "title": "Control Model Registry Entry",
+  "type": "object",
+  "required": ["id", "kind", "label", "entrypoints", "inputs"],
+  "properties": {
+    "id": { "type": "string" },
+    "kind": { "enum": ["model", "strategy"] },
+    "version": { "type": "integer" },
+    "label": { "type": "string" },
+    "description": { "type": "string" },
+    "code": {
+      "type": "object",
+      "properties": {
+        "working_directory": { "type": "string" }
+      }
+    },
+    "entrypoints": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["command", "produces"],
+        "properties": {
+          "label": { "type": "string" },
+          "command": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "params_schema": { "type": "object" },
+          "produces": {
+            "type": "object",
+            "required": ["artifact_type", "contract"],
+            "properties": {
+              "artifact_type": { "type": "string" },
+              "contract": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "inputs": { "type": "object" },
+    "artifact_contract": { "type": "object" },
+    "semantic_outputs": { "type": "object" }
+  }
+}
+

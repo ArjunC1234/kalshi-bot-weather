@@ -1,0 +1,71 @@
+{
+  "id": "neuralcaster_v2",
+  "kind": "model",
+  "version": 2,
+  "label": "Neuralcaster v2",
+  "description": "Temporal neural weather model with rolling and fixed-window evaluation outputs.",
+  "code": {
+    "working_directory": "."
+  },
+  "entrypoints": {
+    "rolling_eval": {
+      "label": "Rolling Evaluation",
+      "command": [
+        "python",
+        "maxtemp-engine/neuralcaster/v2/cli.py",
+        "rolling-eval",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["weather", "market"],
+            "default": "weather"
+          },
+          "epochs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500,
+            "default": 350
+          },
+          "train_days": {
+            "type": "integer",
+            "default": 5
+          },
+          "test_days": {
+            "type": "integer",
+            "default": 1
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "model_report",
+        "contract": "weather_model_report.v1"
+      }
+    }
+  },
+  "inputs": {
+    "dataset": {
+      "type": "local_export",
+      "required_tables": ["events", "weather_snapshots", "market_snapshots"],
+      "optional_tables": ["settlements", "final_temperature_labels"]
+    }
+  },
+  "artifact_contract": {
+    "required_files": ["summary.json", "predictions.csv", "bracket_distributions.csv"],
+    "optional_files": ["errors.csv", "by_checkpoint.csv", "by_city.csv", "temperature_metrics.csv", "bracket_metrics.csv", "training_diagnostics.csv"]
+  },
+  "semantic_outputs": {
+    "prediction_time": "snapshot_time_utc",
+    "target_date": "target_date",
+    "city": "city",
+    "event": "event_ticker",
+    "point_prediction": "expected_high_f",
+    "probability_distribution": "probabilities"
+  }
+}
