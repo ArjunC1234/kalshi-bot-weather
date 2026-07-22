@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import gzip
 import json
 import sqlite3
 from contextlib import closing
@@ -268,7 +269,11 @@ def _count_rows(path: Path, name: str) -> int:
             return 0
     json_path = path / f"{name}.json"
     if json_path.exists():
-        value = _read_json(json_path)
+        value = _read_json_any(json_path)
+        return len(value) if isinstance(value, list) else 0
+    json_gz_path = path / f"{name}.json.gz"
+    if json_gz_path.exists():
+        value = _read_json_gz_any(json_gz_path)
         return len(value) if isinstance(value, list) else 0
     return 0
 
@@ -281,6 +286,21 @@ def _read_json(path: Path) -> dict[str, Any]:
     except (OSError, ValueError):
         return {}
     return value if isinstance(value, dict) else {}
+
+
+def _read_json_any(path: Path) -> Any:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def _read_json_gz_any(path: Path) -> Any:
+    try:
+        with gzip.open(path, "rt", encoding="utf-8") as handle:
+            return json.load(handle)
+    except (OSError, ValueError):
+        return None
 
 
 def _modified_utc(path: Path) -> str:

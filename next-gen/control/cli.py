@@ -39,6 +39,14 @@ def main(argv: list[str] | None = None) -> int:
     serve.add_argument("--port", type=int, default=8775)
     serve.add_argument("--registry-root", type=Path)
 
+    serve_center = commands.add_parser(
+        "serve-control-center",
+        help="Start the Kalshi Bot Control Center backend API.",
+    )
+    serve_center.add_argument("--host", default="127.0.0.1")
+    serve_center.add_argument("--port", type=int, default=8775)
+    serve_center.add_argument("--registry-root", type=Path)
+
     args = parser.parse_args(argv)
     if args.command == "registry":
         if args.action == "validate":
@@ -70,7 +78,7 @@ def main(argv: list[str] | None = None) -> int:
         export_with_profile(profile, args.start, args.end, args.output)
         print(f"export complete: {args.output}")
         return 0
-    if args.command == "serve":
+    if args.command in {"serve", "serve-control-center"}:
         from control.server import serve_control
 
         return serve_control(

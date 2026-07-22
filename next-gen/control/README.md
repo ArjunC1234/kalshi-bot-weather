@@ -1,7 +1,9 @@
-# Control Plane
+# Kalshi Bot Control Center Backend
 
-The control plane is the registry-driven foundation for turning Trends into a
-Kalshi weather bot control center.
+This package is the registry-driven backend foundation for the Kalshi Bot
+Control Center. Trends remains useful reference code, but the Control Center API
+is separate and mounted under `/control/api/*` so a future app can manage
+exports, models, reports, and bot monitoring without depending on the Trends UI.
 
 The intended developer workflow is:
 
@@ -20,6 +22,7 @@ python -m control.cli registry validate
 python -m control.cli registry list
 python -m control.cli artifacts scan
 python -m control.cli serve --port 8775
+python -m control.cli serve-control-center --port 8775
 ```
 
 Create a local export from a registered profile:
@@ -38,14 +41,67 @@ The control API is mounted under `/control/api/*` so existing Trends `/api/*`
 routes can remain stable during migration.
 
 - `GET /control/api/registry`
+- `GET /control/api/dashboard`
+- `GET /control/api/export-profiles`
+- `GET /control/api/models`
 - `GET /control/api/artifacts`
+- `GET /control/api/exports`
+- `GET /control/api/exports/<export_id>`
+- `GET /control/api/reports`
+- `GET /control/api/datasets`
+- `GET /control/api/datasets/<dataset_id>`
+- `GET /control/api/datasets/<dataset_id>/coverage`
+- `GET /control/api/datasets/<dataset_id>/cities`
+- `GET /control/api/datasets/<dataset_id>/cities/<city>`
 - `GET /control/api/jobs`
 - `GET /control/api/jobs/<job_id>`
 - `GET /control/api/jobs/<job_id>/logs`
+- `GET /control/api/bot/<resource>`
 - `POST /control/api/jobs`
+- `POST /control/api/jobs/<job_id>/cancel`
 - `POST /control/api/exports/preview`
 - `POST /control/api/exports/create`
+- `POST /control/api/exports/validate`
+- `POST /control/api/exports/compare`
+- `POST /control/api/exports/clone`
+- `POST /control/api/exports/reduce`
+- `POST /control/api/exports/extend`
+- `POST /control/api/exports/archive`
 - `POST /control/api/compatibility/model-run`
+- `POST /control/api/visualizations/query`
+
+The bot endpoint is intentionally a deferred stub until deployed bot telemetry
+is wired in.
+
+## Dataset And Export Operations
+
+The export manager supports the UI operations needed before direct Supabase or
+scheduled export work is added:
+
+- list and inspect local exports
+- validate required table/city/date coverage
+- compare export table counts and new city coverage
+- clone exports
+- reduce exports by table, city, and target date range
+- extend exports by merging rows from a second export
+- archive exports under `data/.archive`
+
+Server routes resolve requested artifact IDs through the artifact scanner and
+guard destination paths so UI-driven file operations stay within the repository.
+
+## Visualization Query Contract
+
+`POST /control/api/visualizations/query` reads a selected local artifact table
+and returns chart-ready rows plus metadata. It supports:
+
+- field selection for `x`, `y`, and `group`
+- equality, range, and set filters
+- aggregations: `count`, `sum`, `avg`, `min`, `max`
+- snapshot-hour binning with `hour_blocks` where the block count divides 24
+- deterministic sampling, stride decimation, pagination, and density metadata
+
+This keeps large datasets readable in the UI without pushing proprietary chart
+logic into every page.
 
 ## Model Registry Contract
 
@@ -60,7 +116,11 @@ A model registry entry declares:
 - semantic output mappings
 
 The job runner only executes registered argv lists. It does not accept arbitrary
-shell snippets from the UI.
+shell snippets from the UI. UI-submitted parameters must be declared by the
+registered entrypoint schema, aside from reserved control parameters such as
+`dataset_path`, `model_report_path`, `output_path`, and `timeout_seconds`.
+Completed registered jobs write a `run_manifest.json` with the registry ID,
+entrypoint, command, selected dataset/report inputs, and output contract.
 
 ## Export Profile Contract
 
@@ -103,4 +163,3 @@ Recommended strategy report files:
 - `threshold_sweep.csv`
 - `policy_calibration.csv`
 - `ranking_diagnostics.csv`
-
