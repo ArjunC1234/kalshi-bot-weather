@@ -1,0 +1,212 @@
+{
+  "model_name": "neuralcaster_v2",
+  "mode": "weather_rolling_window_5d_train_1d_test",
+  "source_export_id": "export_20260701_20260715_20260715T175455Z",
+  "generated_at_utc": "2026-07-15T18:12:39.236031+00:00",
+  "temperature_prediction_count": 1296,
+  "bracket_prediction_count": 1296,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 1.2630783552004967,
+      "count": 1296
+    },
+    {
+      "metric": "rmse",
+      "value": 1.6621166540689891,
+      "count": 1296
+    },
+    {
+      "metric": "bias",
+      "value": 0.21073526594373912,
+      "count": 1296
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.5231481481481481,
+      "count": 1296
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.7685185185185185,
+      "count": 1296
+    }
+  ],
+  "bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 1.0755353243102475,
+      "count": 1296
+    },
+    {
+      "metric": "brier",
+      "value": 0.5600097027678438,
+      "count": 1296
+    },
+    {
+      "metric": "rps",
+      "value": 0.0779462958129801,
+      "count": 1296
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.5601851851851852,
+      "count": 1296
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.4413613864734672,
+      "count": 1296
+    }
+  ],
+  "model_family": "pytorch_gru_gaussian_residual",
+  "neural_mode": "weather",
+  "train_days": 5,
+  "test_days": 1,
+  "max_seq_len": 24,
+  "hidden_size": 48,
+  "layers": 1,
+  "dropout": 0.1,
+  "epochs": 350,
+  "patience": 45,
+  "learning_rate": 0.003,
+  "weight_decay": 0.01,
+  "seed": 17,
+  "labeled_target_dates": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14"
+  ],
+  "independent_city_days": 84,
+  "snapshot_rows_with_labels": 1885,
+  "folds": [
+    {
+      "model_mode": "trained_gru_gaussian_residual",
+      "training_examples": 589,
+      "fit_examples": 445,
+      "validation_examples": 144,
+      "epochs_run": 56,
+      "best_validation_loss": 1.3190189599990845,
+      "seed": 22,
+      "train_start_date": "2026-07-01",
+      "train_end_date": "2026-07-05",
+      "test_start_date": "2026-07-06",
+      "test_end_date": "2026-07-06"
+    },
+    {
+      "model_mode": "trained_gru_gaussian_residual",
+      "training_examples": 720,
+      "fit_examples": 576,
+      "validation_examples": 144,
+      "epochs_run": 51,
+      "best_validation_loss": 1.0670154094696045,
+      "seed": 23,
+      "train_start_date": "2026-07-02",
+      "train_end_date": "2026-07-06",
+      "test_start_date": "2026-07-07",
+      "test_end_date": "2026-07-07"
+    },
+    {
+      "model_mode": "trained_gru_gaussian_residual",
+      "training_examples": 720,
+      "fit_examples": 576,
+      "validation_examples": 144,
+      "epochs_run": 62,
+      "best_validation_loss": 0.7980865836143494,
+      "seed": 24,
+      "train_start_date": "2026-07-03",
+      "train_end_date": "2026-07-07",
+      "test_start_date": "2026-07-08",
+      "test_end_date": "2026-07-08"
+    },
+    {
+      "model_mode": "trained_gru_gaussian_residual",
+      "training_examples": 720,
+      "fit_examples": 576,
+      "validation_examples": 144,
+      "epochs_run": 59,
+      "best_validation_loss": 0.9498055577278137,
+      "seed": 25,
+      "train_start_date": "2026-07-04",
+      "train_end_date": "2026-07-08",
+      "test_start_date": "2026-07-09",
+      "test_end_date": "2026-07-09"
+    },
+    {
+      "model_mode": "trained_gru_gaussian_residual",
+      "training_examples": 720,
+      "fit_examples": 576,
+      "validation_examples": 144,
+      "epochs_run": 77,
+      "best_validation_loss": 0.8937585949897766,
+      "seed": 26,
+      "train_start_date": "2026-07-05",
+      "train_end_date": "2026-07-09",
+      "test_start_date": "2026-07-10",
+      "test_end_date": "2026-07-10"
+    },
+    {
+      "model_mode": "trained_gru_gaussian_residual",
+      "training_examples": 720,
+      "fit_examples": 576,
+      "validation_examples": 144,
+      "epochs_run": 67,
+      "best_validation_loss": 0.6965793371200562,
+      "seed": 27,
+      "train_start_date": "2026-07-06",
+      "train_end_date": "2026-07-10",
+      "test_start_date": "2026-07-11",
+      "test_end_date": "2026-07-11"
+    },
+    {
+      "model_mode": "trained_gru_gaussian_residual",
+      "training_examples": 720,
+      "fit_examples": 576,
+      "validation_examples": 144,
+      "epochs_run": 46,
+      "best_validation_loss": 0.5789589285850525,
+      "seed": 28,
+      "train_start_date": "2026-07-07",
+      "train_end_date": "2026-07-11",
+      "test_start_date": "2026-07-12",
+      "test_end_date": "2026-07-12"
+    },
+    {
+      "model_mode": "trained_gru_gaussian_residual",
+      "training_examples": 720,
+      "fit_examples": 576,
+      "validation_examples": 144,
+      "epochs_run": 67,
+      "best_validation_loss": 0.7361627221107483,
+      "seed": 29,
+      "train_start_date": "2026-07-08",
+      "train_end_date": "2026-07-12",
+      "test_start_date": "2026-07-13",
+      "test_end_date": "2026-07-13"
+    },
+    {
+      "model_mode": "trained_gru_gaussian_residual",
+      "training_examples": 720,
+      "fit_examples": 576,
+      "validation_examples": 144,
+      "epochs_run": 130,
+      "best_validation_loss": 0.41572946310043335,
+      "seed": 30,
+      "train_start_date": "2026-07-09",
+      "train_end_date": "2026-07-13",
+      "test_start_date": "2026-07-14",
+      "test_end_date": "2026-07-14"
+    }
+  ]
+}

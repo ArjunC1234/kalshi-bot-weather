@@ -1,0 +1,294 @@
+{
+  "experiment": "choose_gate_on_training_set_apply_to_test_set",
+  "edgecaster_train_start": "2026-07-02",
+  "edgecaster_train_end": "2026-07-14",
+  "edgecaster_test_start": "2026-07-15",
+  "edgecaster_test_end": "2026-07-16",
+  "train_summary": {
+    "training_examples": 16334,
+    "fit_examples": 15038,
+    "validation_examples": 1296,
+    "training_days": 13,
+    "validation_date": "2026-07-14",
+    "epochs_run": 28,
+    "best_validation_loss": 0.5593529244263967,
+    "loss_history": [
+      {
+        "epoch": 1,
+        "train_loss": 1.3125690972363506,
+        "validation_loss": 0.9254917105038961
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.9154139072806747,
+        "validation_loss": 0.6716105838616689
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.8047351815082409,
+        "validation_loss": 0.6412762502829233
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.7709775787812693,
+        "validation_loss": 0.6274518668651581
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.746868630250295,
+        "validation_loss": 0.614220087726911
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.7316096402980663,
+        "validation_loss": 0.6011838912963867
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.7166171272595724,
+        "validation_loss": 0.596213087439537
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.708996437214039,
+        "validation_loss": 0.5944495648145676
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.7002313004599677,
+        "validation_loss": 0.591688796877861
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.6895509958267212,
+        "validation_loss": 0.5853467832008997
+      },
+      {
+        "epoch": 11,
+        "train_loss": 0.6783220370610555,
+        "validation_loss": 0.5773145059744517
+      },
+      {
+        "epoch": 12,
+        "train_loss": 0.6750713719262017,
+        "validation_loss": 0.5762230406204859
+      },
+      {
+        "epoch": 13,
+        "train_loss": 0.6697239566732336,
+        "validation_loss": 0.5758781234423319
+      },
+      {
+        "epoch": 14,
+        "train_loss": 0.6641022894117568,
+        "validation_loss": 0.5676666150490443
+      },
+      {
+        "epoch": 15,
+        "train_loss": 0.6545537379052904,
+        "validation_loss": 0.5646490678191185
+      },
+      {
+        "epoch": 16,
+        "train_loss": 0.651595945711489,
+        "validation_loss": 0.5666487589478493
+      },
+      {
+        "epoch": 17,
+        "train_loss": 0.6494937141736349,
+        "validation_loss": 0.5754732315738996
+      },
+      {
+        "epoch": 18,
+        "train_loss": 0.6423170500331454,
+        "validation_loss": 0.5593529244263967
+      },
+      {
+        "epoch": 19,
+        "train_loss": 0.6316324825640078,
+        "validation_loss": 0.5692316815257072
+      },
+      {
+        "epoch": 20,
+        "train_loss": 0.6270335073824282,
+        "validation_loss": 0.5632805327574412
+      },
+      {
+        "epoch": 21,
+        "train_loss": 0.62517691983117,
+        "validation_loss": 0.5658627624313036
+      },
+      {
+        "epoch": 22,
+        "train_loss": 0.6199561269194992,
+        "validation_loss": 0.5754125043749809
+      },
+      {
+        "epoch": 23,
+        "train_loss": 0.6094480278315367,
+        "validation_loss": 0.562966508169969
+      },
+      {
+        "epoch": 24,
+        "train_loss": 0.6104445082169992,
+        "validation_loss": 0.5626233766476313
+      },
+      {
+        "epoch": 25,
+        "train_loss": 0.6079317265086703,
+        "validation_loss": 0.5690856501460075
+      },
+      {
+        "epoch": 26,
+        "train_loss": 0.6050293853989354,
+        "validation_loss": 0.5652320832014084
+      },
+      {
+        "epoch": 27,
+        "train_loss": 0.5987932991098475,
+        "validation_loss": 0.5732891236742338
+      },
+      {
+        "epoch": 28,
+        "train_loss": 0.5933687951829698,
+        "validation_loss": 0.5652343332767487
+      }
+    ]
+  },
+  "train_prediction_examples": 16334,
+  "test_prediction_examples": 2591,
+  "best_train_gate": {
+    "min_predicted_reward": 0.04,
+    "min_trade_probability": 0.3,
+    "min_raw_edge": 0.02,
+    "trades": 57,
+    "contracts": 353,
+    "risk": 159.94,
+    "pnl": 71.06,
+    "roi": 0.4442916093535076,
+    "hit_rate": 0.6666666666666666
+  },
+  "test_result_using_best_train_gate": {
+    "min_predicted_reward": 0.04,
+    "min_trade_probability": 0.3,
+    "min_raw_edge": 0.02,
+    "trades": 5,
+    "contracts": 29,
+    "risk": 14.18,
+    "pnl": -3.1799999999999997,
+    "roi": -0.2242595204513399,
+    "hit_rate": 0.4
+  },
+  "top_10_train_gates": [
+    {
+      "min_predicted_reward": 0.04,
+      "min_trade_probability": 0.3,
+      "min_raw_edge": 0.02,
+      "trades": 57,
+      "contracts": 353,
+      "risk": 159.94,
+      "pnl": 71.06,
+      "roi": 0.4442916093535076,
+      "hit_rate": 0.6666666666666666
+    },
+    {
+      "min_predicted_reward": 0.04,
+      "min_trade_probability": 0.35,
+      "min_raw_edge": 0.02,
+      "trades": 57,
+      "contracts": 353,
+      "risk": 159.94,
+      "pnl": 71.06,
+      "roi": 0.4442916093535076,
+      "hit_rate": 0.6666666666666666
+    },
+    {
+      "min_predicted_reward": 0.04,
+      "min_trade_probability": 0.4,
+      "min_raw_edge": 0.02,
+      "trades": 57,
+      "contracts": 353,
+      "risk": 159.94,
+      "pnl": 71.06,
+      "roi": 0.4442916093535076,
+      "hit_rate": 0.6666666666666666
+    },
+    {
+      "min_predicted_reward": 0.03,
+      "min_trade_probability": 0.3,
+      "min_raw_edge": 0.02,
+      "trades": 66,
+      "contracts": 401,
+      "risk": 184.21,
+      "pnl": 68.79,
+      "roi": 0.3734324955214158,
+      "hit_rate": 0.6363636363636364
+    },
+    {
+      "min_predicted_reward": 0.03,
+      "min_trade_probability": 0.35,
+      "min_raw_edge": 0.02,
+      "trades": 66,
+      "contracts": 401,
+      "risk": 184.21,
+      "pnl": 68.79,
+      "roi": 0.3734324955214158,
+      "hit_rate": 0.6363636363636364
+    },
+    {
+      "min_predicted_reward": 0.03,
+      "min_trade_probability": 0.4,
+      "min_raw_edge": 0.02,
+      "trades": 66,
+      "contracts": 401,
+      "risk": 184.21,
+      "pnl": 68.79,
+      "roi": 0.3734324955214158,
+      "hit_rate": 0.6363636363636364
+    },
+    {
+      "min_predicted_reward": 0.04,
+      "min_trade_probability": 0.6,
+      "min_raw_edge": 0.03,
+      "trades": 35,
+      "contracts": 239,
+      "risk": 97.96000000000001,
+      "pnl": 67.04,
+      "roi": 0.6843609636586362,
+      "hit_rate": 0.7142857142857143
+    },
+    {
+      "min_predicted_reward": 0.04,
+      "min_trade_probability": 0.45,
+      "min_raw_edge": 0.02,
+      "trades": 56,
+      "contracts": 345,
+      "risk": 157.14,
+      "pnl": 65.86,
+      "roi": 0.4191167112129312,
+      "hit_rate": 0.6607142857142857
+    },
+    {
+      "min_predicted_reward": 0.04,
+      "min_trade_probability": 0.5,
+      "min_raw_edge": 0.02,
+      "trades": 56,
+      "contracts": 345,
+      "risk": 157.14,
+      "pnl": 65.86,
+      "roi": 0.4191167112129312,
+      "hit_rate": 0.6607142857142857
+    },
+    {
+      "min_predicted_reward": 0.04,
+      "min_trade_probability": 0.55,
+      "min_raw_edge": 0.02,
+      "trades": 56,
+      "contracts": 345,
+      "risk": 157.14,
+      "pnl": 65.86,
+      "roi": 0.4191167112129312,
+      "hit_rate": 0.6607142857142857
+    }
+  ]
+}

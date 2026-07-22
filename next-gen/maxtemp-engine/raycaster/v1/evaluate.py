@@ -461,7 +461,10 @@ def _group_metric_rows(
         grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for row in rows:
             grouped[str(row[group_column])].append(row)
-        for group, group_rows in sorted(grouped.items()):
+        for group, group_rows in sorted(
+            grouped.items(),
+            key=lambda item: _group_sort_key(group_column, item[0]),
+        ):
             for metric in _metric_rows(group_rows, metric_type):
                 output.append({"group": group, "metric_type": metric_type, **metric})
     return output
@@ -567,7 +570,7 @@ def _write_charts(
         grouped = defaultdict(list)
         for row in temp_rows:
             grouped[row["checkpoint"]].append(float(row["absolute_error_f"]))
-        labels = list(sorted(grouped))
+        labels = list(sorted(grouped, key=_checkpoint_sort_key))
         values = [mean(grouped[label]) for label in labels]
         plt.figure(figsize=(8, 4))
         plt.bar(labels, values)
@@ -581,7 +584,7 @@ def _write_charts(
         grouped = defaultdict(list)
         for row in bracket_rows:
             grouped[row["checkpoint"]].append(float(row["top_one_accuracy"]))
-        labels = list(sorted(grouped))
+        labels = list(sorted(grouped, key=_checkpoint_sort_key))
         values = [mean(grouped[label]) for label in labels]
         plt.figure(figsize=(8, 4))
         plt.bar(labels, values)
@@ -638,3 +641,24 @@ def _checkpoint(item, event) -> str:
     from libs.time_utils import checkpoint_label
 
     return checkpoint_label(item.snapshot_hour_utc, event.climate_window_start_utc)
+
+
+def _group_sort_key(group_column: str, group: str) -> tuple[int, int | str]:
+    if group_column == "checkpoint":
+        return (0, _checkpoint_sort_key(group))
+    return (1, group)
+
+
+def _checkpoint_sort_key(label: str) -> int:
+    if label.startswith("t_minus_") and label.endswith("h"):
+        return -_checkpoint_hour(label, "t_minus_")
+    if label.startswith("t_plus_") and label.endswith("h"):
+        return _checkpoint_hour(label, "t_plus_")
+    return 10_000
+
+
+def _checkpoint_hour(label: str, prefix: str) -> int:
+    try:
+        return int(label.removeprefix(prefix).removesuffix("h"))
+    except ValueError:
+        return 10_000

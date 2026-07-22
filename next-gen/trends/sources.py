@@ -26,9 +26,20 @@ REPORT_MARKERS = (
 )
 QUALITY_FILES = (
     "quality_report.json",
+    "daily_health_report.json",
     "table_counts.csv",
+    "city_coverage.csv",
     "missing_city_hours.csv",
     "provider_errors.csv",
+)
+STRATEGY_MARKERS = (
+    "trades",
+    "daily_pnl",
+    "threshold_sweep",
+    "validation_threshold_sweep",
+    "train_gate_sweep",
+    "candidates",
+    "policy_calibration",
 )
 
 
@@ -37,12 +48,14 @@ class SourceRoots:
     data_root: Path
     report_root: Path
     quality_root: Path
+    strategy_root: Path = Path("reports/strategy")
 
     def normalized(self) -> SourceRoots:
         return SourceRoots(
             self.data_root.resolve(),
             self.report_root.resolve(),
             self.quality_root.resolve(),
+            self.strategy_root.resolve(),
         )
 
 
@@ -51,17 +64,21 @@ def discover_sources(roots: SourceRoots) -> dict[str, Any]:
     exports = _discover(normalized.data_root, "export")
     reports = _discover(normalized.report_root, "report")
     quality_reports = _discover(normalized.quality_root, "quality")
+    strategy_reports = _discover(normalized.strategy_root, "strategy")
     _link_to_exports(reports, exports)
     _link_to_exports(quality_reports, exports)
+    _link_to_exports(strategy_reports, exports)
     return {
         "roots": {
             "data": str(normalized.data_root),
             "report": str(normalized.report_root),
             "quality": str(normalized.quality_root),
+            "strategy": str(normalized.strategy_root),
         },
         "exports": exports,
         "reports": reports,
         "quality_reports": quality_reports,
+        "strategy_reports": strategy_reports,
     }
 
 
@@ -80,6 +97,8 @@ def resolve_source(roots: SourceRoots, kind: str, source_id: str | None) -> Path
         raise ValueError(f"folder is not a valid model report: {source_id}")
     if kind == "quality" and not _is_quality(candidate):
         raise ValueError(f"folder is not a valid quality report: {source_id}")
+    if kind == "strategy" and not _is_strategy(candidate):
+        raise ValueError(f"folder is not a valid strategy report: {source_id}")
     return candidate
 
 
@@ -97,6 +116,8 @@ def _discover(root: Path, kind: str) -> list[dict[str, Any]]:
         if kind == "report" and not _is_report(path):
             continue
         if kind == "quality" and not _is_quality(path):
+            continue
+        if kind == "strategy" and not _is_strategy(path):
             continue
         sources.append(_source_info(root, path, kind))
     return sorted(sources, key=lambda item: (item["modified_utc"], item["id"]), reverse=True)
@@ -120,6 +141,8 @@ def _source_info(root: Path, path: Path, kind: str) -> dict[str, Any]:
         _enrich_report_info(info, path)
     elif kind == "quality":
         _enrich_quality_info(info, path)
+    elif kind == "strategy":
+        _enrich_strategy_info(info, path)
     return info
 
 
@@ -154,12 +177,49 @@ def _enrich_report_info(info: dict[str, Any], path: Path) -> None:
 
 
 def _enrich_quality_info(info: dict[str, Any], path: Path) -> None:
-    quality = _read_json_safe(path / "quality_report.json")
+    quality = _read_json_safe(path / "quality_report.json") or _read_json_safe(
+        path / "daily_health_report.json"
+    )
     if quality.get("source_export_id"):
         info["source_export_id"] = quality.get("source_export_id")
     info["created_utc"] = quality.get("generated_at_utc")
-    info["cities"] = quality.get("cities", [])
+    info["cities"] = quality.get("cities", quality.get("cities_seen", []))
     info["snapshot_hours"] = quality.get("snapshot_hours")
+
+
+def _enrich_strategy_info(info: dict[str, Any], path: Path) -> None:
+    summary = _read_json_safe(path / "summary.json")
+    config = summary.get("config", {})
+    if not isinstance(config, dict):
+        config = {}
+    info["mode"] = summary.get("mode") or summary.get("experiment")
+    source_export_id = (
+        summary.get("source_export_id")
+        or _source_export_id_from_path(summary.get("data_path"))
+        or _source_export_id_from_path(config.get("data_path"))
+    )
+    if source_export_id:
+        info["source_export_id"] = source_export_id
+    info["created_utc"] = summary.get("generated_at_utc")
+    for key in (
+        "trades",
+        "total_pnl",
+        "roi",
+        "hit_rate",
+        "max_drawdown",
+        "positive_clv_rate",
+    ):
+        if key in summary:
+            info[key] = summary[key]
+
+
+def _source_export_id_from_path(value: Any) -> str | None:
+    if not isinstance(value, str) or not value:
+        return None
+    for part in Path(value).parts:
+        if part.startswith("export_"):
+            return part
+    return None
 
 
 def _read_json_safe(path: Path) -> dict[str, Any]:
@@ -204,6 +264,13 @@ def _is_quality(path: Path) -> bool:
     return any((path / marker).exists() for marker in QUALITY_FILES)
 
 
+def _is_strategy(path: Path) -> bool:
+    return any(_has_table(path, marker) for marker in STRATEGY_MARKERS) or (
+        (path / "summary.json").exists()
+        and any(_has_table(path, marker) for marker in ("predictions", "candidates"))
+    )
+
+
 def _has_table(path: Path, name: str) -> bool:
     return any(
         candidate.exists() and candidate.stat().st_size > 0
@@ -242,6 +309,8 @@ def _root_for_kind(roots: SourceRoots, kind: str) -> Path:
         return roots.report_root
     if kind == "quality":
         return roots.quality_root
+    if kind == "strategy":
+        return roots.strategy_root
     raise ValueError(f"unknown source kind: {kind}")
 
 

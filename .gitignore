@@ -10,3 +10,5 @@ collector_spool/
 collector_spool_*/
 *.log
 next-gen/production/deployable/logs/
+next-gen/trends/ui/node_modules/
+next-gen/trends/ui/dist/

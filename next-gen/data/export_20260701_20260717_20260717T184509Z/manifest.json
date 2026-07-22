@@ -1,0 +1,16 @@
+{
+  "end": "2026-07-17",
+  "export_name": "export_20260701_20260717_20260717T184509Z",
+  "exported_at_utc": "2026-07-17T18:45:09.405590+00:00",
+  "start": "2026-07-01",
+  "tables": {
+    "collector_runs": 1128,
+    "events": 2250,
+    "final_temperature_labels": 96,
+    "market_snapshots": 13500,
+    "provider_errors": 85,
+    "raw_payloads": 20336,
+    "settlements": 96,
+    "weather_snapshots": 2250
+  }
+}

@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlparse
 
-from trends.datasets import build_workbench_payload
+from trends.datasets import build_workbench_payload, payload_table_rows
 from trends.sources import SourceRoots, discover_sources, resolve_source
 
 
@@ -22,13 +22,14 @@ def main(argv: list[str] | None = None) -> int:
     serve.add_argument("--data-root", type=Path, default=Path("data"))
     serve.add_argument("--report-root", type=Path, default=Path("reports/model"))
     serve.add_argument("--quality-root", type=Path, default=Path("reports/quality"))
+    serve.add_argument("--strategy-root", type=Path, default=Path("reports/strategy"))
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8765)
     serve.add_argument("--no-open", action="store_true")
     args = parser.parse_args(argv)
     if args.command == "serve":
         return serve_gui(
-            SourceRoots(args.data_root, args.report_root, args.quality_root),
+            SourceRoots(args.data_root, args.report_root, args.quality_root, args.strategy_root),
             args.host,
             args.port,
             open_browser=not args.no_open,
@@ -42,7 +43,7 @@ def serve_gui(
     port: int,
     open_browser: bool = True,
 ) -> int:
-    static_dir = Path(__file__).resolve().parent / "static"
+    static_dir = _static_dir()
     normalized_roots = roots.normalized()
     active: dict[str, Any] = {"payload": None, "selection": None, "cache_key": None}
 
@@ -94,7 +95,7 @@ def serve_gui(
                 if parsed.path.startswith("/api/table/"):
                     table_name = unquote(parsed.path.removeprefix("/api/table/"))
                     payload = self._require_payload()
-                    table = payload["tables"].get(table_name)
+                    table = payload_table_rows(payload, table_name)
                     if table is None:
                         self._send_error_json(404, f"table not found: {table_name}")
                         return
@@ -107,6 +108,8 @@ def serve_gui(
                 self._send_error_json(400, str(exc))
                 return
             if parsed.path == "/":
+                self.path = "/index.html"
+            elif _is_spa_path(static_dir, parsed.path):
                 self.path = "/index.html"
             super().do_GET()
 
@@ -126,21 +129,29 @@ def serve_gui(
                     "quality",
                     request.get("quality_id"),
                 )
-                cache_key = _cache_key([data_path, report_path, quality_path])
+                strategy_path = resolve_source(
+                    normalized_roots,
+                    "strategy",
+                    request.get("strategy_id"),
+                )
+                cache_key = _cache_key([data_path, report_path, quality_path, strategy_path])
                 if active["cache_key"] != cache_key:
                     active["payload"] = build_workbench_payload(
                         data_path,
                         [report_path] if report_path else [],
                         quality_path,
+                        [strategy_path] if strategy_path else [],
                     )
                     active["cache_key"] = cache_key
                 active["selection"] = {
                     "export_id": request.get("export_id"),
                     "report_id": request.get("report_id") or "",
                     "quality_id": request.get("quality_id") or "",
+                    "strategy_id": request.get("strategy_id") or "",
                     "data_path": str(data_path),
                     "report_path": str(report_path) if report_path else None,
                     "quality_path": str(quality_path) if quality_path else None,
+                    "strategy_path": str(strategy_path) if strategy_path else None,
                 }
                 payload = active["payload"]
                 self._send_json(
@@ -187,12 +198,17 @@ def serve_gui(
             self.send_header("Expires", "0")
             super().end_headers()
 
-    with socketserver.TCPServer((host, port), TrendsHandler) as server:
+    class ReusableTCPServer(socketserver.TCPServer):
+        allow_reuse_address = True
+
+    with ReusableTCPServer((host, port), TrendsHandler) as server:
         url = f"http://{host}:{port}"
         print(f"trends GUI: {url}")
         print(f"data root: {normalized_roots.data_root}")
         print(f"report root: {normalized_roots.report_root}")
         print(f"quality root: {normalized_roots.quality_root}")
+        print(f"strategy root: {normalized_roots.strategy_root}")
+        print(f"static root: {static_dir}")
         if open_browser:
             webbrowser.open(url)
         server.serve_forever()
@@ -217,6 +233,25 @@ def _newest_mtime(path: Path) -> float:
         if child.is_file():
             newest = max(newest, child.stat().st_mtime)
     return newest
+
+
+def _static_dir() -> Path:
+    root = Path(__file__).resolve().parent
+    ui_dist = root / "ui" / "dist"
+    if (ui_dist / "index.html").exists():
+        return ui_dist
+    return root / "static"
+
+
+def _is_spa_path(static_dir: Path, path: str) -> bool:
+    if path.startswith("/api/"):
+        return False
+    requested = (static_dir / path.lstrip("/")).resolve()
+    try:
+        requested.relative_to(static_dir.resolve())
+    except ValueError:
+        return False
+    return not requested.exists() and "." not in Path(path).name
 
 
 if __name__ == "__main__":

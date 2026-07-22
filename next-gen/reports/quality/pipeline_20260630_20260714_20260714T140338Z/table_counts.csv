@@ -1,9 +1,0 @@
-rows,table
-900,collector_runs
-16334,raw_payloads
-1794,events
-10764,market_snapshots
-1794,weather_snapshots
-78,settlements
-78,final_temperature_labels
-85,provider_errors

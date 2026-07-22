@@ -13,6 +13,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from backtest.data_sources import LocalExportSource
+from backtest.health import build_daily_health_report
 from backtest.quality import build_quality_report
 from libs.artifacts import (
     create_artifact_manifest,
@@ -25,6 +26,74 @@ from trends.sources import SourceRoots, discover_sources, resolve_source
 
 
 class QualityArtifactTrendTests(unittest.TestCase):
+    def test_daily_health_pending_counts_ignore_previous_target_date_overlap(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            _write_csv(
+                root / "events.csv",
+                [
+                    {
+                        "city": "nyc",
+                        "event_ticker": "E_PREV",
+                        "target_date": "2026-07-19",
+                        "snapshot_local_date": "2026-07-20",
+                        "snapshot_local_hour": "1",
+                        "snapshot_time_utc": "2026-07-20T01:00:00+00:00",
+                    },
+                    {
+                        "city": "nyc",
+                        "event_ticker": "E_CUR",
+                        "target_date": "2026-07-20",
+                        "snapshot_local_date": "2026-07-20",
+                        "snapshot_local_hour": "2",
+                        "snapshot_time_utc": "2026-07-20T02:00:00+00:00",
+                    },
+                ],
+            )
+            _write_csv(
+                root / "market_snapshots.csv",
+                [
+                    {"city": "nyc", "snapshot_local_date": "2026-07-20"},
+                    {"city": "nyc", "snapshot_local_date": "2026-07-20"},
+                ],
+            )
+            _write_csv(
+                root / "weather_snapshots.csv",
+                [
+                    {"city": "nyc", "snapshot_local_date": "2026-07-20"},
+                    {"city": "nyc", "snapshot_local_date": "2026-07-20"},
+                ],
+            )
+            _write_csv(
+                root / "raw_payloads.csv",
+                [
+                    {
+                        "snapshot_local_date": "2026-07-20",
+                        "storage_path": "raw/20260720/item.json.gz",
+                    }
+                ],
+            )
+            _write_csv(
+                root / "settlements.csv",
+                [{"city": "nyc", "event_ticker": "E_CUR", "target_date": "2026-07-20"}],
+            )
+            _write_csv(
+                root / "final_temperature_labels.csv",
+                [{"city": "nyc", "event_ticker": "E_CUR", "target_date": "2026-07-20"}],
+            )
+            _write_csv(root / "provider_errors.csv", [])
+            report = build_daily_health_report(
+                LocalExportSource(root),
+                "2026-07-20",
+                expected_cities=["nyc"],
+            )
+            self.assertEqual(report.event_count, 1)
+            self.assertEqual(report.pending_settlements, 0)
+            self.assertEqual(report.pending_final_highs, 0)
+            self.assertEqual(report.actual_city_hours, 2)
+            self.assertEqual(report.expected_city_hours, 2)
+            self.assertEqual(report.cities_seen, ["nyc"])
+
     def test_quality_report_counts_missing_hours_and_pending_labels(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

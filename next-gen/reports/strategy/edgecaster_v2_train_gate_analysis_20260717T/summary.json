@@ -1,0 +1,330 @@
+{
+  "fit_train_start": "2026-07-02",
+  "fit_train_end": "2026-07-13",
+  "validation_date": "2026-07-14",
+  "train_summary": {
+    "training_examples": 15038,
+    "fit_examples": 13748,
+    "validation_examples": 1290,
+    "training_days": 12,
+    "validation_date": "2026-07-13",
+    "epochs_run": 38,
+    "best_validation_loss": 0.41819201533993083,
+    "loss_history": [
+      {
+        "epoch": 1,
+        "train_loss": 1.334162244796753,
+        "validation_loss": 0.9674709240595499
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.943429114818573,
+        "validation_loss": 0.6126052836577097
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.8239318704605103,
+        "validation_loss": 0.5433476716279984
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.784532277584076,
+        "validation_loss": 0.5070382058620453
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.7562969017028809,
+        "validation_loss": 0.48541302730639774
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.7488854146003723,
+        "validation_loss": 0.468306764960289
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.7290537428855896,
+        "validation_loss": 0.46621499955654144
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.7184409475326539,
+        "validation_loss": 0.46431676546732586
+      },
+      {
+        "epoch": 9,
+        "train_loss": 0.7055880951881409,
+        "validation_loss": 0.4512104392051697
+      },
+      {
+        "epoch": 10,
+        "train_loss": 0.6948700380325318,
+        "validation_loss": 0.44546538094679516
+      },
+      {
+        "epoch": 11,
+        "train_loss": 0.6838937473297119,
+        "validation_loss": 0.4377722193797429
+      },
+      {
+        "epoch": 12,
+        "train_loss": 0.6839720559120178,
+        "validation_loss": 0.4511299344400565
+      },
+      {
+        "epoch": 13,
+        "train_loss": 0.6760410308837891,
+        "validation_loss": 0.4493541481594245
+      },
+      {
+        "epoch": 14,
+        "train_loss": 0.6704892492294312,
+        "validation_loss": 0.45417797937989235
+      },
+      {
+        "epoch": 15,
+        "train_loss": 0.6629641199111939,
+        "validation_loss": 0.4433896603683631
+      },
+      {
+        "epoch": 16,
+        "train_loss": 0.6589368653297424,
+        "validation_loss": 0.4445469913383325
+      },
+      {
+        "epoch": 17,
+        "train_loss": 0.6534153318405151,
+        "validation_loss": 0.43790769452850026
+      },
+      {
+        "epoch": 18,
+        "train_loss": 0.6426911902427673,
+        "validation_loss": 0.44249647855758667
+      },
+      {
+        "epoch": 19,
+        "train_loss": 0.6400570225715637,
+        "validation_loss": 0.43777711875736713
+      },
+      {
+        "epoch": 20,
+        "train_loss": 0.635283670425415,
+        "validation_loss": 0.4415008245656888
+      },
+      {
+        "epoch": 21,
+        "train_loss": 0.6370641899108886,
+        "validation_loss": 0.43362787800530594
+      },
+      {
+        "epoch": 22,
+        "train_loss": 0.6277096605300904,
+        "validation_loss": 0.4395884480327368
+      },
+      {
+        "epoch": 23,
+        "train_loss": 0.6220437443256378,
+        "validation_loss": 0.43180265960594016
+      },
+      {
+        "epoch": 24,
+        "train_loss": 0.615621702671051,
+        "validation_loss": 0.44127537806828815
+      },
+      {
+        "epoch": 25,
+        "train_loss": 0.6128898811340332,
+        "validation_loss": 0.436132184540232
+      },
+      {
+        "epoch": 26,
+        "train_loss": 0.612718995809555,
+        "validation_loss": 0.4413293531785409
+      },
+      {
+        "epoch": 27,
+        "train_loss": 0.6008644688129425,
+        "validation_loss": 0.4221575129777193
+      },
+      {
+        "epoch": 28,
+        "train_loss": 0.5946535277366638,
+        "validation_loss": 0.41819201533993083
+      },
+      {
+        "epoch": 29,
+        "train_loss": 0.5978925585746765,
+        "validation_loss": 0.42954331325987977
+      },
+      {
+        "epoch": 30,
+        "train_loss": 0.5893504774570465,
+        "validation_loss": 0.44067594471077126
+      },
+      {
+        "epoch": 31,
+        "train_loss": 0.5893400514125824,
+        "validation_loss": 0.43208612129092216
+      },
+      {
+        "epoch": 32,
+        "train_loss": 0.5810241103172302,
+        "validation_loss": 0.43413115106523037
+      },
+      {
+        "epoch": 33,
+        "train_loss": 0.5753965759277344,
+        "validation_loss": 0.4393487088382244
+      },
+      {
+        "epoch": 34,
+        "train_loss": 0.5691986966133118,
+        "validation_loss": 0.45864318311214447
+      },
+      {
+        "epoch": 35,
+        "train_loss": 0.5677433049678803,
+        "validation_loss": 0.4330336954444647
+      },
+      {
+        "epoch": 36,
+        "train_loss": 0.5655353236198425,
+        "validation_loss": 0.4430440446982781
+      },
+      {
+        "epoch": 37,
+        "train_loss": 0.5590220868587494,
+        "validation_loss": 0.44257092382758856
+      },
+      {
+        "epoch": 38,
+        "train_loss": 0.5607714712619781,
+        "validation_loss": 0.44528574869036674
+      }
+    ]
+  },
+  "prediction_examples": 1296,
+  "best_validation_gate": {
+    "min_predicted_reward": 0.09,
+    "min_trade_probability": 0.45,
+    "min_raw_edge": 0.02,
+    "trades": 5,
+    "contracts": 28,
+    "risk": 14.09,
+    "pnl": 7.91,
+    "roi": 0.5613910574875799,
+    "hit_rate": 0.8
+  },
+  "top_10": [
+    {
+      "min_predicted_reward": 0.09,
+      "min_trade_probability": 0.45,
+      "min_raw_edge": 0.02,
+      "trades": 5,
+      "contracts": 28,
+      "risk": 14.09,
+      "pnl": 7.91,
+      "roi": 0.5613910574875799,
+      "hit_rate": 0.8
+    },
+    {
+      "min_predicted_reward": 0.09,
+      "min_trade_probability": 0.5,
+      "min_raw_edge": 0.02,
+      "trades": 5,
+      "contracts": 28,
+      "risk": 14.09,
+      "pnl": 7.91,
+      "roi": 0.5613910574875799,
+      "hit_rate": 0.8
+    },
+    {
+      "min_predicted_reward": 0.09,
+      "min_trade_probability": 0.55,
+      "min_raw_edge": 0.02,
+      "trades": 5,
+      "contracts": 28,
+      "risk": 14.09,
+      "pnl": 7.91,
+      "roi": 0.5613910574875799,
+      "hit_rate": 0.8
+    },
+    {
+      "min_predicted_reward": 0.09,
+      "min_trade_probability": 0.58,
+      "min_raw_edge": 0.02,
+      "trades": 5,
+      "contracts": 28,
+      "risk": 14.09,
+      "pnl": 7.91,
+      "roi": 0.5613910574875799,
+      "hit_rate": 0.8
+    },
+    {
+      "min_predicted_reward": 0.09,
+      "min_trade_probability": 0.6,
+      "min_raw_edge": 0.02,
+      "trades": 5,
+      "contracts": 28,
+      "risk": 14.09,
+      "pnl": 7.91,
+      "roi": 0.5613910574875799,
+      "hit_rate": 0.8
+    },
+    {
+      "min_predicted_reward": 0.09,
+      "min_trade_probability": 0.45,
+      "min_raw_edge": 0.01,
+      "trades": 5,
+      "contracts": 26,
+      "risk": 13.83,
+      "pnl": 7.17,
+      "roi": 0.5184381778741866,
+      "hit_rate": 0.8
+    },
+    {
+      "min_predicted_reward": 0.09,
+      "min_trade_probability": 0.5,
+      "min_raw_edge": 0.01,
+      "trades": 5,
+      "contracts": 26,
+      "risk": 13.83,
+      "pnl": 7.17,
+      "roi": 0.5184381778741866,
+      "hit_rate": 0.8
+    },
+    {
+      "min_predicted_reward": 0.09,
+      "min_trade_probability": 0.55,
+      "min_raw_edge": 0.01,
+      "trades": 5,
+      "contracts": 26,
+      "risk": 13.83,
+      "pnl": 7.17,
+      "roi": 0.5184381778741866,
+      "hit_rate": 0.8
+    },
+    {
+      "min_predicted_reward": 0.09,
+      "min_trade_probability": 0.58,
+      "min_raw_edge": 0.01,
+      "trades": 5,
+      "contracts": 26,
+      "risk": 13.83,
+      "pnl": 7.17,
+      "roi": 0.5184381778741866,
+      "hit_rate": 0.8
+    },
+    {
+      "min_predicted_reward": 0.09,
+      "min_trade_probability": 0.6,
+      "min_raw_edge": 0.01,
+      "trades": 5,
+      "contracts": 26,
+      "risk": 13.83,
+      "pnl": 7.17,
+      "roi": 0.5184381778741866,
+      "hit_rate": 0.8
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "test_candidates": 2591,
+  "execution_gate_candidates": 1220,
+  "edgecaster_predicted_reward_min": -0.011027070219684519,
+  "edgecaster_predicted_reward_max": -0.00925055576263316,
+  "edgecaster_positive_predicted_rewards": 0,
+  "edgecaster_default_trade_gate_candidates": 0,
+  "missed_realized_winners_cloud_edge_ge_003": 7,
+  "missed_realized_winners_cloud_edge_ge_005": 4,
+  "threshold_opportunities": [
+    {
+      "candidates": 281,
+      "winners": 105,
+      "hit_rate": 0.3736654804270463,
+      "one_contract_pnl": -21.04,
+      "avg_cloud_edge": 0.053224703117941724,
+      "avg_realized_reward": -0.07487544483985765,
+      "cloud_edge_threshold": 0.0
+    },
+    {
+      "candidates": 157,
+      "winners": 48,
+      "hit_rate": 0.3057324840764331,
+      "one_contract_pnl": -18.13,
+      "avg_cloud_edge": 0.09180242686314932,
+      "avg_realized_reward": -0.11547770700636942,
+      "cloud_edge_threshold": 0.01
+    },
+    {
+      "candidates": 74,
+      "winners": 18,
+      "hit_rate": 0.24324324324324326,
+      "one_contract_pnl": -5.24,
+      "avg_cloud_edge": 0.17861230176870033,
+      "avg_realized_reward": -0.07081081081081081,
+      "cloud_edge_threshold": 0.02
+    },
+    {
+      "candidates": 32,
+      "winners": 7,
+      "hit_rate": 0.21875,
+      "one_contract_pnl": -1.8800000000000001,
+      "avg_cloud_edge": 0.3805660068204078,
+      "avg_realized_reward": -0.058750000000000004,
+      "cloud_edge_threshold": 0.03
+    },
+    {
+      "candidates": 19,
+      "winners": 4,
+      "hit_rate": 0.21052631578947367,
+      "one_contract_pnl": -1.4200000000000002,
+      "avg_cloud_edge": 0.6162319912938332,
+      "avg_realized_reward": -0.07473684210526317,
+      "cloud_edge_threshold": 0.05
+    },
+    {
+      "candidates": 16,
+      "winners": 4,
+      "hit_rate": 0.25,
+      "one_contract_pnl": -0.4500000000000002,
+      "avg_cloud_edge": 0.721875,
+      "avg_realized_reward": -0.02812500000000001,
+      "cloud_edge_threshold": 0.08
+    },
+    {
+      "candidates": 16,
+      "winners": 4,
+      "hit_rate": 0.25,
+      "one_contract_pnl": -0.4500000000000002,
+      "avg_cloud_edge": 0.721875,
+      "avg_realized_reward": -0.02812500000000001,
+      "cloud_edge_threshold": 0.1
+    },
+    {
+      "candidates": 16,
+      "winners": 4,
+      "hit_rate": 0.25,
+      "one_contract_pnl": -0.4500000000000002,
+      "avg_cloud_edge": 0.721875,
+      "avg_realized_reward": -0.02812500000000001,
+      "cloud_edge_threshold": 0.2
+    },
+    {
+      "candidates": 14,
+      "winners": 2,
+      "hit_rate": 0.14285714285714285,
+      "one_contract_pnl": -0.9600000000000002,
+      "avg_cloud_edge": 0.7885714285714285,
+      "avg_realized_reward": -0.06857142857142859,
+      "cloud_edge_threshold": 0.4
+    }
+  ],
+  "raw_edge_strategy_sweep": [
+    {
+      "cloud_edge_threshold": 0.0,
+      "trades": 12,
+      "total_contracts": 62.0,
+      "total_risk": 33.19,
+      "total_pnl": -8.190000000000001,
+      "roi": -0.24676107261223265,
+      "hit_rate": 0.4166666666666667,
+      "max_drawdown": -10.240000000000002,
+      "mean_clv": -0.1429166666666667,
+      "positive_clv_rate": 0.4166666666666667
+    },
+    {
+      "cloud_edge_threshold": 0.01,
+      "trades": 12,
+      "total_contracts": 67.0,
+      "total_risk": 32.98,
+      "total_pnl": -12.98,
+      "roi": -0.3935718617343845,
+      "hit_rate": 0.3333333333333333,
+      "max_drawdown": -14.5,
+      "mean_clv": -0.19625,
+      "positive_clv_rate": 0.3333333333333333
+    },
+    {
+      "cloud_edge_threshold": 0.02,
+      "trades": 12,
+      "total_contracts": 72.0,
+      "total_risk": 33.660000000000004,
+      "total_pnl": -12.66,
+      "roi": -0.3761140819964349,
+      "hit_rate": 0.3333333333333333,
+      "max_drawdown": -14.86,
+      "mean_clv": -0.15875,
+      "positive_clv_rate": 0.3333333333333333
+    },
+    {
+      "cloud_edge_threshold": 0.03,
+      "trades": 9,
+      "total_contracts": 58.0,
+      "total_risk": 22.59,
+      "total_pnl": -3.5900000000000003,
+      "roi": -0.15891987605135016,
+      "hit_rate": 0.4444444444444444,
+      "max_drawdown": -8.19,
+      "mean_clv": 0.01666666666666665,
+      "positive_clv_rate": 0.4444444444444444
+    },
+    {
+      "cloud_edge_threshold": 0.05,
+      "trades": 4,
+      "total_contracts": 21.0,
+      "total_risk": 10.65,
+      "total_pnl": -2.6500000000000004,
+      "roi": -0.24882629107981225,
+      "hit_rate": 0.5,
+      "max_drawdown": -4.85,
+      "mean_clv": -0.006250000000000019,
+      "positive_clv_rate": 0.5
+    },
+    {
+      "cloud_edge_threshold": 0.08,
+      "trades": 3,
+      "total_contracts": 15.0,
+      "total_risk": 7.83,
+      "total_pnl": 0.16999999999999948,
+      "roi": 0.02171136653895268,
+      "hit_rate": 0.6666666666666666,
+      "max_drawdown": -2.66,
+      "mean_clv": 0.14666666666666664,
+      "positive_clv_rate": 0.6666666666666666
+    },
+    {
+      "cloud_edge_threshold": 0.1,
+      "trades": 3,
+      "total_contracts": 15.0,
+      "total_risk": 7.83,
+      "total_pnl": 0.16999999999999948,
+      "roi": 0.02171136653895268,
+      "hit_rate": 0.6666666666666666,
+      "max_drawdown": -2.66,
+      "mean_clv": 0.14666666666666664,
+      "positive_clv_rate": 0.6666666666666666
+    },
+    {
+      "cloud_edge_threshold": 0.2,
+      "trades": 3,
+      "total_contracts": 15.0,
+      "total_risk": 7.83,
+      "total_pnl": 0.16999999999999948,
+      "roi": 0.02171136653895268,
+      "hit_rate": 0.6666666666666666,
+      "max_drawdown": -2.66,
+      "mean_clv": 0.14666666666666664,
+      "positive_clv_rate": 0.6666666666666666
+    },
+    {
+      "cloud_edge_threshold": 0.4,
+      "trades": 3,
+      "total_contracts": 22.0,
+      "total_risk": 6.16,
+      "total_pnl": 8.839999999999998,
+      "roi": 1.4350649350649347,
+      "hit_rate": 0.6666666666666666,
+      "max_drawdown": -2.66,
+      "mean_clv": 0.38666666666666666,
+      "positive_clv_rate": 0.6666666666666666
+    }
+  ]
+}

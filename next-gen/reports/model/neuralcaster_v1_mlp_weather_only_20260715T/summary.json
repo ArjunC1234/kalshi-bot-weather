@@ -1,0 +1,91 @@
+{
+  "model_name": "neuralcaster_v1",
+  "mode": "rolling_window_5d_train_1d_test",
+  "source_export_id": "export_20260701_20260715_20260715T175455Z",
+  "generated_at_utc": "2026-07-15T18:01:20.889149+00:00",
+  "temperature_prediction_count": 1296,
+  "bracket_prediction_count": 1296,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 1.3375165599199548,
+      "count": 1296
+    },
+    {
+      "metric": "rmse",
+      "value": 1.961629908270218,
+      "count": 1296
+    },
+    {
+      "metric": "bias",
+      "value": 0.1776725293365948,
+      "count": 1296
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.5486111111111112,
+      "count": 1296
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.7777777777777778,
+      "count": 1296
+    }
+  ],
+  "bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 1.193319269067475,
+      "count": 1296
+    },
+    {
+      "metric": "brier",
+      "value": 0.6126843226626766,
+      "count": 1296
+    },
+    {
+      "metric": "rps",
+      "value": 0.09059329489366495,
+      "count": 1296
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.5324074074074074,
+      "count": 1296
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.3833631320885084,
+      "count": 1296
+    }
+  ],
+  "model_family": "sklearn_mlp_regressor",
+  "feature_profile": "weather_only",
+  "train_days": 5,
+  "test_days": 1,
+  "min_training_events": 60,
+  "hidden_layers": [
+    24,
+    12
+  ],
+  "alpha": 0.25,
+  "random_state": 17,
+  "labeled_target_dates": [
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14"
+  ],
+  "independent_city_days": 84,
+  "snapshot_rows_with_labels": 1885
+}

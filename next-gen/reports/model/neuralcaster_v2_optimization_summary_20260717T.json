@@ -1,0 +1,622 @@
+{
+  "baseline": {
+    "path": "reports\\model\\neuralcaster_v2_gru_market_14d_20260717T",
+    "mae": 1.0446893797980417,
+    "rmse": 1.5957876026798727,
+    "bias": 0.1927571084764265,
+    "within_1f": 0.6631944444444444,
+    "log_loss": 0.7767173133790736,
+    "top_one": 0.6875,
+    "winner_probability": 0.5522399962277903,
+    "epochs": [
+      89,
+      67
+    ],
+    "best_val": [
+      1.0316264629364014,
+      0.46377280354499817
+    ]
+  },
+  "results": [
+    {
+      "hidden": 24,
+      "dropout": 0.15,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 15,
+      "epochs": [
+        16,
+        62
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_01_h24_d15_lr0p001_wd0p02_p15_20260717T",
+      "mae": 1.092615104251438,
+      "rmse": 1.5962555046962374,
+      "bias": 0.20822337680392744,
+      "within_1f": 0.6145833333333334,
+      "log_loss": 0.8263082884488837,
+      "top_one": 0.6354166666666666,
+      "winner_probability": 0.5092325858716908,
+      "best_val": [
+        1.158808708190918,
+        0.5507677793502808
+      ]
+    },
+    {
+      "hidden": 24,
+      "dropout": 0.2,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        21,
+        66
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_02_h24_d20_lr0p001_wd0p02_p20_20260717T",
+      "mae": 1.098045882119073,
+      "rmse": 1.6041457847714,
+      "bias": 0.2060707484351259,
+      "within_1f": 0.6076388888888888,
+      "log_loss": 0.8325308858096113,
+      "top_one": 0.6354166666666666,
+      "winner_probability": 0.507251719814529,
+      "best_val": [
+        1.1591122150421143,
+        0.5523862838745117
+      ]
+    },
+    {
+      "hidden": 24,
+      "dropout": 0.2,
+      "lr": 0.002,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        21,
+        46
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_03_h24_d20_lr0p002_wd0p02_p20_20260717T",
+      "mae": 1.0990942732493085,
+      "rmse": 1.6051662209107176,
+      "bias": 0.20973011758592344,
+      "within_1f": 0.6111111111111112,
+      "log_loss": 0.8328946015002908,
+      "top_one": 0.6284722222222222,
+      "winner_probability": 0.5073424777214776,
+      "best_val": [
+        1.1608819961547852,
+        0.551607608795166
+      ]
+    },
+    {
+      "hidden": 24,
+      "dropout": 0.25,
+      "lr": 0.001,
+      "wd": 0.03,
+      "patience": 20,
+      "epochs": [
+        21,
+        66
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_04_h24_d25_lr0p001_wd0p03_p20_20260717T",
+      "mae": 1.1023245154486765,
+      "rmse": 1.6078635968593464,
+      "bias": 0.20383440865410649,
+      "within_1f": 0.6076388888888888,
+      "log_loss": 0.8357152064388846,
+      "top_one": 0.6354166666666666,
+      "winner_probability": 0.5060929541471975,
+      "best_val": [
+        1.159040927886963,
+        0.5509039163589478
+      ]
+    },
+    {
+      "hidden": 32,
+      "dropout": 0.15,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 15,
+      "epochs": [
+        33,
+        71
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_05_h32_d15_lr0p001_wd0p02_p15_20260717T",
+      "mae": 1.0874752468532989,
+      "rmse": 1.5895477009363796,
+      "bias": 0.2445577409532331,
+      "within_1f": 0.6423611111111112,
+      "log_loss": 0.802154637818847,
+      "top_one": 0.6388888888888888,
+      "winner_probability": 0.5172781991692886,
+      "best_val": [
+        1.2289220094680786,
+        0.4510093927383423
+      ]
+    },
+    {
+      "hidden": 32,
+      "dropout": 0.2,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        39,
+        79
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_06_h32_d20_lr0p001_wd0p02_p20_20260717T",
+      "mae": 1.0855614874098038,
+      "rmse": 1.585235074082166,
+      "bias": 0.24532852172851521,
+      "within_1f": 0.6458333333333334,
+      "log_loss": 0.798864097038664,
+      "top_one": 0.6354166666666666,
+      "winner_probability": 0.5189840301934945,
+      "best_val": [
+        1.232072114944458,
+        0.44808149337768555
+      ]
+    },
+    {
+      "hidden": 32,
+      "dropout": 0.2,
+      "lr": 0.002,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        30,
+        53
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_07_h32_d20_lr0p002_wd0p02_p20_20260717T",
+      "mae": 1.0941102027893068,
+      "rmse": 1.5958514913146316,
+      "bias": 0.2356329282124833,
+      "within_1f": 0.6423611111111112,
+      "log_loss": 0.7996290974657373,
+      "top_one": 0.6388888888888888,
+      "winner_probability": 0.5181512748193807,
+      "best_val": [
+        1.2329844236373901,
+        0.44568803906440735
+      ]
+    },
+    {
+      "hidden": 32,
+      "dropout": 0.25,
+      "lr": 0.001,
+      "wd": 0.03,
+      "patience": 20,
+      "epochs": [
+        38,
+        80
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_08_h32_d25_lr0p001_wd0p03_p20_20260717T",
+      "mae": 1.0867842833201093,
+      "rmse": 1.588612904406487,
+      "bias": 0.24343200789557523,
+      "within_1f": 0.6423611111111112,
+      "log_loss": 0.8008438611572553,
+      "top_one": 0.6354166666666666,
+      "winner_probability": 0.5185136979355554,
+      "best_val": [
+        1.231634259223938,
+        0.4517607092857361
+      ]
+    },
+    {
+      "hidden": 48,
+      "dropout": 0.15,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 15,
+      "epochs": [
+        82,
+        67
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_09_h48_d15_lr0p001_wd0p02_p15_20260717T",
+      "mae": 1.0234116978115508,
+      "rmse": 1.5502836561452806,
+      "bias": 0.2622778786553274,
+      "within_1f": 0.6597222222222222,
+      "log_loss": 0.7713946462361683,
+      "top_one": 0.6597222222222222,
+      "winner_probability": 0.5356760545351776,
+      "best_val": [
+        1.1462268829345703,
+        0.46954554319381714
+      ]
+    },
+    {
+      "hidden": 48,
+      "dropout": 0.2,
+      "lr": 0.001,
+      "wd": 0.03,
+      "patience": 20,
+      "epochs": [
+        87,
+        72
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_10_h48_d20_lr0p001_wd0p03_p20_20260717T",
+      "mae": 1.0259039137098527,
+      "rmse": 1.5522970546252723,
+      "bias": 0.2504288991292315,
+      "within_1f": 0.6631944444444444,
+      "log_loss": 0.7717678675874123,
+      "top_one": 0.65625,
+      "winner_probability": 0.5348186205405265,
+      "best_val": [
+        1.1556919813156128,
+        0.46577873826026917
+      ]
+    },
+    {
+      "hidden": 48,
+      "dropout": 0.25,
+      "lr": 0.001,
+      "wd": 0.05,
+      "patience": 20,
+      "epochs": [
+        115,
+        75
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_11_h48_d25_lr0p001_wd0p05_p20_20260717T",
+      "mae": 0.9910449716779924,
+      "rmse": 1.5182869894678594,
+      "bias": 0.1762924883100719,
+      "within_1f": 0.6909722222222222,
+      "log_loss": 0.7500663498527999,
+      "top_one": 0.6944444444444444,
+      "winner_probability": 0.5640315603558063,
+      "best_val": [
+        1.1552040576934814,
+        0.4616876244544983
+      ]
+    },
+    {
+      "hidden": 16,
+      "dropout": 0.2,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        24,
+        124
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_12_h16_d20_lr0p001_wd0p02_p20_20260717T",
+      "mae": 1.0953084680769178,
+      "rmse": 1.613256570457405,
+      "bias": 0.3173207547929549,
+      "within_1f": 0.6284722222222222,
+      "log_loss": 0.8290907055157378,
+      "top_one": 0.6423611111111112,
+      "winner_probability": 0.5042740618998047,
+      "best_val": [
+        1.2971445322036743,
+        0.48836931586265564
+      ]
+    },
+    {
+      "hidden": 16,
+      "dropout": 0.15,
+      "lr": 0.002,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        87,
+        82
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_13_h16_d15_lr0p002_wd0p02_p20_20260717T",
+      "mae": 1.073215929667155,
+      "rmse": 1.5958521670824637,
+      "bias": 0.27722123463948534,
+      "within_1f": 0.6458333333333334,
+      "log_loss": 0.8041034506131226,
+      "top_one": 0.6805555555555556,
+      "winner_probability": 0.5309123610248094,
+      "best_val": [
+        1.1535056829452515,
+        0.47390294075012207
+      ]
+    }
+  ],
+  "ranked_by_mae": [
+    {
+      "hidden": 48,
+      "dropout": 0.25,
+      "lr": 0.001,
+      "wd": 0.05,
+      "patience": 20,
+      "epochs": [
+        115,
+        75
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_11_h48_d25_lr0p001_wd0p05_p20_20260717T",
+      "mae": 0.9910449716779924,
+      "rmse": 1.5182869894678594,
+      "bias": 0.1762924883100719,
+      "within_1f": 0.6909722222222222,
+      "log_loss": 0.7500663498527999,
+      "top_one": 0.6944444444444444,
+      "winner_probability": 0.5640315603558063,
+      "best_val": [
+        1.1552040576934814,
+        0.4616876244544983
+      ]
+    },
+    {
+      "hidden": 48,
+      "dropout": 0.15,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 15,
+      "epochs": [
+        82,
+        67
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_09_h48_d15_lr0p001_wd0p02_p15_20260717T",
+      "mae": 1.0234116978115508,
+      "rmse": 1.5502836561452806,
+      "bias": 0.2622778786553274,
+      "within_1f": 0.6597222222222222,
+      "log_loss": 0.7713946462361683,
+      "top_one": 0.6597222222222222,
+      "winner_probability": 0.5356760545351776,
+      "best_val": [
+        1.1462268829345703,
+        0.46954554319381714
+      ]
+    },
+    {
+      "hidden": 48,
+      "dropout": 0.2,
+      "lr": 0.001,
+      "wd": 0.03,
+      "patience": 20,
+      "epochs": [
+        87,
+        72
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_10_h48_d20_lr0p001_wd0p03_p20_20260717T",
+      "mae": 1.0259039137098527,
+      "rmse": 1.5522970546252723,
+      "bias": 0.2504288991292315,
+      "within_1f": 0.6631944444444444,
+      "log_loss": 0.7717678675874123,
+      "top_one": 0.65625,
+      "winner_probability": 0.5348186205405265,
+      "best_val": [
+        1.1556919813156128,
+        0.46577873826026917
+      ]
+    },
+    {
+      "hidden": 16,
+      "dropout": 0.15,
+      "lr": 0.002,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        87,
+        82
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_13_h16_d15_lr0p002_wd0p02_p20_20260717T",
+      "mae": 1.073215929667155,
+      "rmse": 1.5958521670824637,
+      "bias": 0.27722123463948534,
+      "within_1f": 0.6458333333333334,
+      "log_loss": 0.8041034506131226,
+      "top_one": 0.6805555555555556,
+      "winner_probability": 0.5309123610248094,
+      "best_val": [
+        1.1535056829452515,
+        0.47390294075012207
+      ]
+    },
+    {
+      "hidden": 32,
+      "dropout": 0.2,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        39,
+        79
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_06_h32_d20_lr0p001_wd0p02_p20_20260717T",
+      "mae": 1.0855614874098038,
+      "rmse": 1.585235074082166,
+      "bias": 0.24532852172851521,
+      "within_1f": 0.6458333333333334,
+      "log_loss": 0.798864097038664,
+      "top_one": 0.6354166666666666,
+      "winner_probability": 0.5189840301934945,
+      "best_val": [
+        1.232072114944458,
+        0.44808149337768555
+      ]
+    },
+    {
+      "hidden": 32,
+      "dropout": 0.25,
+      "lr": 0.001,
+      "wd": 0.03,
+      "patience": 20,
+      "epochs": [
+        38,
+        80
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_08_h32_d25_lr0p001_wd0p03_p20_20260717T",
+      "mae": 1.0867842833201093,
+      "rmse": 1.588612904406487,
+      "bias": 0.24343200789557523,
+      "within_1f": 0.6423611111111112,
+      "log_loss": 0.8008438611572553,
+      "top_one": 0.6354166666666666,
+      "winner_probability": 0.5185136979355554,
+      "best_val": [
+        1.231634259223938,
+        0.4517607092857361
+      ]
+    },
+    {
+      "hidden": 32,
+      "dropout": 0.15,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 15,
+      "epochs": [
+        33,
+        71
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_05_h32_d15_lr0p001_wd0p02_p15_20260717T",
+      "mae": 1.0874752468532989,
+      "rmse": 1.5895477009363796,
+      "bias": 0.2445577409532331,
+      "within_1f": 0.6423611111111112,
+      "log_loss": 0.802154637818847,
+      "top_one": 0.6388888888888888,
+      "winner_probability": 0.5172781991692886,
+      "best_val": [
+        1.2289220094680786,
+        0.4510093927383423
+      ]
+    },
+    {
+      "hidden": 24,
+      "dropout": 0.15,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 15,
+      "epochs": [
+        16,
+        62
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_01_h24_d15_lr0p001_wd0p02_p15_20260717T",
+      "mae": 1.092615104251438,
+      "rmse": 1.5962555046962374,
+      "bias": 0.20822337680392744,
+      "within_1f": 0.6145833333333334,
+      "log_loss": 0.8263082884488837,
+      "top_one": 0.6354166666666666,
+      "winner_probability": 0.5092325858716908,
+      "best_val": [
+        1.158808708190918,
+        0.5507677793502808
+      ]
+    },
+    {
+      "hidden": 32,
+      "dropout": 0.2,
+      "lr": 0.002,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        30,
+        53
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_07_h32_d20_lr0p002_wd0p02_p20_20260717T",
+      "mae": 1.0941102027893068,
+      "rmse": 1.5958514913146316,
+      "bias": 0.2356329282124833,
+      "within_1f": 0.6423611111111112,
+      "log_loss": 0.7996290974657373,
+      "top_one": 0.6388888888888888,
+      "winner_probability": 0.5181512748193807,
+      "best_val": [
+        1.2329844236373901,
+        0.44568803906440735
+      ]
+    },
+    {
+      "hidden": 16,
+      "dropout": 0.2,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        24,
+        124
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_12_h16_d20_lr0p001_wd0p02_p20_20260717T",
+      "mae": 1.0953084680769178,
+      "rmse": 1.613256570457405,
+      "bias": 0.3173207547929549,
+      "within_1f": 0.6284722222222222,
+      "log_loss": 0.8290907055157378,
+      "top_one": 0.6423611111111112,
+      "winner_probability": 0.5042740618998047,
+      "best_val": [
+        1.2971445322036743,
+        0.48836931586265564
+      ]
+    },
+    {
+      "hidden": 24,
+      "dropout": 0.2,
+      "lr": 0.001,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        21,
+        66
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_02_h24_d20_lr0p001_wd0p02_p20_20260717T",
+      "mae": 1.098045882119073,
+      "rmse": 1.6041457847714,
+      "bias": 0.2060707484351259,
+      "within_1f": 0.6076388888888888,
+      "log_loss": 0.8325308858096113,
+      "top_one": 0.6354166666666666,
+      "winner_probability": 0.507251719814529,
+      "best_val": [
+        1.1591122150421143,
+        0.5523862838745117
+      ]
+    },
+    {
+      "hidden": 24,
+      "dropout": 0.2,
+      "lr": 0.002,
+      "wd": 0.02,
+      "patience": 20,
+      "epochs": [
+        21,
+        46
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_03_h24_d20_lr0p002_wd0p02_p20_20260717T",
+      "mae": 1.0990942732493085,
+      "rmse": 1.6051662209107176,
+      "bias": 0.20973011758592344,
+      "within_1f": 0.6111111111111112,
+      "log_loss": 0.8328946015002908,
+      "top_one": 0.6284722222222222,
+      "winner_probability": 0.5073424777214776,
+      "best_val": [
+        1.1608819961547852,
+        0.551607608795166
+      ]
+    },
+    {
+      "hidden": 24,
+      "dropout": 0.25,
+      "lr": 0.001,
+      "wd": 0.03,
+      "patience": 20,
+      "epochs": [
+        21,
+        66
+      ],
+      "path": "reports\\model\\neuralcaster_v2_gru_market_opt_04_h24_d25_lr0p001_wd0p03_p20_20260717T",
+      "mae": 1.1023245154486765,
+      "rmse": 1.6078635968593464,
+      "bias": 0.20383440865410649,
+      "within_1f": 0.6076388888888888,
+      "log_loss": 0.8357152064388846,
+      "top_one": 0.6354166666666666,
+      "winner_probability": 0.5060929541471975,
+      "best_val": [
+        1.159040927886963,
+        0.5509039163589478
+      ]
+    }
+  ]
+}

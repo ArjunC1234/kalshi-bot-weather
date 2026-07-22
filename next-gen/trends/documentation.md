@@ -25,7 +25,7 @@ Run from `next-gen/`:
 
 ```powershell
 python -m trends.cli serve
-python -m trends.cli serve --data-root data --report-root reports/model --quality-root reports/quality
+python -m trends.cli serve --data-root data --report-root reports/model --quality-root reports/quality --strategy-root reports/strategy
 ```
 
 Open the printed local URL and select:
@@ -33,8 +33,30 @@ Open the printed local URL and select:
 - one frozen local Supabase export folder
 - one exact model report folder, optional
 - one quality report folder, optional
+- one strategy report folder, optional
 
 The GUI uses a source selector. It does not require pre-generating a giant `trends_data.json` file.
+If `trends/ui/dist/index.html` exists, the Python server serves the React workbench. Otherwise it
+falls back to the legacy static UI under `trends/static/`.
+
+## React UI
+
+The reworked workbench source lives under `trends/ui/`.
+
+```powershell
+cd trends/ui
+npm install
+npm run build
+```
+
+For frontend development, run the Python server on port 8765, then run:
+
+```powershell
+cd trends/ui
+npm run dev
+```
+
+Vite proxies `/api` requests to the Python Trends server.
 
 ## Source Folder Layout
 
@@ -43,6 +65,7 @@ Keep local reports grouped by report type:
 - `data/<export_run>` for frozen Supabase exports.
 - `reports/model/<model_report_run>` for Raycaster and future model reports.
 - `reports/quality/<quality_report_run>` for data-quality and daily-health reports.
+- `reports/strategy/<strategy_report_run>` for paper strategy and policy reports.
 - `reports/trends/<diagnostic_run>` for future Trends-only diagnostics if needed.
 
 ## GUI Modes
@@ -57,6 +80,8 @@ Keep local reports grouped by report type:
 - `Feature vs Error`: scatter plots comparing source/disagreement features to model error.
 - `Calibration`: bracket probability reliability buckets and related summaries.
 - `Market vs Model`: model probabilities versus archived ask/midpoint and winner probability paths.
+- `Strategy Lab`: paper strategy PnL, drawdown, threshold sweeps, trades, CLV, and policy calibration.
+- `Raw Tables`: sortable/searchable inspection for raw and derived tables.
 
 Model-specific modes should degrade gracefully when no model report is selected.
 
@@ -91,6 +116,19 @@ Quality report folders may include:
 - `missing_city_hours.csv`
 - `provider_errors.csv`
 - `city_coverage.csv`
+
+Strategy report folders may include:
+
+- `summary.json`
+- `trades.csv`
+- `daily_pnl.csv`
+- `threshold_sweep.csv`
+- `validation_threshold_sweep.csv`
+- `train_gate_sweep.csv`
+- `candidates.csv`
+- `predictions.csv`
+- `policy_calibration.csv`
+- `ranking_diagnostics.csv`
 
 ## API Shape
 

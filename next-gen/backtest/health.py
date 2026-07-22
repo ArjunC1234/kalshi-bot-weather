@@ -56,6 +56,7 @@ def build_daily_health_report(
         "provider_errors": source.load_table("provider_errors"),
     }
     events = _rows_for_collection_day(tables["events"], day)
+    target_events = _rows_for_target_date(tables["events"], day)
     markets = _rows_for_collection_day(tables["market_snapshots"], day)
     weather = _rows_for_collection_day(tables["weather_snapshots"], day)
     raw_payloads = _rows_for_storage_day(tables["raw_payloads"], day)
@@ -85,7 +86,7 @@ def build_daily_health_report(
     ]
     event_keys = {
         (str(row.get("city")), str(row.get("event_ticker")))
-        for row in events
+        for row in target_events
         if row.get("city") and row.get("event_ticker")
     }
     settled_keys = {
@@ -116,7 +117,7 @@ def build_daily_health_report(
         generated_at_utc=datetime.now(UTC).isoformat(),
         status=status,
         expected_cities=cities,
-        cities_seen=sorted({str(row.get("city")) for row in events if row.get("city")}),
+        cities_seen=sorted({str(row.get("city")) for row in target_events if row.get("city")}),
         expected_city_hours=len(cities) * len(expected_hours),
         actual_city_hours=sum(len(hours) for hours in observed_hours.values()),
         missing_city_hours=missing,
@@ -162,6 +163,10 @@ def daily_health_summary(report: DailyHealthReport) -> str:
 
 def _rows_for_collection_day(rows: list[dict[str, Any]], day: str) -> list[dict[str, Any]]:
     return [row for row in rows if _row_collection_day(row) == day]
+
+
+def _rows_for_target_date(rows: list[dict[str, Any]], day: str) -> list[dict[str, Any]]:
+    return [row for row in rows if _date_key(row.get("target_date")) == day]
 
 
 def _rows_for_storage_day(rows: list[dict[str, Any]], day: str) -> list[dict[str, Any]]:

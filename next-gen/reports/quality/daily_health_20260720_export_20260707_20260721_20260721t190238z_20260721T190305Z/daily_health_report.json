@@ -1,0 +1,72 @@
+{
+  "actual_city_hours": 144,
+  "cities_seen": [
+    "aus",
+    "den",
+    "la",
+    "mia",
+    "nyc",
+    "okc"
+  ],
+  "city_coverage": [
+    {
+      "city": "nyc",
+      "coverage_ratio": 1.0,
+      "expected_hours": 24,
+      "snapshot_hours": 24
+    },
+    {
+      "city": "mia",
+      "coverage_ratio": 1.0,
+      "expected_hours": 24,
+      "snapshot_hours": 24
+    },
+    {
+      "city": "la",
+      "coverage_ratio": 1.0,
+      "expected_hours": 24,
+      "snapshot_hours": 24
+    },
+    {
+      "city": "den",
+      "coverage_ratio": 1.0,
+      "expected_hours": 24,
+      "snapshot_hours": 24
+    },
+    {
+      "city": "aus",
+      "coverage_ratio": 1.0,
+      "expected_hours": 24,
+      "snapshot_hours": 24
+    },
+    {
+      "city": "okc",
+      "coverage_ratio": 1.0,
+      "expected_hours": 24,
+      "snapshot_hours": 24
+    }
+  ],
+  "event_count": 12,
+  "expected_cities": [
+    "nyc",
+    "mia",
+    "la",
+    "den",
+    "aus",
+    "okc"
+  ],
+  "expected_city_hours": 144,
+  "generated_at_utc": "2026-07-21T19:03:05.822913+00:00",
+  "latest_snapshot_utc": "2026-07-21T06:00:00+00:00",
+  "market_snapshot_rows": 864,
+  "missing_city_hours": [],
+  "pending_final_highs": 6,
+  "pending_settlements": 6,
+  "provider_errors": {},
+  "raw_payload_rows": 1679,
+  "source_export_id": "export_20260707_20260721_20260721T190238Z",
+  "status": "ok",
+  "target_date": "2026-07-20",
+  "warnings": [],
+  "weather_snapshot_rows": 144
+}

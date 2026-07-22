@@ -1,0 +1,245 @@
+{
+  "model_name": "neuralcaster_v2",
+  "mode": "market_fixed_train_20260702_20260714_score_20260702_20260716",
+  "source_export_id": "export_20260701_20260717_20260717T184509Z",
+  "generated_at_utc": "2026-07-17T21:36:04.074075+00:00",
+  "temperature_prediction_count": 2160,
+  "bracket_prediction_count": 2160,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 0.992370547824436,
+      "count": 2160
+    },
+    {
+      "metric": "rmse",
+      "value": 1.3779225458542168,
+      "count": 2160
+    },
+    {
+      "metric": "bias",
+      "value": 0.10842157095449943,
+      "count": 2160
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.6347222222222222,
+      "count": 2160
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.8513888888888889,
+      "count": 2160
+    }
+  ],
+  "bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 0.6284036489223466,
+      "count": 2160
+    },
+    {
+      "metric": "brier",
+      "value": 0.35065729958395936,
+      "count": 2160
+    },
+    {
+      "metric": "rps",
+      "value": 0.04321410639919425,
+      "count": 2160
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.6944444444444444,
+      "count": 2160
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.6319980894177953,
+      "count": 2160
+    }
+  ],
+  "model_family": "pytorch_gru_gaussian_residual",
+  "experiment": "fixed_train_neuralcaster_then_fixed_train_edgecaster",
+  "neural_mode": "market",
+  "train_start_date": "2026-07-02",
+  "train_end_date": "2026-07-14",
+  "score_start_date": "2026-07-02",
+  "score_end_date": "2026-07-16",
+  "test_start_date": "2026-07-15",
+  "test_end_date": "2026-07-16",
+  "max_seq_len": 24,
+  "hidden_size": 48,
+  "layers": 1,
+  "dropout": 0.25,
+  "epochs": 280,
+  "patience": 20,
+  "learning_rate": 0.001,
+  "weight_decay": 0.05,
+  "market_probability_blend": 0.95,
+  "seed": 17,
+  "training_target_dates": [
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14"
+  ],
+  "scored_target_dates": [
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14",
+    "2026-07-15",
+    "2026-07-16"
+  ],
+  "folds": [
+    {
+      "model_mode": "trained_gru_gaussian_residual",
+      "training_examples": 1872,
+      "fit_examples": 1728,
+      "validation_examples": 144,
+      "epochs_run": 23,
+      "best_validation_loss": 1.168696641921997,
+      "seed": 17,
+      "loss_history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.7748843431472778,
+          "validation_loss": 1.1700481176376343
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.7694757580757141,
+          "validation_loss": 1.1690258979797363
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.7649346590042114,
+          "validation_loss": 1.168696641921997
+        },
+        {
+          "epoch": 4,
+          "train_loss": 0.7603467702865601,
+          "validation_loss": 1.1690673828125
+        },
+        {
+          "epoch": 5,
+          "train_loss": 0.756511390209198,
+          "validation_loss": 1.1690891981124878
+        },
+        {
+          "epoch": 6,
+          "train_loss": 0.7519635558128357,
+          "validation_loss": 1.169432520866394
+        },
+        {
+          "epoch": 7,
+          "train_loss": 0.7480323910713196,
+          "validation_loss": 1.1702561378479004
+        },
+        {
+          "epoch": 8,
+          "train_loss": 0.744713306427002,
+          "validation_loss": 1.1711199283599854
+        },
+        {
+          "epoch": 9,
+          "train_loss": 0.7414085865020752,
+          "validation_loss": 1.1716667413711548
+        },
+        {
+          "epoch": 10,
+          "train_loss": 0.7373443245887756,
+          "validation_loss": 1.1716904640197754
+        },
+        {
+          "epoch": 11,
+          "train_loss": 0.733268678188324,
+          "validation_loss": 1.1711840629577637
+        },
+        {
+          "epoch": 12,
+          "train_loss": 0.7300460934638977,
+          "validation_loss": 1.1703158617019653
+        },
+        {
+          "epoch": 13,
+          "train_loss": 0.7249389290809631,
+          "validation_loss": 1.1694198846817017
+        },
+        {
+          "epoch": 14,
+          "train_loss": 0.7217584252357483,
+          "validation_loss": 1.1690086126327515
+        },
+        {
+          "epoch": 15,
+          "train_loss": 0.7140934467315674,
+          "validation_loss": 1.1697585582733154
+        },
+        {
+          "epoch": 16,
+          "train_loss": 0.7106382250785828,
+          "validation_loss": 1.1713173389434814
+        },
+        {
+          "epoch": 17,
+          "train_loss": 0.7047969102859497,
+          "validation_loss": 1.173304796218872
+        },
+        {
+          "epoch": 18,
+          "train_loss": 0.6977187395095825,
+          "validation_loss": 1.1759403944015503
+        },
+        {
+          "epoch": 19,
+          "train_loss": 0.6916924118995667,
+          "validation_loss": 1.1793521642684937
+        },
+        {
+          "epoch": 20,
+          "train_loss": 0.6845883131027222,
+          "validation_loss": 1.1826810836791992
+        },
+        {
+          "epoch": 21,
+          "train_loss": 0.6785390973091125,
+          "validation_loss": 1.1854915618896484
+        },
+        {
+          "epoch": 22,
+          "train_loss": 0.6697484254837036,
+          "validation_loss": 1.1884057521820068
+        },
+        {
+          "epoch": 23,
+          "train_loss": 0.6597231030464172,
+          "validation_loss": 1.1909286975860596
+        }
+      ],
+      "train_start_date": "2026-07-02",
+      "train_end_date": "2026-07-14",
+      "test_start_date": "2026-07-15",
+      "test_end_date": "2026-07-16"
+    }
+  ]
+}
