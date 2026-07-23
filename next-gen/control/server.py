@@ -1,4 +1,4 @@
-"""HTTP server for the Kalshi Bot Control Center backend API."""
+"""HTTP server for the Kalshi Weather Workbench backend API."""
 
 from __future__ import annotations
 
@@ -71,7 +71,7 @@ def serve_control(
                     )
                     return
                 if parsed.path == "/control/api/artifacts":
-                    records = _records(active_root)
+                    records = _records(active_root, include_counts=True, include_schemas=True)
                     artifact_index.replace_all(records)
                     self._send_json({"artifacts": artifact_index.list()})
                     return
@@ -88,7 +88,11 @@ def serve_control(
                         {
                             "reports": [
                                 record.metadata
-                                for record in _records(active_root)
+                                for record in _records(
+                                    active_root,
+                                    include_counts=True,
+                                    include_schemas=True,
+                                )
                                 if record.artifact_type
                                 in {"model_report", "strategy_report", "quality_report"}
                             ]
@@ -253,6 +257,11 @@ def serve_control(
                 return
             self._send_error_json(404, "not found")
 
+        def do_OPTIONS(self) -> None:  # noqa: N802 - stdlib API name.
+            self.send_response(204)
+            self._send_cors_headers()
+            self.end_headers()
+
         def _handle_export_create(self) -> None:
             request = self._read_json()
             profile_id = str(request.get("profile_id", ""))
@@ -358,6 +367,7 @@ def serve_control(
         def _send_json(self, value: object, status: int = 200) -> None:
             body = json.dumps(value, default=str).encode("utf-8")
             self.send_response(status)
+            self._send_cors_headers()
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
@@ -369,11 +379,16 @@ def serve_control(
         def log_message(self, format: str, *args: Any) -> None:  # noqa: A002 - stdlib name.
             return
 
+        def _send_cors_headers(self) -> None:
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+
     class ReusableTCPServer(socketserver.TCPServer):
         allow_reuse_address = True
 
     with ReusableTCPServer((host, port), ControlHandler) as server:
-        print(f"Kalshi Bot Control Center API: http://{host}:{server.server_address[1]}/control/api")
+        print(f"Kalshi Weather Workbench API: http://{host}:{server.server_address[1]}/control/api")
         server.serve_forever()
     return 0
 
@@ -385,19 +400,26 @@ def _required_entry(registry: Registry, kind: str, entry_id: str):
     return entry
 
 
-def _records(active_root: Path) -> list[ArtifactRecord]:
+def _records(
+    active_root: Path,
+    *,
+    include_counts: bool = True,
+    include_schemas: bool = True,
+) -> list[ArtifactRecord]:
     return scan_artifacts(
         active_root / "data",
         active_root / "reports/model",
         active_root / "reports/quality",
         active_root / "reports/strategy",
+        include_counts=include_counts,
+        include_schemas=include_schemas,
     )
 
 
 def _artifact_path(active_root: Path, artifact_type: str, artifact_id: str) -> Path:
     if not artifact_id:
         raise ValueError("artifact id is required")
-    for record in _records(active_root):
+    for record in _records(active_root, include_counts=False, include_schemas=False):
         if record.artifact_type == artifact_type and record.id == artifact_id:
             return _safe_path(active_root, record.path)
     raise ValueError(f"{artifact_type} not found: {artifact_id}")

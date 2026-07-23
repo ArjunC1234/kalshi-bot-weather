@@ -107,6 +107,9 @@ def scan_artifacts(
     model_root: Path = Path("reports/model"),
     quality_root: Path = Path("reports/quality"),
     strategy_root: Path = Path("reports/strategy"),
+    *,
+    include_counts: bool = True,
+    include_schemas: bool = True,
 ) -> list[ArtifactRecord]:
     roots = (
         (data_root, "local_export"),
@@ -121,7 +124,12 @@ def scan_artifacts(
         for path in [root, *[item for item in root.rglob("*") if item.is_dir()]]:
             if _skip(path):
                 continue
-            inspected = inspect_artifact(path, fallback_type=fallback_type)
+            inspected = inspect_artifact(
+                path,
+                fallback_type=fallback_type,
+                include_counts=include_counts,
+                include_schemas=include_schemas,
+            )
             if inspected["artifact_type"] == "unknown":
                 continue
             records.append(
@@ -142,7 +150,13 @@ def scan_artifacts(
     return sorted(records, key=lambda item: (item.modified_utc, item.id), reverse=True)
 
 
-def inspect_artifact(path: Path, fallback_type: str | None = None) -> dict[str, Any]:
+def inspect_artifact(
+    path: Path,
+    fallback_type: str | None = None,
+    *,
+    include_counts: bool = True,
+    include_schemas: bool = True,
+) -> dict[str, Any]:
     path = path.resolve()
     files = _table_names(path)
     manifest = _read_json(path / "run_manifest.json")
@@ -153,9 +167,10 @@ def inspect_artifact(path: Path, fallback_type: str | None = None) -> dict[str, 
         or export_manifest.get("artifact_type")
         or _legacy_type(path, files, fallback_type)
     )
-    table_counts = _manifest_table_counts(export_manifest) or {
-        name: _count_rows(path, name) for name in files
-    }
+    artifact_id = _artifact_id(path, artifact_type)
+    table_counts = _manifest_table_counts(export_manifest)
+    if include_counts and not table_counts:
+        table_counts = {name: _count_rows(path, name) for name in files}
     source_export_id = (
         manifest.get("source_export_id")
         or export_manifest.get("source_export_id")
@@ -165,7 +180,7 @@ def inspect_artifact(path: Path, fallback_type: str | None = None) -> dict[str, 
     excluded_columns = export_manifest.get("excluded_columns", {})
     status = str(manifest.get("status") or export_manifest.get("status") or "complete")
     return {
-        "id": _artifact_id(path),
+        "id": artifact_id,
         "artifact_type": artifact_type,
         "path": str(path),
         "status": status,
@@ -181,13 +196,14 @@ def inspect_artifact(path: Path, fallback_type: str | None = None) -> dict[str, 
         "files": files,
         "table_counts": table_counts,
         "excluded_columns": excluded_columns,
-        "schemas": infer_artifact_schemas(path, files),
+        "schemas": infer_artifact_schemas(path, files) if include_schemas else {},
         "summary": summary,
     }
 
 
 def _row_to_dict(row: tuple[Any, ...]) -> dict[str, Any]:
-    return {
+    metadata = json.loads(row[10])
+    output = {
         "id": row[0],
         "artifact_type": row[1],
         "path": row[2],
@@ -198,8 +214,19 @@ def _row_to_dict(row: tuple[Any, ...]) -> dict[str, Any]:
         "contract": row[7],
         "files": json.loads(row[8]),
         "table_counts": json.loads(row[9]),
-        "metadata": json.loads(row[10]),
+        "metadata": metadata,
     }
+    if isinstance(metadata, dict):
+        for key in (
+            "excluded_columns",
+            "schemas",
+            "summary",
+            "coverage",
+            "metadata_health",
+        ):
+            if key in metadata:
+                output[key] = metadata[key]
+    return output
 
 
 def _legacy_type(path: Path, files: list[str], fallback_type: str | None) -> str:
@@ -311,8 +338,11 @@ def _modified_utc(path: Path) -> str:
     return datetime.fromtimestamp(newest, tz=UTC).isoformat()
 
 
-def _artifact_id(path: Path) -> str:
-    return path.name or path.resolve().name
+def _artifact_id(path: Path, artifact_type: str | None = None) -> str:
+    name = path.name or path.resolve().name
+    if artifact_type in {"model_report", "strategy_report", "quality_report"}:
+        return f"{artifact_type}:{name}"
+    return name
 
 
 def _source_export_id_from_path(value: Any) -> str | None:

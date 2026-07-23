@@ -82,6 +82,21 @@ def _add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--max-no-contracts-per-order", type=int, default=10)
     parser.add_argument("--max-positions-per-event", type=int, default=1)
     parser.add_argument("--seed", type=int, default=29)
+    parser.add_argument(
+        "--selection-policy",
+        choices=["standard", "calibrated"],
+        default="standard",
+    )
+    parser.add_argument(
+        "--calibration-source",
+        choices=["validation", "train"],
+        default="validation",
+    )
+    parser.add_argument("--calibration-shrinkage", type=float, default=24.0)
+    parser.add_argument("--calibration-min-count", type=int, default=10)
+    parser.add_argument("--calibration-lcb-z", type=float, default=0.75)
+    parser.add_argument("--min-calibrated-ev", type=float, default=0.0)
+    parser.add_argument("--min-calibrated-ev-lcb", type=float, default=-0.01)
 
 
 def _config(args: argparse.Namespace) -> EdgecasterV2Config:
@@ -108,9 +123,15 @@ def _config(args: argparse.Namespace) -> EdgecasterV2Config:
         max_no_contracts_per_order=args.max_no_contracts_per_order,
         max_positions_per_event=args.max_positions_per_event,
         seed=args.seed,
+        selection_policy=args.selection_policy,
+        calibration_source=args.calibration_source,
+        calibration_shrinkage=args.calibration_shrinkage,
+        calibration_min_count=args.calibration_min_count,
+        calibration_lcb_z=args.calibration_lcb_z,
+        min_calibrated_ev=args.min_calibrated_ev,
+        min_calibrated_ev_lcb=args.min_calibrated_ev_lcb,
     )
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

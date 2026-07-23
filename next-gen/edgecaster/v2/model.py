@@ -32,6 +32,13 @@ class EdgecasterV2Config:
     max_no_contracts_per_order: int = 10
     max_positions_per_event: int = 1
     seed: int = 29
+    selection_policy: str = "standard"
+    calibration_source: str = "validation"
+    calibration_shrinkage: float = 24.0
+    calibration_min_count: int = 10
+    calibration_lcb_z: float = 0.75
+    min_calibrated_ev: float = 0.0
+    min_calibrated_ev_lcb: float = -0.01
 
 
 class EdgecasterV2Net(nn.Module):

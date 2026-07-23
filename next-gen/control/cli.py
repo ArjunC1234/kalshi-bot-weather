@@ -11,6 +11,13 @@ from control.providers.supabase_export import export_with_profile
 from control.registry.loader import load_registry, validate_registry
 
 
+def _default_repo_root() -> Path:
+    cwd = Path.cwd().resolve()
+    if (cwd / "control").is_dir() and (cwd / "data").is_dir():
+        return cwd
+    return Path(__file__).resolve().parents[1]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Kalshi weather control plane")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -38,14 +45,25 @@ def main(argv: list[str] | None = None) -> int:
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8775)
     serve.add_argument("--registry-root", type=Path)
+    serve.add_argument("--repo-root", type=Path, default=_default_repo_root())
 
     serve_center = commands.add_parser(
         "serve-control-center",
-        help="Start the Kalshi Bot Control Center backend API.",
+        help="Legacy alias for the Kalshi Weather Workbench backend API.",
     )
     serve_center.add_argument("--host", default="127.0.0.1")
     serve_center.add_argument("--port", type=int, default=8775)
     serve_center.add_argument("--registry-root", type=Path)
+    serve_center.add_argument("--repo-root", type=Path, default=_default_repo_root())
+
+    serve_workbench = commands.add_parser(
+        "serve-workbench",
+        help="Start the Kalshi Weather Workbench backend API.",
+    )
+    serve_workbench.add_argument("--host", default="127.0.0.1")
+    serve_workbench.add_argument("--port", type=int, default=8775)
+    serve_workbench.add_argument("--registry-root", type=Path)
+    serve_workbench.add_argument("--repo-root", type=Path, default=_default_repo_root())
 
     args = parser.parse_args(argv)
     if args.command == "registry":
@@ -78,14 +96,14 @@ def main(argv: list[str] | None = None) -> int:
         export_with_profile(profile, args.start, args.end, args.output)
         print(f"export complete: {args.output}")
         return 0
-    if args.command in {"serve", "serve-control-center"}:
+    if args.command in {"serve", "serve-control-center", "serve-workbench"}:
         from control.server import serve_control
 
         return serve_control(
             host=args.host,
             port=args.port,
             registry_root=args.registry_root,
-            repo_root=Path("."),
+            repo_root=args.repo_root,
         )
     return 1
 

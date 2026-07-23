@@ -36,15 +36,40 @@ python -m edgecaster.v2.cli rolling-eval `
   --train-days 7
 ```
 
+Calibrated fixed-window run:
+
+```powershell
+python -m edgecaster.v2.cli fixed-window `
+  --data data/export_20260701_20260717_20260717T184509Z `
+  --model-report reports/model/neuralcaster_v2_gru_market_opt11_blend95_7d_20260717T `
+  --output reports/strategy/edgecaster_v2_calibrated_20260717T `
+  --train-start 2026-07-09 `
+  --train-end 2026-07-15 `
+  --test-start 2026-07-16 `
+  --test-end 2026-07-20 `
+  --selection-policy calibrated `
+  --calibration-source train `
+  --min-predicted-reward 0.0 `
+  --min-trade-probability 0.35 `
+  --min-raw-edge 0.0
+```
+
+The calibrated policy fits hierarchical reliability segments from pre-test
+predictions, including city, side, checkpoint bucket, bracket type, price, raw
+edge, predicted reward, and trade-probability buckets. Sparse segments shrink
+back toward the global calibration rate. In calibrated mode, trades are selected
+by calibrated expected-value lower bound before raw model score.
+
 ## Outputs
 
 - `summary.json`: model config, training counts, and PnL summary.
 - `predictions.csv`: every candidate with predicted reward, rank score, trade
-  probability, realized reward, and features.
+  probability, optional calibrated expected value, realized reward, and features.
 - `trades.csv`: selected paper trades.
 - `daily_pnl.csv`, `city_metrics.csv`, `side_metrics.csv`: strategy summaries.
 - `ranking_diagnostics.csv`: whether the rank/trade heads selected the best
   realized candidate in each event snapshot.
+- `calibration_segments.csv`: segment reliability table for calibrated runs.
 - `loss_history.csv` and `charts/training_loss.png`: training diagnostics.
 
 This module is not production wiring. It does not place orders and does not

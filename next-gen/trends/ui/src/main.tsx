@@ -1,14 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { App } from "./App";
+import { WorkbenchApp } from "./WorkbenchApp";
 import "./styles.css";
 
-document.documentElement.dataset.theme = window.matchMedia("(prefers-color-scheme: light)").matches
-  ? "light"
-  : "dark";
+document.documentElement.dataset.theme = "trends";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <WorkbenchApp />
   </StrictMode>,
 );

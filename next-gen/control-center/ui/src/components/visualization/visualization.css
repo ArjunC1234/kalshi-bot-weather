@@ -1,0 +1,458 @@
+.kbc-chart-panel,
+.kbc-coverage-map,
+.kbc-metric-sparkline {
+  background: #101819;
+  border: 1px solid #263736;
+  border-radius: 10px;
+  color: #eaf3f0;
+}
+
+.kbc-chart-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: visible;
+}
+
+.kbc-chart-panel__header,
+.kbc-coverage-map__header {
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(38, 55, 54, 0.72);
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 16px 18px 14px;
+}
+
+.kbc-chart-panel__title-block {
+  min-width: 0;
+}
+
+.kbc-chart-panel__eyebrow {
+  color: #8ea39d;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.kbc-chart-panel__title,
+.kbc-coverage-map__header h3 {
+  color: #eaf3f0;
+  font-size: 1rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.kbc-chart-panel__subtitle,
+.kbc-coverage-map__header p {
+  color: #8ea39d;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  margin: 6px 0 0;
+}
+
+.kbc-chart-panel__actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.kbc-chart-panel__meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: 10px 18px 0;
+}
+
+.kbc-chart-legend {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  min-width: 0;
+}
+
+.kbc-chart-legend__item {
+  align-items: center;
+  color: #8ea39d;
+  display: inline-flex;
+  font-size: 0.8rem;
+  gap: 7px;
+  max-width: 160px;
+  min-width: 0;
+}
+
+.kbc-chart-legend__item.is-muted {
+  opacity: 0.48;
+}
+
+.kbc-chart-legend__swatch {
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(234, 243, 240, 0.22);
+  flex: 0 0 auto;
+  height: 9px;
+  width: 9px;
+}
+
+.kbc-chart-panel__density,
+.kbc-chart-panel__warning {
+  border: 1px solid rgba(142, 163, 157, 0.22);
+  border-radius: 999px;
+  color: #8ea39d;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 9px;
+}
+
+.kbc-chart-panel__warning {
+  border-color: rgba(255, 181, 71, 0.35);
+  color: #ffb547;
+}
+
+.kbc-chart-panel__body {
+  min-height: 0;
+  overflow: visible;
+  padding: 14px 14px 16px;
+  position: relative;
+}
+
+.kbc-chart-host {
+  min-width: 0;
+  overflow: visible;
+  position: relative;
+  width: 100%;
+}
+
+.kbc-chart-canvas {
+  height: 100%;
+  min-height: inherit;
+  overflow: visible;
+  width: 100%;
+}
+
+.kbc-chart-error,
+.kbc-chart-state {
+  align-items: center;
+  color: #8ea39d;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  min-height: 220px;
+  padding: 24px;
+  text-align: center;
+}
+
+.kbc-chart-state.is-error,
+.kbc-chart-error {
+  color: #ff6b5b;
+}
+
+.kbc-metric-sparkline {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 14px;
+}
+
+.kbc-metric-sparkline__copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.kbc-metric-sparkline__label {
+  color: #8ea39d;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.kbc-metric-sparkline__value {
+  color: #eaf3f0;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.kbc-metric-sparkline__value span {
+  color: #8ea39d;
+  font-size: 0.78rem;
+  margin-left: 4px;
+}
+
+.kbc-metric-sparkline__delta {
+  color: #69d184;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.kbc-metric-sparkline__chart {
+  flex: 0 0 132px;
+  height: 38px;
+}
+
+.kbc-metric-sparkline__chart path {
+  stroke: #1dd6b7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+}
+
+.kbc-metric-sparkline.is-warn .kbc-metric-sparkline__chart path {
+  stroke: #ffb547;
+}
+
+.kbc-metric-sparkline.is-bad .kbc-metric-sparkline__chart path {
+  stroke: #ff6b5b;
+}
+
+.kbc-coverage-bars {
+  display: grid;
+  gap: 10px;
+}
+
+.kbc-coverage-bars__row {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(96px, 1fr) minmax(120px, 2fr) auto;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.kbc-coverage-bars__row.is-clickable {
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.kbc-coverage-bars__row.is-clickable:hover {
+  background: rgba(29, 214, 183, 0.08);
+}
+
+.kbc-coverage-bars__label {
+  color: #8ea39d;
+  font-size: 0.82rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kbc-coverage-bars__track,
+.kbc-coverage-map__mini-track {
+  background: rgba(142, 163, 157, 0.14);
+  border-radius: 999px;
+  display: block;
+  height: 7px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.kbc-coverage-bars__fill,
+.kbc-coverage-map__mini-track span {
+  background: #1dd6b7;
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+}
+
+.kbc-coverage-bars__fill.is-warn {
+  background: #ffb547;
+}
+
+.kbc-coverage-bars__fill.is-bad,
+.kbc-coverage-bars__fill.is-empty {
+  background: #ff6b5b;
+}
+
+.kbc-coverage-bars__fill.is-good {
+  background: #69d184;
+}
+
+.kbc-coverage-bars__value {
+  color: #eaf3f0;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.kbc-coverage-map {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.kbc-coverage-map__header > span {
+  border: 1px solid rgba(142, 163, 157, 0.24);
+  border-radius: 999px;
+  color: #8ea39d;
+  flex: 0 0 auto;
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 5px 9px;
+}
+
+.kbc-coverage-map__stage {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 18px;
+  grid-template-columns: minmax(260px, 1fr) minmax(220px, 0.42fr);
+  min-height: 0;
+  padding: 14px;
+}
+
+.kbc-coverage-map__svg {
+  background:
+    linear-gradient(rgba(29, 214, 183, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(29, 214, 183, 0.06) 1px, transparent 1px);
+  background-size: 36px 36px;
+  border: 1px solid rgba(38, 55, 54, 0.72);
+  border-radius: 10px;
+  height: 100%;
+  min-height: 280px;
+  width: 100%;
+}
+
+.kbc-coverage-map__outline {
+  fill: rgba(29, 214, 183, 0.07);
+  stroke: rgba(142, 163, 157, 0.42);
+  stroke-width: 0.7;
+}
+
+.kbc-coverage-map__grid {
+  fill: none;
+  opacity: 0.55;
+  stroke: rgba(142, 163, 157, 0.16);
+  stroke-width: 0.4;
+}
+
+.kbc-coverage-map__city text {
+  fill: #8ea39d;
+  font-size: 3px;
+  font-weight: 800;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+.kbc-coverage-map__city circle {
+  fill: rgba(29, 214, 183, 0.52);
+  stroke: rgba(234, 243, 240, 0.78);
+  stroke-width: 0.55;
+}
+
+.kbc-coverage-map__city.is-selected circle {
+  fill: rgba(79, 125, 255, 0.82);
+  filter: drop-shadow(0 0 7px rgba(79, 125, 255, 0.55));
+}
+
+.kbc-coverage-map__city.is-warn circle {
+  fill: rgba(255, 181, 71, 0.62);
+}
+
+.kbc-coverage-map__city.is-bad circle,
+.kbc-coverage-map__city.is-empty circle {
+  fill: rgba(255, 107, 91, 0.62);
+}
+
+.kbc-coverage-map__hit {
+  cursor: pointer;
+}
+
+.kbc-coverage-map__city[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.kbc-coverage-map__city:focus-visible circle {
+  outline: none;
+  stroke: #eaf3f0;
+  stroke-width: 1;
+}
+
+.kbc-coverage-map__list {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.kbc-coverage-map__city-row {
+  align-items: center;
+  background: rgba(234, 243, 240, 0.03);
+  border: 1px solid rgba(38, 55, 54, 0.72);
+  border-radius: 8px;
+  color: #eaf3f0;
+  cursor: pointer;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: minmax(72px, 1fr) minmax(72px, 1.2fr) auto;
+  min-width: 0;
+  padding: 9px 10px;
+  text-align: left;
+}
+
+.kbc-coverage-map__city-row:hover,
+.kbc-coverage-map__city-row.is-selected {
+  background: rgba(29, 214, 183, 0.08);
+  border-color: rgba(29, 214, 183, 0.34);
+}
+
+.kbc-coverage-map__city-row span:first-child {
+  color: #8ea39d;
+  font-size: 0.82rem;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kbc-coverage-map__city-row strong {
+  font-size: 0.82rem;
+}
+
+@media (max-width: 780px) {
+  .kbc-chart-panel__header,
+  .kbc-coverage-map__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .kbc-chart-panel__actions {
+    justify-content: flex-start;
+  }
+
+  .kbc-coverage-map__stage {
+    grid-template-columns: 1fr;
+  }
+
+  .kbc-coverage-bars__row {
+    grid-template-columns: minmax(84px, 1fr) minmax(72px, 1fr) auto;
+  }
+
+  .kbc-metric-sparkline__chart {
+    flex-basis: 96px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kbc-chart-panel *,
+  .kbc-coverage-map *,
+  .kbc-metric-sparkline * {
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

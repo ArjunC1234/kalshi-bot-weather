@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import gzip
 import json
+from json import JSONDecodeError
 from pathlib import Path
 from typing import Any
 
@@ -76,25 +77,54 @@ def _sample_rows(path: Path, table: str, limit: int = 50) -> list[dict[str, Any]
         return _json_rows(json_path, limit)
     json_gz_path = path / f"{table}.json.gz"
     if json_gz_path.exists():
-        try:
-            with gzip.open(json_gz_path, "rt", encoding="utf-8") as handle:
-                value = json.load(handle)
-        except (OSError, ValueError):
-            return []
-        if not isinstance(value, list):
-            return []
-        return [row for row in value[:limit] if isinstance(row, dict)]
+        return _json_gz_rows(json_gz_path, limit)
     return []
 
 
 def _json_rows(path: Path, limit: int) -> list[dict[str, Any]]:
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
     except (OSError, ValueError):
         return []
-    if not isinstance(value, list):
+    return _sample_json_array_text(text, limit)
+
+
+def _json_gz_rows(path: Path, limit: int) -> list[dict[str, Any]]:
+    try:
+        with gzip.open(path, "rt", encoding="utf-8") as handle:
+            text = handle.read(1_000_000)
+    except (OSError, ValueError):
         return []
-    return [row for row in value[:limit] if isinstance(row, dict)]
+    return _sample_json_array_text(text, limit)
+
+
+def _sample_json_array_text(text: str, limit: int) -> list[dict[str, Any]]:
+    decoder = json.JSONDecoder()
+    rows: list[dict[str, Any]] = []
+    index = _skip_whitespace(text, 0)
+    if index >= len(text) or text[index] != "[":
+        return []
+    index += 1
+    while len(rows) < limit:
+        index = _skip_whitespace(text, index)
+        if index >= len(text) or text[index] == "]":
+            break
+        if text[index] == ",":
+            index += 1
+            continue
+        try:
+            value, index = decoder.raw_decode(text, index)
+        except JSONDecodeError:
+            break
+        if isinstance(value, dict):
+            rows.append(value)
+    return rows
+
+
+def _skip_whitespace(text: str, index: int) -> int:
+    while index < len(text) and text[index] in " \r\n\t":
+        index += 1
+    return index
 
 
 def _row_grain(columns: list[str]) -> list[str]:

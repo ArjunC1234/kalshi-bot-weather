@@ -1,0 +1,49 @@
+{
+  "artifact_type": "local_export",
+  "created_utc": "2026-07-23T07:35:10.646309+00:00",
+  "end": "2026-07-21",
+  "excluded_columns": {
+    "raw_payloads": [
+      "payload"
+    ]
+  },
+  "export_name": "export_20260702_20260721_control",
+  "export_profile_id": "weather_research_default",
+  "exported_at_utc": "2026-07-23T07:35:10.646309+00:00",
+  "source": "supabase.weather",
+  "start": "2026-07-02",
+  "tables": {
+    "collector_runs": {
+      "rows": 1431,
+      "source_table": "collector_runs"
+    },
+    "events": {
+      "rows": 2856,
+      "source_table": "events"
+    },
+    "final_temperature_labels": {
+      "rows": 120,
+      "source_table": "final_temperature_labels"
+    },
+    "market_snapshots": {
+      "rows": 17136,
+      "source_table": "market_snapshots"
+    },
+    "provider_errors": {
+      "rows": 85,
+      "source_table": "provider_errors"
+    },
+    "raw_payloads": {
+      "rows": 25638,
+      "source_table": "raw_payloads"
+    },
+    "settlements": {
+      "rows": 120,
+      "source_table": "settlements"
+    },
+    "weather_snapshots": {
+      "rows": 2856,
+      "source_table": "weather_snapshots"
+    }
+  }
+}

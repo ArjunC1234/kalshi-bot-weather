@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5173",
+    "dev:workbench": "node scripts/dev-workbench.mjs",
+    "backend": "cd ../.. && python -m control.cli serve-workbench --port 8775",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4173"
   },

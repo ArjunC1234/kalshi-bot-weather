@@ -53,7 +53,18 @@ NUMERIC_FEATURES = [
     "nbm_projected_high_f",
     "ensemble_raw_median_high_f",
 ]
-CATEGORICAL_FEATURES = ["city", "side", "checkpoint", "bracket_type"]
+CATEGORICAL_FEATURES = [
+    "city",
+    "side",
+    "checkpoint",
+    "checkpoint_bucket",
+    "bracket_type",
+    "city_side",
+    "checkpoint_bucket_side",
+    "city_checkpoint_bucket",
+    "city_checkpoint_bucket_side",
+    "city_bracket_type",
+]
 
 
 @dataclass(frozen=True)
@@ -225,11 +236,19 @@ def _features(
     lower = float(market.bracket.lower_f) if market.bracket.lower_f is not None else None
     upper = float(market.bracket.upper_f) if market.bracket.upper_f is not None else None
     observed = weather.observed_high_so_far_f if weather is not None else None
+    checkpoint = f"utc_{market.snapshot_hour_utc.hour:02d}"
+    checkpoint_bucket = _checkpoint_bucket(market.snapshot_hour_utc.hour)
     return {
         "city": market.city,
         "side": side,
-        "checkpoint": f"utc_{market.snapshot_hour_utc.hour:02d}",
+        "checkpoint": checkpoint,
+        "checkpoint_bucket": checkpoint_bucket,
         "bracket_type": _bracket_type(market),
+        "city_side": f"{market.city}:{side}",
+        "checkpoint_bucket_side": f"{checkpoint_bucket}:{side}",
+        "city_checkpoint_bucket": f"{market.city}:{checkpoint_bucket}",
+        "city_checkpoint_bucket_side": f"{market.city}:{checkpoint_bucket}:{side}",
+        "city_bracket_type": f"{market.city}:{_bracket_type(market)}",
         "yes_probability": yes_probability,
         "outcome_probability": outcome_probability,
         "entry_bid": bid,
@@ -261,6 +280,18 @@ def _features(
             weather.ensemble_raw_median_high_f if weather is not None else None
         ),
     }
+
+
+def _checkpoint_bucket(hour: int) -> str:
+    if hour < 6:
+        return "overnight"
+    if hour < 10:
+        return "morning"
+    if hour < 14:
+        return "midday"
+    if hour < 18:
+        return "afternoon"
+    return "evening"
 
 
 def _quote(market: MarketSnapshot, side: str) -> tuple[float, float] | None:
@@ -321,4 +352,3 @@ def _bracket_type(market: MarketSnapshot) -> str:
     if market.bracket.upper_f is None:
         return "upper_tail"
     return "bounded"
-

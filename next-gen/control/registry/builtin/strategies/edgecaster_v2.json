@@ -35,19 +35,31 @@
           },
           "train_start": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First target date included in the training window. Use ISO date format.",
+            "examples": ["2026-07-02"]
           },
           "train_end": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last target date included in the training window. Use ISO date format.",
+            "examples": ["2026-07-16"]
           },
           "test_start": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First target date included in the test window. Use ISO date format.",
+            "examples": ["2026-07-17"]
           },
           "test_end": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last target date included in the test window. Use ISO date format.",
+            "examples": ["2026-07-21"]
           }
         }
       },

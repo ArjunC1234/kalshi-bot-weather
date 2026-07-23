@@ -13,7 +13,7 @@ import {
 } from "echarts/components";
 import { getInstanceByDom, init, use, type ECharts, type EChartsCoreOption } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
-import { Info } from "lucide-react";
+import { Download, Info } from "lucide-react";
 
 use([
   BarChart,
@@ -55,6 +55,22 @@ export function ChartPanel({
   const helpId = useId();
   const ref = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<ECharts | null>(null);
+
+  function handleDownloadPng() {
+    const instance = ref.current ? getInstanceByDom(ref.current) : chartRef.current;
+    if (!instance) return;
+    const url = instance.getDataURL({
+      type: "png",
+      pixelRatio: 2,
+      backgroundColor: "#fffaf0",
+    });
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${fileSlug(title)}.png`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
 
   useEffect(() => {
     if (!ref.current) return undefined;
@@ -104,7 +120,13 @@ export function ChartPanel({
           </div>
           {subtitle ? <p>{subtitle}</p> : null}
         </div>
-        {actions ? <div className="panel-actions">{actions}</div> : null}
+        <div className="panel-actions">
+          {actions}
+          <button className="ghost icon-text-button" type="button" onClick={handleDownloadPng}>
+            <Download aria-hidden="true" size={15} />
+            PNG
+          </button>
+        </div>
       </header>
       <div
         ref={ref}
@@ -115,4 +137,8 @@ export function ChartPanel({
       />
     </section>
   );
+}
+
+function fileSlug(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "chart";
 }

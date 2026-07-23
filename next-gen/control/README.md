@@ -1,9 +1,9 @@
-# Kalshi Bot Control Center Backend
+# Kalshi Weather Workbench Backend
 
 This package is the registry-driven backend foundation for the Kalshi Bot
-Control Center. Trends remains useful reference code, but the Control Center API
-is separate and mounted under `/control/api/*` so a future app can manage
-exports, models, reports, and bot monitoring without depending on the Trends UI.
+Weather Workbench. Trends remains useful reference code, but the Workbench API is
+separate and mounted under `/control/api/*` so the app can manage exports,
+models, reports, and bot monitoring without depending on the Trends UI routes.
 
 The intended developer workflow is:
 
@@ -22,7 +22,13 @@ python -m control.cli registry validate
 python -m control.cli registry list
 python -m control.cli artifacts scan
 python -m control.cli serve --port 8775
-python -m control.cli serve-control-center --port 8775
+python -m control.cli serve-workbench --port 8775
+```
+
+From `trends/ui/`, one command starts both the backend and the Vite frontend:
+
+```powershell
+npm run dev:workbench
 ```
 
 Create a local export from a registered profile:

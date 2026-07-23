@@ -1,0 +1,2 @@
+order_id,city,event_ticker,market_ticker,target_date,entry_time_utc,model_probability,entry_price,edge,contracts,winner_ticker,settlement_value,pnl,roi,hit,closing_mid,clv,checkpoint,side,bracket_type
+edgecaster-v2-000001,okc,KXHIGHTOKC-26JUL18,KXHIGHTOKC-26JUL18-B90.5,2026-07-18,2026-07-18 10:00:00+00:00,0.837009282713275,0.68,0.09634504726078733,4.0,KXHIGHTOKC-26JUL18-B90.5,0.0,-2.72,-1.0,0.0,0.005,-0.675,utc_10,no,bounded

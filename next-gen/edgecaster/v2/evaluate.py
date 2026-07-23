@@ -7,7 +7,7 @@ import json
 import math
 import random
 from collections import Counter, defaultdict
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from statistics import mean
 from typing import Any
@@ -109,6 +109,73 @@ class EdgecasterV2Prediction:
     model_mode: str
     training_examples: int
     training_days: int
+    calibrated_win_probability: float | None = None
+    calibrated_ev: float | None = None
+    calibrated_ev_lcb: float | None = None
+    calibration_segment: str | None = None
+    calibration_count: int = 0
+
+
+@dataclass(frozen=True)
+class CalibrationStats:
+    key: str
+    count: int
+    mean_win: float
+    mean_model_win: float
+    mean_reward: float
+    mean_predicted_reward: float
+    std_reward: float
+
+
+@dataclass(frozen=True)
+class CalibrationPolicy:
+    stats: dict[str, CalibrationStats]
+    global_stats: CalibrationStats
+    config: EdgecasterV2Config
+
+    def apply(self, prediction: EdgecasterV2Prediction) -> EdgecasterV2Prediction:
+        stats = self._best_stats(prediction)
+        local_weight = stats.count / (stats.count + self.config.calibration_shrinkage)
+        global_weight = 1.0 - local_weight
+        global_win_bias = self.global_stats.mean_win - self.global_stats.mean_model_win
+        local_win_bias = stats.mean_win - stats.mean_model_win
+        global_reward_bias = (
+            self.global_stats.mean_reward - self.global_stats.mean_predicted_reward
+        )
+        local_reward_bias = stats.mean_reward - stats.mean_predicted_reward
+        calibrated_win = _clamp(
+            prediction.win_probability
+            + local_weight * local_win_bias
+            + global_weight * global_win_bias,
+            0.001,
+            0.999,
+        )
+        calibrated_reward = (
+            prediction.predicted_reward
+            + local_weight * local_reward_bias
+            + global_weight * global_reward_bias
+        )
+        candidate_ev = calibrated_win - prediction.candidate.entry_ask
+        calibrated_ev = min(candidate_ev, calibrated_reward)
+        standard_error = math.sqrt(
+            max(calibrated_win * (1.0 - calibrated_win), 0.01) / max(1, stats.count)
+        )
+        calibrated_ev_lcb = calibrated_ev - self.config.calibration_lcb_z * standard_error
+        return replace(
+            prediction,
+            calibrated_win_probability=calibrated_win,
+            calibrated_ev=calibrated_ev,
+            calibrated_ev_lcb=calibrated_ev_lcb,
+            calibration_segment=stats.key,
+            calibration_count=stats.count,
+        )
+
+    def _best_stats(self, prediction: EdgecasterV2Prediction) -> CalibrationStats:
+        for key in _calibration_keys(prediction):
+            stats = self.stats.get(key)
+            if stats is not None and stats.count >= self.config.calibration_min_count:
+                return stats
+        return self.global_stats
 
 
 def run_fixed_window(
@@ -124,6 +191,29 @@ def run_fixed_window(
     sets = load_candidate_sets(data_path, model_report)
     train_sets, test_sets = split_sets(sets, train_start, train_end, test_start, test_end)
     model, feature_spec, training_summary = train_model(train_sets, config)
+    calibration_policy = None
+    calibration_summary: dict[str, Any] = {}
+    if config.selection_policy == "calibrated":
+        validation_date = training_summary.get("validation_date")
+        if config.calibration_source == "train":
+            calibration_sets = train_sets
+        else:
+            calibration_sets = [
+                item
+                for item in train_sets
+                if validation_date is not None and item.target_date == validation_date
+            ]
+            if not calibration_sets:
+                calibration_sets = train_sets
+        calibration_predictions = predict_sets(
+            model,
+            feature_spec,
+            calibration_sets,
+            training_examples=training_summary["training_examples"],
+            training_days=training_summary["training_days"],
+        )
+        calibration_policy = fit_calibration_policy(calibration_predictions, config)
+        calibration_summary = calibration_policy_summary(calibration_policy)
     predictions = predict_sets(
         model,
         feature_spec,
@@ -131,6 +221,8 @@ def run_fixed_window(
         training_examples=training_summary["training_examples"],
         training_days=training_summary["training_days"],
     )
+    if calibration_policy is not None:
+        predictions = [calibration_policy.apply(row) for row in predictions]
     dataset = load_dataset_for_trades(data_path)
     trades = select_trades(predictions, market_history(dataset), config)
     summary = {
@@ -148,10 +240,17 @@ def run_fixed_window(
         "training_examples": training_summary["training_examples"],
         "training_days": training_summary["training_days"],
         "prediction_examples": len(predictions),
+        "calibration": calibration_summary,
         **training_summary,
         **summary_metrics(trades),
     }
-    write_outputs(Path(output_dir), summary, predictions, trades)
+    write_outputs(
+        Path(output_dir),
+        summary,
+        predictions,
+        trades,
+        calibration_policy=calibration_policy,
+    )
     return {**summary, "output_dir": str(output_dir)}
 
 
@@ -358,19 +457,14 @@ def select_trades(
         selected = [
             sorted(
                 event_candidates,
-                key=lambda item: (
-                    item.trade_probability,
-                    item.predicted_reward,
-                    item.rank_score,
-                    item.candidate.raw_edge,
-                ),
+                key=lambda item: _selection_key(item, config),
                 reverse=True,
             )[0]
             for event_candidates in by_event.values()
         ]
         for prediction in sorted(
             selected,
-            key=lambda item: (item.trade_probability, item.predicted_reward),
+            key=lambda item: _selection_key(item, config),
             reverse=True,
         ):
             candidate = prediction.candidate
@@ -393,6 +487,7 @@ def write_outputs(
     summary: dict[str, Any],
     predictions: list[EdgecasterV2Prediction],
     trades: list[PaperTrade],
+    calibration_policy: CalibrationPolicy | None = None,
 ) -> None:
     output.mkdir(parents=True, exist_ok=True)
     _write_dict_rows(output / "predictions.csv", [_prediction_row(row) for row in predictions])
@@ -401,6 +496,17 @@ def write_outputs(
     _write_dict_rows(output / "city_metrics.csv", grouped_metric_rows(trades, "city"))
     _write_dict_rows(output / "side_metrics.csv", grouped_metric_rows(trades, "side"))
     _write_dict_rows(output / "ranking_diagnostics.csv", _ranking_diagnostics(predictions))
+    if calibration_policy is not None:
+        _write_dict_rows(
+            output / "calibration_segments.csv",
+            [
+                asdict(stats)
+                for stats in sorted(
+                    calibration_policy.stats.values(),
+                    key=lambda item: (item.key.split(":", 1)[0], -item.count, item.key),
+                )
+            ],
+        )
     _write_loss_history(output, summary.get("loss_history", []))
     (output / "summary.json").write_text(
         json.dumps(summary, indent=2, default=str),
@@ -478,12 +584,40 @@ def _batches(items: list[CandidateSet], size: int) -> list[list[CandidateSet]]:
 
 def _passes_policy(prediction: EdgecasterV2Prediction, config: EdgecasterV2Config) -> bool:
     candidate = prediction.candidate
-    return (
+    standard_pass = (
         prediction.predicted_reward >= config.min_predicted_reward
         and prediction.trade_probability >= config.min_trade_probability
         and candidate.raw_edge >= config.min_raw_edge
         and candidate.spread <= config.max_spread
         and config.min_entry_price <= candidate.entry_ask <= config.max_entry_price
+    )
+    if config.selection_policy != "calibrated":
+        return standard_pass
+    return (
+        standard_pass
+        and prediction.calibrated_ev is not None
+        and prediction.calibrated_ev_lcb is not None
+        and prediction.calibrated_ev >= config.min_calibrated_ev
+        and prediction.calibrated_ev_lcb >= config.min_calibrated_ev_lcb
+    )
+
+
+def _selection_key(
+    prediction: EdgecasterV2Prediction,
+    config: EdgecasterV2Config,
+) -> tuple[float, float, float, float]:
+    if config.selection_policy == "calibrated":
+        return (
+            prediction.calibrated_ev_lcb if prediction.calibrated_ev_lcb is not None else -999.0,
+            prediction.calibrated_ev if prediction.calibrated_ev is not None else -999.0,
+            prediction.predicted_reward,
+            prediction.trade_probability,
+        )
+    return (
+        prediction.trade_probability,
+        prediction.predicted_reward,
+        prediction.rank_score,
+        prediction.candidate.raw_edge,
     )
 
 
@@ -522,9 +656,17 @@ def _trade(
         market_ticker=candidate.market_ticker,
         target_date=candidate.target_date,
         entry_time_utc=candidate.snapshot_hour_utc,
-        model_probability=prediction.trade_probability,
+        model_probability=(
+            prediction.calibrated_win_probability
+            if prediction.calibrated_win_probability is not None
+            else prediction.trade_probability
+        ),
         entry_price=candidate.entry_ask,
-        edge=prediction.predicted_reward,
+        edge=(
+            prediction.calibrated_ev
+            if prediction.calibrated_ev is not None
+            else prediction.predicted_reward
+        ),
         contracts=float(contracts),
         winner_ticker=candidate.winner_ticker,
         settlement_value=settlement_value,
@@ -537,6 +679,136 @@ def _trade(
         side=candidate.side,
         bracket_type=candidate.bracket_type,
     )
+
+
+def fit_calibration_policy(
+    predictions: list[EdgecasterV2Prediction],
+    config: EdgecasterV2Config,
+) -> CalibrationPolicy:
+    eligible = [
+        row
+        for row in predictions
+        if row.candidate.spread <= config.max_spread
+        and config.min_entry_price <= row.candidate.entry_ask <= config.max_entry_price
+    ]
+    if not eligible:
+        eligible = predictions
+    accumulators: dict[str, list[EdgecasterV2Prediction]] = defaultdict(list)
+    for prediction in eligible:
+        for key in _calibration_keys(prediction):
+            accumulators[key].append(prediction)
+    stats = {key: _calibration_stats(key, rows) for key, rows in accumulators.items() if rows}
+    global_stats = stats.get("global:all")
+    if global_stats is None:
+        global_stats = _calibration_stats("global:all", eligible)
+        stats[global_stats.key] = global_stats
+    return CalibrationPolicy(stats=stats, global_stats=global_stats, config=config)
+
+
+def calibration_policy_summary(policy: CalibrationPolicy) -> dict[str, Any]:
+    usable_segments = [
+        row for row in policy.stats.values() if row.count >= policy.config.calibration_min_count
+    ]
+    return {
+        "policy": "hierarchical_segment_calibration",
+        "source": policy.config.calibration_source,
+        "segments": len(policy.stats),
+        "usable_segments": len(usable_segments),
+        "global_count": policy.global_stats.count,
+        "global_mean_win": policy.global_stats.mean_win,
+        "global_mean_model_win": policy.global_stats.mean_model_win,
+        "global_mean_reward": policy.global_stats.mean_reward,
+        "global_mean_predicted_reward": policy.global_stats.mean_predicted_reward,
+        "shrinkage": policy.config.calibration_shrinkage,
+        "min_count": policy.config.calibration_min_count,
+        "lcb_z": policy.config.calibration_lcb_z,
+    }
+
+
+def _calibration_stats(key: str, rows: list[EdgecasterV2Prediction]) -> CalibrationStats:
+    count = len(rows)
+    rewards = [row.candidate.reward for row in rows]
+    mean_reward = sum(rewards) / max(1, count)
+    if count > 1:
+        variance = sum((reward - mean_reward) ** 2 for reward in rewards) / count
+        std_reward = math.sqrt(max(variance, 0.0))
+    else:
+        std_reward = 0.0
+    return CalibrationStats(
+        key=key,
+        count=count,
+        mean_win=sum(row.candidate.win_label for row in rows) / max(1, count),
+        mean_model_win=sum(row.win_probability for row in rows) / max(1, count),
+        mean_reward=mean_reward,
+        mean_predicted_reward=sum(row.predicted_reward for row in rows) / max(1, count),
+        std_reward=std_reward,
+    )
+
+
+def _calibration_keys(prediction: EdgecasterV2Prediction) -> list[str]:
+    features = prediction.candidate.features
+    city = prediction.candidate.city
+    side = prediction.candidate.side
+    checkpoint_bucket = str(features.get("checkpoint_bucket", "unknown"))
+    bracket_type = prediction.candidate.bracket_type
+    return [
+        f"city_checkpoint_bucket_side:{city}:{checkpoint_bucket}:{side}",
+        f"city_side:{city}:{side}",
+        f"checkpoint_bucket_side:{checkpoint_bucket}:{side}",
+        f"city_checkpoint_bucket:{city}:{checkpoint_bucket}",
+        f"city_bracket_type:{city}:{bracket_type}",
+        f"bracket_type_side:{bracket_type}:{side}",
+        f"price_bucket:{_price_bucket(prediction.candidate.entry_ask)}",
+        f"raw_edge_bucket:{_edge_bucket(prediction.candidate.raw_edge)}",
+        f"predicted_reward_bucket:{_edge_bucket(prediction.predicted_reward)}",
+        f"trade_probability_bucket:{_probability_bucket(prediction.trade_probability)}",
+        f"city:{city}",
+        f"checkpoint_bucket:{checkpoint_bucket}",
+        f"side:{side}",
+        "global:all",
+    ]
+
+
+def _price_bucket(value: float) -> str:
+    if value < 0.35:
+        return "lt_35"
+    if value < 0.50:
+        return "35_50"
+    if value < 0.65:
+        return "50_65"
+    if value < 0.80:
+        return "65_80"
+    return "gte_80"
+
+
+def _edge_bucket(value: float) -> str:
+    if value < -0.02:
+        return "lt_neg_02"
+    if value < 0.0:
+        return "neg_02_0"
+    if value < 0.02:
+        return "0_02"
+    if value < 0.05:
+        return "02_05"
+    if value < 0.08:
+        return "05_08"
+    return "gte_08"
+
+
+def _probability_bucket(value: float) -> str:
+    if value < 0.35:
+        return "lt_35"
+    if value < 0.45:
+        return "35_45"
+    if value < 0.55:
+        return "45_55"
+    if value < 0.65:
+        return "55_65"
+    return "gte_65"
+
+
+def _clamp(value: float, lower: float, upper: float) -> float:
+    return max(lower, min(upper, value))
 
 
 def _closing_mid(
@@ -578,6 +850,11 @@ def _prediction_row(prediction: EdgecasterV2Prediction) -> dict[str, Any]:
         "predicted_reward": prediction.predicted_reward,
         "rank_score": prediction.rank_score,
         "trade_probability": prediction.trade_probability,
+        "calibrated_win_probability": prediction.calibrated_win_probability,
+        "calibrated_ev": prediction.calibrated_ev,
+        "calibrated_ev_lcb": prediction.calibrated_ev_lcb,
+        "calibration_segment": prediction.calibration_segment,
+        "calibration_count": prediction.calibration_count,
         "model_mode": prediction.model_mode,
         "training_examples": prediction.training_examples,
         "training_days": prediction.training_days,

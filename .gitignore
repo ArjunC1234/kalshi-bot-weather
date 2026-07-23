@@ -12,3 +12,9 @@ collector_spool_*/
 next-gen/production/deployable/logs/
 next-gen/trends/ui/node_modules/
 next-gen/trends/ui/dist/
+next-gen/control-center/ui/node_modules/
+next-gen/control-center/ui/dist/
+next-gen/control-center/ui/*.log
+next-gen/control-center/ui/*.tsbuildinfo
+next-gen/control-center/ui/vite.config.js
+next-gen/control-center/ui/vite.config.d.ts

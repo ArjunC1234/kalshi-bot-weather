@@ -1,4 +1,4 @@
-"""Manage local dataset exports for the Control Center."""
+"""Manage local dataset exports for the Workbench."""
 
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ def list_exports(data_root: Path = Path("data")) -> list[dict[str, Any]]:
         Path("_missing"),
         Path("_missing"),
         Path("_missing"),
+        include_schemas=False,
     )
     return [
         record.metadata

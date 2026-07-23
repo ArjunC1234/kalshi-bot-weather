@@ -6,7 +6,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table";
-import { ArrowDownUp, Search } from "lucide-react";
+import { ArrowDownUp, Download, Search } from "lucide-react";
 import { useDeferredValue, useMemo, useState, type ReactNode } from "react";
 import type { DataRow } from "../types";
 import { asText, formatNumber, titleCase } from "../utils";
@@ -16,12 +16,23 @@ type DataTableProps = {
   rows: DataRow[];
   preferredColumns?: string[];
   maxRows?: number;
+  onRowSelect?: (row: DataRow) => void;
+  selectedRowKey?: string;
+  selectedRowValue?: unknown;
 };
 
 const MAX_RENDER_ROWS = 5_000;
 const SEARCH_SCAN_LIMIT = 50_000;
 
-export function DataTable({ title, rows, preferredColumns, maxRows = 300 }: DataTableProps) {
+export function DataTable({
+  title,
+  rows,
+  preferredColumns,
+  maxRows = 300,
+  onRowSelect,
+  selectedRowKey,
+  selectedRowValue,
+}: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [query, setQuery] = useState("");
   const [rowLimit, setRowLimit] = useState<number | "all">(maxRows);
@@ -29,23 +40,24 @@ export function DataTable({ title, rows, preferredColumns, maxRows = 300 }: Data
   const canRenderAll = rows.length <= MAX_RENDER_ROWS;
   const displayLimit = rowLimit === "all" ? (canRenderAll ? rows.length : MAX_RENDER_ROWS) : Math.min(rowLimit, MAX_RENDER_ROWS);
   const searchRowLimit = Math.min(rows.length, SEARCH_SCAN_LIMIT);
+  const columnIds = useMemo(() => columnKeys(rows, preferredColumns), [preferredColumns, rows]);
   const columns = useMemo<ColumnDef<DataRow>[]>(() => {
-    const keys = columnKeys(rows, preferredColumns);
-    return keys.map((key) => ({
+    return columnIds.map((key) => ({
       accessorKey: key,
       header: titleCase(key),
       cell: (info) => <CellValue value={info.getValue()} />,
     }));
-  }, [preferredColumns, rows]);
-  const filteredRows = useMemo(() => {
+  }, [columnIds]);
+  const exportRows = useMemo(() => {
     const normalized = deferredQuery.trim().toLowerCase();
     const base = normalized
       ? rows.slice(0, searchRowLimit).filter((row) =>
           Object.values(row).some((value) => searchableText(value).toLowerCase().includes(normalized)),
         )
       : rows;
-    return sortRows(base, sorting).slice(0, displayLimit);
-  }, [deferredQuery, displayLimit, rows, searchRowLimit, sorting]);
+    return sortRows(base, sorting);
+  }, [deferredQuery, rows, searchRowLimit, sorting]);
+  const filteredRows = useMemo(() => exportRows.slice(0, displayLimit), [displayLimit, exportRows]);
   const searchLimited = Boolean(deferredQuery.trim()) && rows.length > searchRowLimit;
   const renderLimited = rows.length > displayLimit || filteredRows.length === displayLimit;
   const selectValue = rowLimit === "all" && !canRenderAll ? MAX_RENDER_ROWS : rowLimit;
@@ -69,33 +81,44 @@ export function DataTable({ title, rows, preferredColumns, maxRows = 300 }: Data
             {renderLimited && rows.length > filteredRows.length ? ", capped for responsiveness" : ""}
           </p>
         </div>
-        <label className="search-control">
-          <Search aria-hidden="true" size={16} />
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            aria-label={`Search ${title} rows`}
-            placeholder="Search rows"
-            spellCheck={false}
-          />
-        </label>
-        <label className="row-limit-control">
-          Rows
-          <select
-            value={selectValue}
-            onChange={(event) => {
-              const value = event.target.value;
-              setRowLimit(value === "all" ? "all" : Number(value));
-            }}
+        <div className="table-actions">
+          <label className="search-control">
+            <Search aria-hidden="true" size={16} />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              aria-label={`Search ${title} rows`}
+              placeholder="Search rows"
+              spellCheck={false}
+            />
+          </label>
+          <label className="row-limit-control">
+            Rows
+            <select
+              value={selectValue}
+              onChange={(event) => {
+                const value = event.target.value;
+                setRowLimit(value === "all" ? "all" : Number(value));
+              }}
+            >
+              {[300, 1_000, MAX_RENDER_ROWS].map((limit) => (
+                <option key={limit} value={limit}>
+                  {limit.toLocaleString()}
+                </option>
+              ))}
+              {canRenderAll ? <option value="all">All</option> : null}
+            </select>
+          </label>
+          <button
+            className="ghost icon-text-button"
+            disabled={!exportRows.length}
+            type="button"
+            onClick={() => downloadCsv(title, exportRows, columnIds)}
           >
-            {[300, 1_000, MAX_RENDER_ROWS].map((limit) => (
-              <option key={limit} value={limit}>
-                {limit.toLocaleString()}
-              </option>
-            ))}
-            {canRenderAll ? <option value="all">All</option> : null}
-          </select>
-        </label>
+            <Download aria-hidden="true" size={15} />
+            CSV
+          </button>
+        </div>
       </header>
       {rows.length ? (
         <div className="table-scroll">
@@ -119,15 +142,22 @@ export function DataTable({ title, rows, preferredColumns, maxRows = 300 }: Data
               ))}
             </thead>
             <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
+              {table.getRowModel().rows.map((row) => {
+                const selected = selectedRowKey ? asText(row.original[selectedRowKey]) === asText(selectedRowValue) : false;
+                return (
+                <tr
+                  className={`${onRowSelect ? "selectable-row" : ""} ${selected ? "selected-row" : ""}`}
+                  key={row.id}
+                  onClick={onRowSelect ? () => onRowSelect(row.original) : undefined}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
         </div>
@@ -136,6 +166,34 @@ export function DataTable({ title, rows, preferredColumns, maxRows = 300 }: Data
       )}
     </section>
   );
+}
+
+function downloadCsv(title: string, rows: DataRow[], keys: string[]): void {
+  if (!rows.length) return;
+  const resolvedKeys = keys.length ? keys : columnKeys(rows);
+  const csv = [
+    resolvedKeys.map(csvCell).join(","),
+    ...rows.map((row) => resolvedKeys.map((key) => csvCell(row[key])).join(",")),
+  ].join("\r\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${fileSlug(title)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+function csvCell(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  const text = typeof value === "object" ? JSON.stringify(value) : String(value);
+  return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+}
+
+function fileSlug(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "table";
 }
 
 function columnKeys(rows: DataRow[], preferredColumns?: string[]): string[] {
@@ -196,7 +254,7 @@ function formatCell(value: unknown): { kind: "empty" } | { kind: "simple"; previ
   const text = typeof value === "object" ? JSON.stringify(value, null, 2) : String(value);
   const isStructured = looksStructured(text);
   if (!isStructured && text.length <= 140) return { kind: "simple", preview: text, title: text };
-  const preview = isStructured ? structuredPreview(text) : `${text.slice(0, 137)}...`;
+  const preview = isStructured ? structuredPreview(text) : compactLongText(text);
   return { kind: "details", preview, title: "Expand full value", full: text };
 }
 
@@ -233,4 +291,11 @@ function structuredPreview(text: string): ReactNode {
       <i>more</i>
     </span>
   );
+}
+
+function compactLongText(text: string): string {
+  if (text.length <= 140) return text;
+  const pathParts = text.split(/[\\/]/).filter(Boolean);
+  if (pathParts.length >= 3) return `.../${pathParts.slice(-3).join("/")}`;
+  return `${text.slice(0, 137)}...`;
 }

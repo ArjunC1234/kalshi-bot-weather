@@ -1,0 +1,10 @@
+{
+  "collector_runs": 1359,
+  "events": 2712,
+  "final_temperature_labels": 120,
+  "market_snapshots": 16272,
+  "provider_errors": 85,
+  "raw_payloads": 24367,
+  "settlements": 120,
+  "weather_snapshots": 2712
+}

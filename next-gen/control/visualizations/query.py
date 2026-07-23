@@ -175,11 +175,18 @@ def _hour_block_label(block: int, block_size: int) -> str:
 
 def _matches_filters(row: dict[str, Any], filters: dict[str, Any]) -> bool:
     cities = {str(city) for city in _string_list(filters.get("cities") or filters.get("city"))}
-    if cities and str(row.get("city")) not in cities:
+    if cities and "city" in row and str(row.get("city")) not in cities:
         return False
-    date_column = _optional_string(filters.get("date_column")) or (
-        "target_date" if "target_date" in row else "snapshot_time_utc"
+    requested_date_column = _optional_string(filters.get("date_column"))
+    date_column = requested_date_column or (
+        "target_date"
+        if "target_date" in row
+        else "snapshot_time_utc"
+        if "snapshot_time_utc" in row
+        else None
     )
+    if not date_column:
+        return True
     value = row.get(date_column)
     if filters.get("date_from") and _date_key(value) < str(filters["date_from"]):
         return False

@@ -9,6 +9,6 @@ def bot_stub(resource: str) -> dict[str, Any]:
     return {
         "resource": resource,
         "status": "not_configured",
-        "message": "Deployed bot monitoring is reserved for a later Control Center phase.",
+        "message": "Deployed bot monitoring is reserved for a later Workbench phase.",
         "data": [],
     }

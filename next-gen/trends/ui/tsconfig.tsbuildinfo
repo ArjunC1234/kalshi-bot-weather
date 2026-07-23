@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/api.ts","./src/main.tsx","./src/types.ts","./src/utils.ts","./src/components/chartpanel.tsx","./src/components/datatable.tsx","./src/components/sourcepicker.tsx"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/workbenchapp.tsx","./src/api.ts","./src/controlapi.ts","./src/main.tsx","./src/types.ts","./src/utils.ts","./src/components/chartpanel.tsx","./src/components/datatable.tsx","./src/components/sourcepicker.tsx"],"version":"5.9.3"}

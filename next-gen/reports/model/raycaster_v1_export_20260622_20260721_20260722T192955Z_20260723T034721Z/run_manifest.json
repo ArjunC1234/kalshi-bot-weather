@@ -1,0 +1,13 @@
+{
+  "artifact_type": "model_report",
+  "contract": "weather_model_report.v1",
+  "registry_id": "raycaster_v1",
+  "registry_kind": "model",
+  "entrypoint": "evaluate",
+  "source_export_id": "export_20260622_20260721_20260722T192955Z",
+  "created_utc": "2026-07-23T03:47:21.400616+00:00",
+  "job_id": "job_20260723T034721Z_9fb5ad24",
+  "status": "complete",
+  "updated_utc": "2026-07-23T03:47:40.624303+00:00",
+  "returncode": 0
+}

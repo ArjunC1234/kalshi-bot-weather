@@ -1,4 +1,4 @@
-"""Control Center dashboard summaries."""
+"""Workbench dashboard summaries."""
 
 from __future__ import annotations
 
@@ -16,6 +16,8 @@ def dashboard_summary(repo_root: Path, registry: Registry, job_store: JobStore) 
         repo_root / "reports/model",
         repo_root / "reports/quality",
         repo_root / "reports/strategy",
+        include_counts=False,
+        include_schemas=False,
     )
     by_type: dict[str, int] = {}
     for record in records:
@@ -23,7 +25,7 @@ def dashboard_summary(repo_root: Path, registry: Registry, job_store: JobStore) 
     exports = [record for record in records if record.artifact_type == "local_export"]
     jobs = [serialize_job(job) for job in job_store.list()[:8]]
     return {
-        "brand": "Kalshi Bot Control Center",
+        "brand": "Kalshi Weather Workbench",
         "artifact_counts": by_type,
         "exports_available": len(exports),
         "latest_export": exports[0].metadata if exports else None,
@@ -33,4 +35,3 @@ def dashboard_summary(repo_root: Path, registry: Registry, job_store: JobStore) 
         "recent_jobs": jobs,
         "bot_monitoring": {"status": "deferred", "route": "/control/api/bot/status"},
     }
-
