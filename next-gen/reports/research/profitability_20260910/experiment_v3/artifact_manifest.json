@@ -1,0 +1,22 @@
+{
+  "compiled_after_scoring": true,
+  "purpose": "Reproduction hashes; the earlier selection lock records pre-scoring selection",
+  "dependencies": {
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\reports\\research\\profitability_20260910\\experiment_v3\\models.joblib": "8560c8eceea5d4cdf937cedf0a7da802ef5b1d562bce2e90963beb1d87c2f1cc",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\reports\\research\\profitability_20260910\\experiment_v3\\selection_lock.json": "a503da75f88939e32b2bbc52ea2e7939ee669f56a35a5b0f747b51ec784dface",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\reports\\research\\profitability_20260910\\experiment_v2\\neural_artifact\\artifact.json": "b34793ef4b2b21a036d0175875f7c1549c65e5cad777ff0409db13ceaf02b636",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\reports\\research\\profitability_20260910\\experiment_v2\\neural_artifact\\model.pt": "2bda83884c047dcf5098d6b5bc709cf3254fe3274359cede1c947c08e864f184",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\reports\\model\\neuralcaster_v2_weather_strict_train_20260701_20260817_test_20260818_20260831\\bracket_distributions.csv": "75c773c94c6649f3dddfe59baa0a85e762b85ea131e73610046ffc7834a5c47a",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\reports\\model\\neuralcaster_v2_weather_current_20260701_20260831_rolling14\\bracket_distributions.csv": "53095895abd733a47f70604224f9f3c544201a0438f492a190d3898c2c59127c",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\reports\\model\\neuralcaster_v2_weather_current_20260701_20260831_rolling14\\summary.json": "d4bc286a4916263660e25dd9f03b535792535c5d476ad240ec92e0231a8d63a3",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\reports\\research\\profitability_20260910\\experiment_v2\\neural_fresh\\bracket_distributions.csv": "2b5e2d7a9234000c24efa4be7778e677c641fc4cd2db6ca495aa645371b42702",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_history_verified_20260701_20260901\\events.json.gz": "caceb1779406afecaca0b04e5a0629028ebcba44ad44c5e2575c0c1e816cf9ff",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_history_verified_20260701_20260901\\weather_snapshots.json.gz": "42318aad70bbd08a9aa4c9098f529aa46cbb2717496df1fd63116f70561e1f88",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_history_verified_20260701_20260901\\market_snapshots.json.gz": "7239928e58f7c356159c73cfb375571cb763410a7fd5a5c59bd704e8d299c4e6",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_history_verified_20260701_20260901\\settlements.json.gz": "158b91c1f02062c904a468708b0f7823d53a7edcdfbf0d092b4aa9f12f28f256",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_fresh_verified_20260901_20260912\\events.json.gz": "457dc50ccb895317ef85f2b91b32f16c9c4b3c61052da76b3335aa5899e2783b",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_fresh_verified_20260901_20260912\\weather_snapshots.json.gz": "1704d49be4e4c474528515a86cac1382a7487082161042f54e5526cdbd69084f",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_fresh_verified_20260901_20260912\\market_snapshots.json.gz": "5140f606f4a1f184d78410fc63814c8b7e1aa4b6942e49bb70c4bd732cb94912",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_fresh_verified_20260901_20260912\\settlements.json.gz": "46a70a11417dd6f52abbb877199c6d4417a1f153b330e31653e97455a1cb552e"
+  }
+}

@@ -30,6 +30,7 @@ import type {
   EventReplay,
   LoadResponse,
   MetricInfo,
+  SourceInfo,
   SourcesResponse,
   StrategyAnalysis,
   ThemeMode,
@@ -269,11 +270,16 @@ export function App() {
       setSources(result);
       setPicker((current) => {
         const exportId = current.exportId || result.exports[0]?.id || "";
+        const reports = linkedToExport(result.reports, exportId);
+        const strategies = linkedToExport(result.strategy_reports, exportId);
+        const strategyId = current.strategyId || strategies[0]?.id || "";
+        const strategy = strategies.find((item) => item.id === strategyId);
         const qualityId =
           current.qualityId ||
           result.quality_reports.find((item) => item.source_export_id === exportId)?.id ||
           "";
-        return { ...current, exportId, qualityId };
+        const reportId = current.reportId || matchingModelReportId(strategy, reports) || reports[0]?.id || "";
+        return { ...current, exportId, reportId, qualityId, strategyId };
       });
     } finally {
       setSourceLoading(false);
@@ -1290,6 +1296,16 @@ function canUseMode(mode: { requires_report?: boolean; requires_strategy?: boole
   if (mode.requires_report && !metadata.has_model_reports) return false;
   if (mode.requires_strategy && !metadata.has_strategy_reports) return false;
   return true;
+}
+
+function linkedToExport(items: SourceInfo[], exportId: string): SourceInfo[] {
+  if (!exportId) return items;
+  return items.filter((item) => item.source_export_id === exportId);
+}
+
+function matchingModelReportId(strategy: SourceInfo | undefined, reports: SourceInfo[]): string {
+  if (!strategy?.model_report_id) return "";
+  return reports.find((report) => report.id === strategy.model_report_id)?.id ?? "";
 }
 
 function readInitialMode(): ViewMode {

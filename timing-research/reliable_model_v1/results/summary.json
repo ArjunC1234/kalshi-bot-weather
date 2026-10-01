@@ -1,0 +1,10 @@
+{
+  "model": "monotone-barrier-v1",
+  "as_of": "2026-09-18",
+  "integrity_errors": [],
+  "selected_policy": null,
+  "status": "FAIL",
+  "status_reason": "No policy met the frozen selection requirements.",
+  "prospective_interim": {},
+  "success_checks": {}
+}

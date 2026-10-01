@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-09-13T14:48:25.959857+00:00",
+  "protocol_sha256": "e0c2882dc851fa899ddbec2227275e9e8a5faeb6d3f6e9f3f2138b605358f98c",
+  "protocol_path": "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\reports\\research\\focused_regime_20260913\\PROTOCOL.md",
+  "fit_asof": "2026-08-24T18:00:00+00:00",
+  "calibration_asof": "2026-08-28T18:00:00+00:00",
+  "evaluation": [
+    "2026-08-28",
+    "2026-09-10"
+  ],
+  "policy": {
+    "side": "no",
+    "min_price": 0.5,
+    "max_price": 0.85,
+    "min_hours": 14,
+    "min_net_edge": 0.05,
+    "bounded_only": false,
+    "min_probability": 0.85,
+    "max_spread": 0.05
+  },
+  "live_trading_enabled": false
+}

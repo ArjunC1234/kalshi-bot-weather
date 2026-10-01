@@ -28,7 +28,7 @@ import {
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState, type CSSProperties, type InputHTMLAttributes, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type InputHTMLAttributes, type ReactNode } from "react";
 import { getAnalysis, getSeries, getSources, getTable, loadWorkbench } from "./api";
 import { ChartPanel } from "./components/ChartPanel";
 import { DataTable } from "./components/DataTable";
@@ -52,6 +52,7 @@ import {
   visualizationQuery,
   workbenchBackendCommand,
   type ArtifactMetadata,
+  type ArtifactTableSchema,
   type ControlSnapshot,
   type EntrypointSpec,
   type ExportPreviewResponse,
@@ -89,6 +90,15 @@ type PickerState = {
   reportId: string;
   qualityId: string;
   strategyId: string;
+};
+
+type InitialWorkbenchRoute = {
+  picker: PickerState;
+  exportId: string;
+  artifactId: string;
+  reportId: string;
+  jobId: string;
+  autoLoad: boolean;
 };
 
 type WorkbenchMode =
@@ -274,21 +284,23 @@ const INITIAL_OPERATION: OperationState = {
 };
 
 export function WorkbenchApp() {
+  const [initialRoute] = useState(() => readInitialWorkbenchRoute());
+  const didAutoLoadRoute = useRef(false);
   const [mode, setMode] = useState<WorkbenchMode>(() => routeFromUrl());
   const [sources, setSources] = useState<SourcesResponse | null>(null);
   const [sourceError, setSourceError] = useState("");
   const [sourcesLoading, setSourcesLoading] = useState(false);
-  const [picker, setPicker] = useState<PickerState>({ exportId: "", reportId: "", qualityId: "", strategyId: "" });
+  const [picker, setPicker] = useState<PickerState>(initialRoute.picker);
   const [workbench, setWorkbench] = useState<LoadResponse | null>(null);
   const [sourceOpen, setSourceOpen] = useState(false);
   const [workbenchLoading, setWorkbenchLoading] = useState(false);
   const [workbenchError, setWorkbenchError] = useState("");
   const [control, setControl] = useState<ControlSnapshot | null>(null);
   const [controlLoading, setControlLoading] = useState(false);
-  const [activeExportId, setActiveExportId] = useState("");
-  const [activeArtifactId, setActiveArtifactId] = useState("");
-  const [activeReportId, setActiveReportId] = useState("");
-  const [activeJobId, setActiveJobId] = useState("");
+  const [activeExportId, setActiveExportId] = useState(initialRoute.exportId);
+  const [activeArtifactId, setActiveArtifactId] = useState(initialRoute.artifactId);
+  const [activeReportId, setActiveReportId] = useState(initialRoute.reportId);
+  const [activeJobId, setActiveJobId] = useState(initialRoute.jobId);
   const [filters, setFilters] = useState<DateFilters>(DEFAULT_FILTERS);
 
   const refreshSources = useCallback(async () => {
@@ -299,11 +311,16 @@ export function WorkbenchApp() {
       setSources(result);
       setPicker((current) => {
         const exportId = current.exportId || result.exports[0]?.id || "";
+        const reports = linkedToExport(result.reports, exportId);
+        const qualityReports = linkedToExport(result.quality_reports, exportId);
+        const strategyReports = linkedToExport(result.strategy_reports, exportId);
+        const strategyId = selectedOrFirstLinked(current.strategyId, strategyReports);
+        const strategy = strategyReports.find((item) => item.id === strategyId);
         return {
           exportId,
-          reportId: current.reportId || linkedToExport(result.reports, exportId)[0]?.id || "",
-          qualityId: current.qualityId || linkedToExport(result.quality_reports, exportId)[0]?.id || "",
-          strategyId: current.strategyId || linkedToExport(result.strategy_reports, exportId)[0]?.id || "",
+          reportId: selectedOrMatchingModelReport(current.reportId, reports, strategy),
+          qualityId: selectedOrFirstLinked(current.qualityId, qualityReports),
+          strategyId,
         };
       });
     } catch (error) {
@@ -360,13 +377,20 @@ export function WorkbenchApp() {
         end: result.metadata.date_range.end ?? result.metadata.artifact_date_range?.end ?? "",
         city: "all",
       });
-      setActiveExportId((current) => current || result.selection.export_id || "");
+      setActiveExportId(result.selection.export_id || picker.exportId || "");
     } catch (error) {
       setWorkbenchError(readableError(error));
     } finally {
       setWorkbenchLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (!initialRoute.autoLoad || didAutoLoadRoute.current || !sources || workbench || workbenchLoading) return;
+    if (!picker.exportId) return;
+    didAutoLoadRoute.current = true;
+    void handleLoadWorkbench();
+  }, [initialRoute.autoLoad, picker, sources, workbench, workbenchLoading]);
 
   const selectedExport = findById(control?.exports ?? [], activeExportId) ?? control?.exports[0];
   const scannedSelectedExport = selectedExport ? findById(control?.artifacts ?? [], selectedExport.id) : undefined;
@@ -563,6 +587,12 @@ type RouterProps = {
 type PathRow = {
   label: string;
   value: string;
+};
+
+type RunDiagnostic = {
+  detail: string;
+  level: "ok" | "warn" | "block";
+  title: string;
 };
 
 function ViewRouter(props: RouterProps) {
@@ -808,7 +838,8 @@ function ExportBuilderView({ activeExport, control, onRefreshControl }: RouterPr
   const profiles = control?.exportProfiles ?? [];
   const exports = control?.exports ?? [];
   const selected = activeExport ?? exports[0];
-  const [profileId, setProfileId] = useState(profiles[0]?.id ?? "");
+  const defaultProfileId = preferredExportProfileId(profiles);
+  const [profileId, setProfileId] = useState(defaultProfileId);
   const [start, setStart] = useState(selected?.coverage?.date_range?.start ?? "2026-07-01");
   const [end, setEnd] = useState(selected?.coverage?.date_range?.end ?? "2026-07-21");
   const [outputPath, setOutputPath] = useState("");
@@ -821,8 +852,8 @@ function ExportBuilderView({ activeExport, control, onRefreshControl }: RouterPr
   const [preview, setPreview] = useState<ExportPreviewResponse | null>(null);
 
   useEffect(() => {
-    if (!profileId && profiles[0]?.id) setProfileId(profiles[0].id);
-  }, [profileId, profiles]);
+    if (!profileId && defaultProfileId) setProfileId(defaultProfileId);
+  }, [defaultProfileId, profileId]);
 
   useEffect(() => {
     if (!selected) return;
@@ -957,20 +988,42 @@ function ExportBuilderView({ activeExport, control, onRefreshControl }: RouterPr
   );
 }
 
+function preferredExportProfileId(profiles: RegistryEntry[]): string {
+  return profiles.find((profile) => profile.id === "lightweight_model_eval")?.id ?? profiles[0]?.id ?? "";
+}
+
 function DataExplorerView({ activeArtifact, control, filters, onSelectArtifact }: RouterProps) {
   const artifacts = uniqueArtifacts([...(control?.artifacts ?? []), ...(control?.exports ?? []), ...(control?.reports ?? [])]);
   const artifact = activeArtifact ?? artifacts[0];
-  const [schemaProbe, setSchemaProbe] = useState<VisualizationQueryResponse | null>(null);
+  const [schemaProbe, setSchemaProbe] = useState<Record<string, ArtifactTableSchema>>({});
   const metadata = artifact?.metadata as DataRow | undefined;
   const metadataSchemas = metadata?.schemas as ArtifactMetadata["schemas"] | undefined;
-  const schemas = useMemo(() => ({
+  const schemas = useMemo<Record<string, ArtifactTableSchema>>(() => ({
     ...(metadataSchemas ?? {}),
     ...(artifact?.schemas ?? {}),
-    ...(schemaProbe?.table ? { [schemaProbe.table]: schemaProbe.schema } : {}),
+    ...schemaProbe,
   }), [artifact?.schemas, metadataSchemas, schemaProbe]);
-  const tables = useMemo(() => Object.keys(schemas).length ? Object.keys(schemas) : artifact?.files ?? [], [artifact?.files, schemas]);
+  const tables = useMemo(() => Object.keys(schemas).length ? Object.keys(schemas) : artifactTableNames(artifact?.files ?? []), [artifact?.files, schemas]);
+  const [explorerMode, setExplorerMode] = useState<"single" | "compare" | "join">("single");
   const [table, setTable] = useState(tables[0] ?? "");
-  const columns = useMemo(() => Object.keys(schemas[table]?.columns ?? {}), [schemas, table]);
+  const [selectedTables, setSelectedTables] = useState<string[]>([]);
+  const [joinTable, setJoinTable] = useState("");
+  const [joinKeys, setJoinKeys] = useState<string[]>([]);
+  const [joinField, setJoinField] = useState("");
+  const baseColumns = useMemo(() => Object.keys(schemas[table]?.columns ?? {}), [schemas, table]);
+  const joinColumns = useMemo(() => Object.keys(schemas[joinTable]?.columns ?? {}), [joinTable, schemas]);
+  const comparedTables = useMemo(() => selectedTables.filter((name) => tables.includes(name)), [selectedTables, tables]);
+  const comparedColumns = useMemo(() => commonColumns(comparedTables, schemas), [comparedTables, schemas]);
+  const joinedFieldName = joinTable && joinField ? `${joinTable}.${joinField}` : "";
+  const columns = useMemo(() => {
+    if (explorerMode === "compare") return [...comparedColumns, "source_table"];
+    if (explorerMode === "join") return joinedFieldName ? [...baseColumns, joinedFieldName] : baseColumns;
+    return baseColumns;
+  }, [baseColumns, comparedColumns, explorerMode, joinedFieldName]);
+  const xColumns = useMemo(() => columns.filter((column) => column !== "source_table" && column !== joinedFieldName), [columns, joinedFieldName]);
+  const yColumns = useMemo(() => columns.filter((column) => isExplorerNumericColumn(column, schemas, table, joinTable, joinedFieldName)), [columns, joinedFieldName, joinTable, schemas, table]);
+  const groupColumns = useMemo(() => columns.filter((column) => column !== ""), [columns]);
+  const availableJoinKeys = useMemo(() => baseColumns.filter((column) => joinColumns.includes(column)), [baseColumns, joinColumns]);
   const [xField, setXField] = useState("");
   const [yField, setYField] = useState("");
   const [groupField, setGroupField] = useState("");
@@ -985,23 +1038,34 @@ function DataExplorerView({ activeArtifact, control, filters, onSelectArtifact }
   }, [table, tables]);
 
   useEffect(() => {
-    setSchemaProbe(null);
+    setSchemaProbe({});
+    setSelectedTables([]);
+    setJoinTable("");
+    setJoinKeys([]);
+    setJoinField("");
   }, [artifact?.id]);
 
   useEffect(() => {
-    if (!artifact?.path || !table || columns.length) return undefined;
+    const neededTables = unique([table, joinTable, ...selectedTables]).filter(Boolean);
+    const missing = neededTables.filter((name) => !schemas[name]);
+    if (!artifact?.path || !missing.length) return undefined;
+    const artifactPath = artifact.path;
     let cancelled = false;
-    visualizationQuery({
-      artifact_path: artifact.path,
+    Promise.all(missing.map((name) => visualizationQuery({
+      artifact_path: artifactPath,
       query: {
-        table,
+        table: name,
         aggregation: "none",
         sample: { limit: 1 },
         page_size: 1,
       },
-    })
-      .then((response) => {
-        if (!cancelled) setSchemaProbe(response);
+    })))
+      .then((responses) => {
+        if (cancelled) return;
+        setSchemaProbe((current) => ({
+          ...current,
+          ...Object.fromEntries(responses.map((response) => [response.table, response.schema])),
+        }));
       })
       .catch((err) => {
         if (!cancelled) setError(readableError(err));
@@ -1009,20 +1073,31 @@ function DataExplorerView({ activeArtifact, control, filters, onSelectArtifact }
     return () => {
       cancelled = true;
     };
-  }, [artifact?.path, columns.length, table]);
+  }, [artifact?.path, joinTable, schemas, selectedTables, table]);
 
   useEffect(() => {
-    const schemaColumns = Object.keys(schemas[table]?.columns ?? {});
-    const schema = schemas[table]?.columns ?? {};
-    const firstTime = schemaColumns.find((column) => /time|date|hour/i.test(column)) ?? schemaColumns[0] ?? "";
-    const firstNumber = schemaColumns.find((column) => isNumericSchemaType(schema[column]?.type)) ?? "";
-    setXField((current) => current && schemaColumns.includes(current) ? current : firstTime);
-    setYField((current) => current && schemaColumns.includes(current) ? current : firstNumber);
-    setGroupField((current) => current && schemaColumns.includes(current) ? current : schemaColumns.includes("city") ? "city" : "");
+    const firstTime = xColumns.find((column) => /time|date|hour/i.test(column)) ?? xColumns[0] ?? "";
+    const firstNumber = yColumns[0] ?? "";
+    setXField((current) => current && xColumns.includes(current) ? current : firstTime);
+    setYField((current) => current && yColumns.includes(current) ? current : firstNumber);
+    setGroupField((current) => current && groupColumns.includes(current) ? current : defaultExplorerGroup(explorerMode, groupColumns, joinedFieldName));
     setAggregation((current) => (current !== "count" && current !== "none" && !firstNumber ? "count" : current));
     setResult(null);
     setError("");
-  }, [schemas, table]);
+  }, [explorerMode, groupColumns, joinedFieldName, xColumns, yColumns]);
+
+  useEffect(() => {
+    if (tables.length && !selectedTables.length) setSelectedTables(table ? [table] : tables.slice(0, 2));
+  }, [selectedTables.length, table, tables]);
+
+  useEffect(() => {
+    if (!joinTable && tables.length) setJoinTable(tables.find((name) => name !== table) ?? "");
+  }, [joinTable, table, tables]);
+
+  useEffect(() => {
+    setJoinKeys((current) => current.filter((key) => availableJoinKeys.includes(key)));
+    setJoinField((current) => current && joinColumns.includes(current) ? current : joinColumns.find((column) => !availableJoinKeys.includes(column)) ?? "");
+  }, [availableJoinKeys, joinColumns]);
 
   async function runQuery() {
     if (!artifact?.path || !table) return;
@@ -1034,13 +1109,30 @@ function DataExplorerView({ activeArtifact, control, filters, onSelectArtifact }
     setError("");
     try {
       const valueName = aggregation === "none" ? undefined : aggregation === "count" ? "count" : "value";
+      const activeTables = explorerMode === "compare" ? comparedTables : [table];
+      const activeJoin = explorerMode === "join" && joinTable && joinKeys.length && joinField
+        ? { table: joinTable, keys: joinKeys, fields: [joinField] }
+        : undefined;
+      if (explorerMode === "compare" && activeTables.length < 2) {
+        setError("Choose at least two tables to compare.");
+        setLoading(false);
+        return;
+      }
+      if (explorerMode === "join" && !activeJoin) {
+        setError("Choose a joined table, at least one shared key, and a joined field.");
+        setLoading(false);
+        return;
+      }
       const response = await visualizationQuery({
         artifact_path: artifact.path,
         query: {
           table,
+          tables: explorerMode === "compare" ? activeTables : undefined,
           x: xField || undefined,
           y: aggregation === "count" ? undefined : yField || undefined,
           group: groupField ? [groupField] : [],
+          group_by_table: explorerMode === "compare",
+          join: activeJoin,
           filters: {
             cities: filters.city !== "all" ? [filters.city] : undefined,
             date_from: filters.start || undefined,
@@ -1072,6 +1164,13 @@ function DataExplorerView({ activeArtifact, control, filters, onSelectArtifact }
 
   return (
     <div className="view-stack">
+      <div className="explorer-mode-row">
+        {(["single", "compare", "join"] as const).map((item) => (
+          <button className={explorerMode === item ? "active ghost" : "ghost"} key={item} type="button" onClick={() => setExplorerMode(item)}>
+            {item === "single" ? "Single Table" : item === "compare" ? "Compare Tables" : "Join Feature"}
+          </button>
+        ))}
+      </div>
       <ControlStrip>
         <label>
           Artifact
@@ -1080,29 +1179,55 @@ function DataExplorerView({ activeArtifact, control, filters, onSelectArtifact }
           </select>
         </label>
         <label>
-          Table
+          Base Table
           <select value={table} onChange={(event) => setTable(event.target.value)}>
             {tables.map((name) => <option key={name} value={name}>{titleCase(name)}</option>)}
           </select>
         </label>
+        {explorerMode === "compare" ? (
+          <div className="explorer-control-wide">
+            <CheckboxGrid label="Compare tables" values={tables} selected={comparedTables} onChange={setSelectedTables} />
+          </div>
+        ) : null}
+        {explorerMode === "join" ? (
+          <>
+            <label>
+              Join Table
+              <select value={joinTable} onChange={(event) => setJoinTable(event.target.value)}>
+                <option value="">None</option>
+                {tables.filter((name) => name !== table).map((name) => <option key={name} value={name}>{titleCase(name)}</option>)}
+              </select>
+            </label>
+            <div className="explorer-control-wide">
+              <CheckboxGrid label="Join keys" values={availableJoinKeys} selected={joinKeys} onChange={setJoinKeys} />
+            </div>
+            <label>
+              Joined Field
+              <select value={joinField} onChange={(event) => setJoinField(event.target.value)}>
+                <option value="">None</option>
+                {joinColumns.filter((column) => !availableJoinKeys.includes(column)).map((column) => <option key={column} value={column}>{titleCase(column)}</option>)}
+              </select>
+            </label>
+          </>
+        ) : null}
         <label>
           X
           <select value={xField} onChange={(event) => setXField(event.target.value)}>
-            {columns.map((column) => <option key={column} value={column}>{titleCase(column)}</option>)}
+            {xColumns.map((column) => <option key={column} value={column}>{titleCase(column)}</option>)}
           </select>
         </label>
         <label>
           Y
           <select value={yField} onChange={(event) => setYField(event.target.value)}>
             <option value="">None</option>
-            {columns.map((column) => <option key={column} value={column}>{titleCase(column)}</option>)}
+            {yColumns.map((column) => <option key={column} value={column}>{titleCase(column)}</option>)}
           </select>
         </label>
         <label>
           Group
           <select value={groupField} onChange={(event) => setGroupField(event.target.value)}>
             <option value="">None</option>
-            {columns.map((column) => <option key={column} value={column}>{titleCase(column)}</option>)}
+            {groupColumns.map((column) => <option key={column} value={column}>{titleCase(column)}</option>)}
           </select>
         </label>
         <label>
@@ -1123,6 +1248,12 @@ function DataExplorerView({ activeArtifact, control, filters, onSelectArtifact }
           {loading ? "Querying..." : "Run Query"}
         </button>
       </ControlStrip>
+      {explorerMode === "compare" && comparedTables.length ? (
+        <div className="notice">Comparing tables uses only shared columns and automatically adds <strong>source_table</strong> for grouping.</div>
+      ) : null}
+      {explorerMode === "join" ? (
+        <div className="notice">Join Feature left-joins the base table to one other table on selected shared keys, then exposes the joined field as <strong>{joinedFieldName || "joined_table.field"}</strong>.</div>
+      ) : null}
       {error ? <div className="notice error">{error}</div> : null}
       <ChartPanel
         title="Visualization Query"
@@ -1140,6 +1271,46 @@ function DataExplorerView({ activeArtifact, control, filters, onSelectArtifact }
       ) : null}
     </div>
   );
+}
+
+function commonColumns(tables: string[], schemas: Record<string, ArtifactTableSchema>): string[] {
+  const columnSets = tables
+    .map((name) => Object.keys(schemas[name]?.columns ?? {}))
+    .filter((columns) => columns.length);
+  if (!columnSets.length) return [];
+  return columnSets
+    .slice(1)
+    .reduce((shared, columns) => shared.filter((column) => columns.includes(column)), columnSets[0])
+    .sort((left, right) => left.localeCompare(right, undefined, { numeric: true, sensitivity: "base" }));
+}
+
+function artifactTableNames(files: string[]): string[] {
+  return files
+    .map((file) => asText(file).split(/[\\/]/).pop() ?? "")
+    .map((file) => file.replace(/\.json\.gz$/i, "").replace(/\.(csv|json)$/i, ""))
+    .filter((name) => name && !["manifest", "export_profile"].includes(name))
+    .sort((left, right) => left.localeCompare(right, undefined, { numeric: true, sensitivity: "base" }));
+}
+
+function isExplorerNumericColumn(
+  column: string,
+  schemas: Record<string, ArtifactTableSchema>,
+  table: string,
+  joinTable: string,
+  joinedFieldName: string,
+): boolean {
+  if (column === "source_table") return false;
+  if (column === joinedFieldName && joinTable) {
+    const field = column.split(".").slice(1).join(".");
+    return isNumericSchemaType(asText(schemas[joinTable]?.columns?.[field]?.type));
+  }
+  return isNumericSchemaType(asText(schemas[table]?.columns?.[column]?.type));
+}
+
+function defaultExplorerGroup(mode: "single" | "compare" | "join", columns: string[], joinedFieldName: string): string {
+  if (mode === "compare" && columns.includes("source_table")) return "source_table";
+  if (mode === "join" && joinedFieldName && columns.includes(joinedFieldName)) return joinedFieldName;
+  return columns.includes("city") ? "city" : "";
 }
 
 function QualityView({ filters }: RouterProps) {
@@ -1261,10 +1432,11 @@ function ModelAnalysisView({ filters, workbench }: { filters: DateFilters; workb
   const calibration = useAnalysis<DataRow[]>("calibration_bins", Boolean(workbench));
   const rows = tab === "checkpoint" ? filterRows(checkpoint.data ?? [], filters) : tab === "features" ? filterRows(features.data ?? [], filters) : filterRows(calibration.data ?? [], filters);
   const option = tab === "checkpoint"
-    ? metricHeatmapOption(rows, "checkpoint", "metric", "value")
+    ? modelCheckpointHeatmapOption(rows)
     : tab === "features"
       ? scatterOption(rows, "source_range_f", "absolute_error_f", "city", "Feature vs error")
       : scatterOption(rows, "mean_probability", "observed_frequency", "model_name", "Calibration");
+  const chartHeight = tab === "checkpoint" ? heatmapChartHeight(rows, "checkpoint") : 470;
   return (
     <div className="view-stack">
       <div className="tab-row">
@@ -1272,10 +1444,16 @@ function ModelAnalysisView({ filters, workbench }: { filters: DateFilters; workb
           <button className={tab === item ? "active ghost" : "ghost"} key={item} type="button" onClick={() => setTab(item)}>{titleCase(item)}</button>
         ))}
       </div>
-      <ChartPanel title={MODE_META["model-analysis"].label} subtitle={titleCase(tab)} option={option} height={470} />
+      <ChartPanel title={MODE_META["model-analysis"].label} subtitle={titleCase(tab)} option={option} height={chartHeight} />
       <DataTable title={titleCase(tab)} rows={rows} />
     </div>
   );
+}
+
+function heatmapChartHeight(rows: DataRow[], yKey: string): number {
+  const rowCount = unique(rows.map((row) => row[yKey])).length;
+  if (!rowCount) return 470;
+  return Math.max(560, Math.min(840, 240 + rowCount * 18));
 }
 
 function StrategyReportView({ filters }: { filters: DateFilters }) {
@@ -1286,10 +1464,20 @@ function StrategyReportView({ filters }: { filters: DateFilters }) {
   const daily = strategyDailyPnlRows(data.daily_pnl, trades, filters);
   const gate = strategyGateChart(data, filters);
   const diagnostics = strategyDiagnostics(data, trades, filters);
+  const timingRows = tradeTimingRows(trades);
   const summary = strategySummaryFromTrades(trades, daily, data.overview);
+  const candidates = filterRows(data.candidate_points, filters, ["target_date", "snapshot_hour_utc", "snapshot_time_utc"]);
+  const rankingRows = filterRows(data.ranking_diagnostics, filters, ["target_date", "snapshot_hour_utc", "snapshot_time_utc"]);
+  const cityRows = filterRows(data.city_metrics, filters, ["target_date", "date"]);
+  const sideRows = filterRows(data.side_metrics, filters, ["target_date", "date"]);
   return (
     <div className="view-stack">
       {error ? <div className="notice error">{error}</div> : null}
+      {!trades.length && candidates.length ? (
+        <div className="notice">
+          This strategy report loaded, but the calibrated policy selected zero test trades. Showing Edgecaster candidate and ranking diagnostics instead.
+        </div>
+      ) : null}
       <div className="kpi-grid">
         <Kpi label="Trades" value={summary.trades} />
         <Kpi label="Total PnL" value={formatCurrency(summary.total_pnl)} tone={(asNumber(summary.total_pnl) ?? 0) < 0 ? "bad" : "good"} />
@@ -1300,6 +1488,7 @@ function StrategyReportView({ filters }: { filters: DateFilters }) {
       </div>
       <div className="view-grid">
         <ChartPanel title="Strategy PnL" subtitle={filters.city === "all" ? undefined : `Derived from filtered ${filters.city.toUpperCase()} trades`} option={strategyPnlOption(daily)} height={420} />
+        <ChartPanel title="Trade Timing" subtitle="Actual trades grouped by t+ hour when available, otherwise UTC entry hour." option={tradeTimingOption(timingRows)} height={420} />
         <ChartPanel title={gate.title} subtitle={gate.subtitle} option={gate.option} height={420} />
         <ChartPanel title="Edge Threshold Effect" subtitle="Higher minimum edge versus success rate, ROI, PnL, and remaining sample size." option={edgeThresholdEffectOption(diagnostics.edgeThresholdRows)} height={430} />
         <ChartPanel title="Side Outcome Mix" subtitle="Percent of YES and NO contracts that profited, lost, or finished flat." option={sideOutcomeMixOption(diagnostics.sideOutcomeRows)} height={430} />
@@ -1309,7 +1498,13 @@ function StrategyReportView({ filters }: { filters: DateFilters }) {
         <ChartPanel title="Entry Price Buckets" subtitle="Where contract price paid is helping or hurting payoff-weighted returns." option={strategyBucketPerformanceOption(diagnostics.priceBucketRows, "Entry price bucket")} height={430} />
         <ChartPanel title="Trade Edge vs PnL" subtitle="Each point is a trade, sized by contracts and colored by side." option={tradeEdgePnlOption(trades)} height={430} />
       </div>
+      <DataTable title="Strategy Summary" rows={data.summaries} preferredColumns={["name", "mode", "train_start_date", "train_end_date", "test_start_date", "test_end_date", "trades", "total_pnl", "roi", "hit_rate"]} />
+      <DataTable title="Candidate Diagnostics" rows={candidates} preferredColumns={["target_date", "snapshot_time_utc", "city", "checkpoint", "market_ticker", "side", "entry_ask", "raw_edge", "predicted_reward", "trade_probability", "calibrated_ev", "calibrated_ev_lcb", "calibration_segment", "win_label", "reward"]} />
+      <DataTable title="Ranking Diagnostics" rows={rankingRows} preferredColumns={["target_date", "snapshot_time_utc", "city", "checkpoint", "market_ticker", "side", "rank_score", "predicted_reward", "trade_probability", "calibrated_ev", "calibrated_ev_lcb"]} />
+      <DataTable title="City Metrics" rows={cityRows} preferredColumns={["city", "trades", "candidates", "total_pnl", "roi", "hit_rate", "mean_reward", "mean_predicted_reward"]} />
+      <DataTable title="Side Metrics" rows={sideRows} preferredColumns={["side", "trades", "candidates", "total_pnl", "roi", "hit_rate", "mean_reward", "mean_predicted_reward"]} />
       <DataTable title="Side Outcome Diagnostics" rows={diagnostics.sideSummaryRows} preferredColumns={["side", "trades", "contracts", "profitable_contract_rate", "loss_contract_rate", "total_pnl", "gross_profit", "gross_loss", "avg_win_pnl", "avg_loss_pnl", "roi", "avg_entry_price", "avg_edge"]} />
+      <DataTable title="Trade Timing Diagnostics" rows={timingRows} preferredColumns={["bucket", "trades", "contracts", "total_pnl", "roi", "hit_rate", "avg_entry_price", "avg_edge", "positive_clv_rate"]} />
       <DataTable title="Bucket Diagnostics" rows={diagnostics.bucketRows} preferredColumns={["bucket_type", "group", "trades", "contracts", "hit_rate", "profitable_contract_rate", "roi", "total_pnl", "gross_profit", "gross_loss", "avg_entry_price", "avg_edge", "positive_clv_rate"]} />
       <DataTable title="Trades" rows={trades} preferredColumns={["entry_time_utc", "target_date", "city", "side", "market_ticker", "entry_price", "model_probability", "edge", "contracts", "pnl", "roi"]} />
     </div>
@@ -1346,6 +1541,37 @@ function dailyPnlFromTrades(trades: DataRow[]): DataRow[] {
         hit_rate: row.trades ? row.hits / row.trades : null,
       };
     });
+}
+
+function tradeTimingRows(trades: DataRow[]): DataRow[] {
+  const grouped = new Map<string, { bucket: string; sort: number; trades: DataRow[] }>();
+  for (const trade of trades) {
+    const bucket = tradeTimingBucket(trade);
+    if (!bucket) continue;
+    const current = grouped.get(bucket.label) ?? { bucket: bucket.label, sort: bucket.sort, trades: [] };
+    current.trades.push(trade);
+    grouped.set(bucket.label, current);
+  }
+  return [...grouped.values()]
+    .sort((left, right) => left.sort - right.sort)
+    .map((group) => ({
+      bucket: group.bucket,
+      sort: group.sort,
+      ...rollupTrades(group.trades),
+    }));
+}
+
+function tradeTimingBucket(trade: DataRow): { label: string; sort: number } | null {
+  const hoursElapsed = asNumber(trade.hours_elapsed);
+  if (hoursElapsed !== null) {
+    const hour = Math.floor(hoursElapsed);
+    return { label: `t+${hour}h`, sort: hour };
+  }
+  const timestamp = asText(trade.entry_time_utc || trade.snapshot_hour_utc || trade.snapshot_time_utc);
+  const parsed = timestamp ? new Date(timestamp) : null;
+  if (!parsed || Number.isNaN(parsed.getTime())) return null;
+  const hour = parsed.getUTCHours();
+  return { label: `utc ${String(hour).padStart(2, "0")}`, sort: 100 + hour };
 }
 
 function strategyGateChart(data: StrategyAnalysis, filters: DateFilters): { title: string; subtitle: string; option: EChartsOption } {
@@ -1774,6 +2000,32 @@ function LabView({ activeExport, activeReport, control, kind, onRefreshControl, 
   const schema = selectedEntrypoint?.params_schema ?? entry?.params_schema;
   const [params, setParams] = useState<DataRow>({});
   const [modelReportPath, setModelReportPath] = useState(preferredModelReportPath);
+  const outputPathPreview = generatedOutputPathPreview(kind, entry, entrypoint, selectedEntrypoint, params, activeExport);
+  const effectiveOutputPath = asText(params.output_path).trim() || outputPathPreview;
+  const selectedModelReport = kind === "strategy"
+    ? modelReports.find((report) => samePath(report.path, modelReportPath))
+    : undefined;
+  const runDiagnostics = buildRunDiagnostics({
+    activeExport,
+    entry,
+    entrypoint,
+    kind,
+    modelReportPath,
+    params,
+    schema,
+    selectedEntrypoint,
+    selectedModelReport,
+  });
+  const blockingDiagnostics = runDiagnostics.filter((item) => item.level === "block");
+  const commandPreview = buildCommandPreview({
+    activeExport,
+    entrypointSpec: selectedEntrypoint,
+    kind,
+    modelReportPath,
+    outputPathPreview: effectiveOutputPath,
+    params,
+    schema,
+  });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -1815,6 +2067,10 @@ function LabView({ activeExport, activeReport, control, kind, onRefreshControl, 
 
   async function runJob() {
     if (!entry || !entrypoint) return;
+    if (blockingDiagnostics.length) {
+      setError(blockingDiagnostics.map((item) => `${item.title}: ${item.detail}`).join(" "));
+      return;
+    }
     if (kind === "strategy" && !asText(modelReportPath)) {
       setError("Model report path is required for strategy runs.");
       return;
@@ -1822,6 +2078,7 @@ function LabView({ activeExport, activeReport, control, kind, onRefreshControl, 
     setBusy(true);
     setError("");
     try {
+      const outputPath = asText(params.output_path).trim();
       const job = await createJob({
         kind,
         registry_id: entry.id,
@@ -1830,7 +2087,7 @@ function LabView({ activeExport, activeReport, control, kind, onRefreshControl, 
           ...coercedParams(params, schema),
           dataset_path: activeExport?.path ?? "",
           model_report_path: kind === "strategy" ? asText(modelReportPath) : undefined,
-          output_path: asText(params.output_path),
+          ...(outputPath ? { output_path: outputPath } : {}),
           timeout_seconds: params.timeout_seconds || 1800,
         },
       });
@@ -1895,10 +2152,21 @@ function LabView({ activeExport, activeReport, control, kind, onRefreshControl, 
               onUse={setModelReportPath}
             />
           ) : null}
-          <SchemaForm params={params} schema={schema} onChange={setParams} />
+          <SchemaForm
+            params={params}
+            schema={schema}
+            onChange={setParams}
+            outputRoot={kind === "strategy" ? "reports/strategy" : "reports/model"}
+            outputPreview={outputPathPreview}
+          />
+          <RunReadinessPanel
+            commandPreview={commandPreview}
+            diagnostics={runDiagnostics}
+            outputPathPreview={effectiveOutputPath}
+          />
           <div className="row-actions">
             {kind === "model" ? <button className="ghost" disabled={busy || !activeExport?.path} type="button" onClick={() => void runCompatibility()}>Check compatibility</button> : null}
-            <button disabled={busy || !entry || !entrypoint || !activeExport?.path} type="button" onClick={() => void runJob()}>
+            <button disabled={busy || !entry || !entrypoint || !activeExport?.path || Boolean(blockingDiagnostics.length)} type="button" onClick={() => void runJob()}>
               {busy ? "Working..." : `Run ${kind}`}
             </button>
           </div>
@@ -1920,10 +2188,56 @@ function LabView({ activeExport, activeReport, control, kind, onRefreshControl, 
   );
 }
 
+function RunReadinessPanel({
+  commandPreview,
+  diagnostics,
+  outputPathPreview,
+}: {
+  commandPreview: string;
+  diagnostics: RunDiagnostic[];
+  outputPathPreview: string;
+}) {
+  const hasBlocks = diagnostics.some((item) => item.level === "block");
+  const hasWarnings = diagnostics.some((item) => item.level === "warn");
+  const status = hasBlocks ? "Blocked" : hasWarnings ? "Warnings" : "Ready";
+  const statusValue = hasBlocks ? "failed" : hasWarnings ? "warning" : "succeeded";
+  return (
+    <div className="run-readiness">
+      <div className="run-readiness-head">
+        <span>Run readiness</span>
+        <StatusPill status={statusValue} label={status} />
+      </div>
+      <div className="run-diagnostics">
+        {diagnostics.map((item) => (
+          <div className={`run-diagnostic ${item.level}`} key={`${item.level}-${item.title}`}>
+            <strong>{item.title}</strong>
+            <span>{item.detail}</span>
+          </div>
+        ))}
+      </div>
+      <div className="command-preview">
+        <div>
+          <strong>Output</strong>
+          <code>{outputPathPreview}</code>
+        </div>
+        <CopyPathButton value={outputPathPreview} label="Copy generated output path" />
+      </div>
+      <div className="command-preview">
+        <div>
+          <strong>Command</strong>
+          <code>{commandPreview || "Command unavailable until a registry entry is selected."}</code>
+        </div>
+        <CopyPathButton value={commandPreview} label="Copy command preview" />
+      </div>
+    </div>
+  );
+}
+
 function JobsView({ activeJob, control, onRefreshControl, onSelectJob }: RouterProps) {
   const [logs, setLogs] = useState("");
   const [logError, setLogError] = useState("");
   const selected = activeJob ?? control?.jobs[0];
+  const selectedCommand = (selected?.command ?? []).map(asText).map(commandArg).join(" ");
   useEffect(() => {
     if (!selected?.id) return;
     let cancelled = false;
@@ -1941,6 +2255,14 @@ function JobsView({ activeJob, control, onRefreshControl, onSelectJob }: RouterP
       cancelled = true;
     };
   }, [selected?.id]);
+
+  useEffect(() => {
+    if (!selected || !isActiveJob(selected.status)) return undefined;
+    const timer = window.setInterval(() => {
+      void onRefreshControl();
+    }, 2500);
+    return () => window.clearInterval(timer);
+  }, [onRefreshControl, selected?.id, selected?.status]);
 
   async function handleCancel() {
     if (!selected?.id) return;
@@ -1977,7 +2299,17 @@ function JobsView({ activeJob, control, onRefreshControl, onSelectJob }: RouterP
               <Detail label="Output" value={selected.output_path ?? "-"} />
               <Detail label="Return code" value={String(selected.returncode ?? "-")} />
             </div>
-            <pre className="log-box">{logError ? logError : logs || "No log output."}</pre>
+            <div className="job-inspector-stack">
+              <div className="command-preview">
+                <div>
+                  <strong>Command</strong>
+                  <code>{selectedCommand || "No command recorded."}</code>
+                </div>
+                <CopyPathButton value={selectedCommand} label="Copy job command" />
+              </div>
+              <JsonBlock title="Submitted Params" value={selected.params ?? {}} />
+              <pre className="log-box">{logError ? logError : logs || "No log output."}</pre>
+            </div>
           </div>
         ) : (
           <EmptyState compact label="No jobs tracked yet." />
@@ -2105,6 +2437,7 @@ function WorkbenchInspector({
   workbench: LoadResponse | null;
 }) {
   const cities = workbench?.metadata.cities ?? activeExport?.coverage?.cities ?? [];
+  const associatedReports = associatedReportsByKind(control?.reports ?? [], activeExport?.id ?? workbench?.selection.export_id ?? "");
   return (
     <aside className="inspector">
       <div className="inspector-head">
@@ -2164,6 +2497,14 @@ function WorkbenchInspector({
         </div>
       </section>
 
+      <AssociatedReportsPanel
+        groups={[
+          { label: "Models", reports: associatedReports.model_report, selectedPath: workbench?.selection.report_path },
+          { label: "Quality", reports: associatedReports.quality_report, selectedPath: workbench?.selection.quality_path },
+          { label: "Strategy", reports: associatedReports.strategy_report, selectedPath: workbench?.selection.strategy_path },
+        ]}
+      />
+
       <section className="inspector-section">
         <h3>Selected Artifact</h3>
         <div className="detail-list">
@@ -2192,6 +2533,49 @@ function WorkbenchInspector({
         </div>
       </section>
     </aside>
+  );
+}
+
+function AssociatedReportsPanel({
+  groups,
+}: {
+  groups: Array<{ label: string; reports: ArtifactMetadata[]; selectedPath?: string | null }>;
+}) {
+  return (
+    <section className="inspector-section">
+      <h3>Associated Reports</h3>
+      <div className="associated-report-groups">
+        {groups.map((group) => (
+          <div className="associated-report-group" key={group.label}>
+            <div className="associated-report-group-head">
+              <strong>{group.label}</strong>
+              <span>{formatNumber(group.reports.length)}</span>
+            </div>
+            {group.reports.length ? (
+              group.reports.slice(0, 5).map((report) => {
+                const selected = samePath(report.path, group.selectedPath);
+                return (
+                  <div className={`associated-report-row ${selected ? "active" : ""}`} key={report.id}>
+                    <span>
+                      <strong>{report.id}</strong>
+                      <em>
+                        {formatNumber(sumCounts(report.table_counts))} rows
+                        {Boolean(report.source_export_inferred) ? " | inferred" : ""}
+                        {selected ? " | loaded" : ""}
+                      </em>
+                    </span>
+                    <CopyPathButton value={report.path} label={`Copy ${group.label} report path`} />
+                  </div>
+                );
+              })
+            ) : (
+              <div className="empty-panel compact">No associated {group.label.toLowerCase()} reports.</div>
+            )}
+            {group.reports.length > 5 ? <small>{formatNumber(group.reports.length - 5)} more in Artifact Library</small> : null}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -2293,7 +2677,19 @@ function ArtifactSummary({ artifact }: { artifact: ArtifactMetadata }) {
   );
 }
 
-function SchemaForm({ onChange, params, schema }: { onChange: (params: DataRow) => void; params: DataRow; schema?: { properties?: Record<string, JsonSchemaProperty>; required?: string[] } }) {
+function SchemaForm({
+  onChange,
+  outputPreview,
+  outputRoot = "reports/model",
+  params,
+  schema,
+}: {
+  onChange: (params: DataRow) => void;
+  outputPreview?: string;
+  outputRoot?: string;
+  params: DataRow;
+  schema?: { properties?: Record<string, JsonSchemaProperty>; required?: string[] };
+}) {
   const properties = schema?.properties ?? {};
   const keys = Object.keys(properties);
   const required = new Set(schema?.required ?? []);
@@ -2331,8 +2727,9 @@ function SchemaForm({ onChange, params, schema }: { onChange: (params: DataRow) 
         );
       })}
       <label className="schema-row">
-        <span>Output path<em>control</em></span>
-        <input value={asText(params.output_path)} onChange={(event) => onChange({ ...params, output_path: event.target.value })} placeholder="reports/model/custom_run" />
+        <span>Output path override<em>control / optional</em></span>
+        <input value={asText(params.output_path)} onChange={(event) => onChange({ ...params, output_path: event.target.value })} placeholder={outputPreview || `${outputRoot}/AUTO_GENERATED_REPORT_NAME`} />
+        <small className="schema-hint">Leave blank to auto-create: {outputPreview || `${outputRoot}/AUTO_GENERATED_REPORT_NAME`}</small>
       </label>
       <label className="schema-row">
         <span>Timeout seconds<em>control</em></span>
@@ -2667,10 +3064,98 @@ function useTable(tableName: string, enabled: boolean) {
   return { data, loading, error };
 }
 
-function linkedToExport<T extends { source_export_id?: string }>(items: T[], exportId: string): T[] {
+function linkedToExport<T extends { source_export_id?: string | null }>(items: T[], exportId: string): T[] {
   if (!exportId) return items;
-  const linked = items.filter((item) => item.source_export_id === exportId);
-  return linked.length ? linked : items.slice(0, 12);
+  return items.filter((item) => item.source_export_id === exportId);
+}
+
+function selectedOrFirstLinked<T extends { id: string }>(selectedId: string, linked: T[]): string {
+  if (selectedId && linked.some((item) => item.id === selectedId)) return selectedId;
+  return linked[0]?.id ?? "";
+}
+
+function selectedOrMatchingModelReport<T extends { id: string; model_report_id?: string | null }>(
+  selectedId: string,
+  linked: T[],
+  strategy?: T,
+): string {
+  if (selectedId && linked.some((item) => item.id === selectedId)) return selectedId;
+  if (strategy?.model_report_id) {
+    const match = linked.find((item) => item.id === strategy.model_report_id);
+    if (match) return match.id;
+  }
+  return linked[0]?.id ?? "";
+}
+
+function associatedReportsByKind(reports: ArtifactMetadata[], exportId: string) {
+  const linked = linkedToExport(reports, exportId);
+  return {
+    model_report: linked.filter((report) => report.artifact_type === "model_report"),
+    quality_report: linked.filter((report) => report.artifact_type === "quality_report"),
+    strategy_report: linked.filter((report) => report.artifact_type === "strategy_report"),
+  };
+}
+
+function samePath(left?: string | null, right?: string | null): boolean {
+  if (!left || !right) return false;
+  return left.replaceAll("\\", "/").toLowerCase() === right.replaceAll("\\", "/").toLowerCase();
+}
+
+function readInitialWorkbenchRoute(): InitialWorkbenchRoute {
+  if (typeof window === "undefined") {
+    return emptyInitialWorkbenchRoute();
+  }
+  const params = new URL(window.location.href).searchParams;
+  const exportId = params.get("export") ?? "";
+  const artifactId = params.get("artifact") ?? "";
+  const reportId = params.get("report") ?? "";
+  const jobId = params.get("job") ?? "";
+  const picker: PickerState = {
+    exportId,
+    reportId: "",
+    qualityId: "",
+    strategyId: "",
+  };
+  applyRouteArtifactToPicker(picker, reportId);
+  applyRouteArtifactToPicker(picker, artifactId);
+  return {
+    picker,
+    exportId,
+    artifactId,
+    reportId,
+    jobId,
+    autoLoad: Boolean(exportId),
+  };
+}
+
+function emptyInitialWorkbenchRoute(): InitialWorkbenchRoute {
+  return {
+    picker: { exportId: "", reportId: "", qualityId: "", strategyId: "" },
+    exportId: "",
+    artifactId: "",
+    reportId: "",
+    jobId: "",
+    autoLoad: false,
+  };
+}
+
+function applyRouteArtifactToPicker(picker: PickerState, value: string): void {
+  if (!value) return;
+  const { artifactType, sourceId } = splitRouteArtifactId(value);
+  if (!sourceId) return;
+  if (artifactType === "strategy_report") picker.strategyId = sourceId;
+  else if (artifactType === "quality_report") picker.qualityId = sourceId;
+  else if (artifactType === "model_report") picker.reportId = sourceId;
+  else if (!picker.reportId) picker.reportId = sourceId;
+}
+
+function splitRouteArtifactId(value: string): { artifactType: string; sourceId: string } {
+  const separator = value.indexOf(":");
+  if (separator < 0) return { artifactType: "", sourceId: value };
+  return {
+    artifactType: value.slice(0, separator),
+    sourceId: value.slice(separator + 1),
+  };
 }
 
 function routeFromUrl(): WorkbenchMode {
@@ -2885,6 +3370,331 @@ function isActiveJob(status: string): boolean {
   return ["queued", "running"].includes(status);
 }
 
+function buildRunDiagnostics({
+  activeExport,
+  entry,
+  entrypoint,
+  kind,
+  modelReportPath,
+  params,
+  schema,
+  selectedEntrypoint,
+  selectedModelReport,
+}: {
+  activeExport?: ArtifactMetadata;
+  entry?: RegistryEntry;
+  entrypoint: string;
+  kind: "model" | "strategy";
+  modelReportPath: string;
+  params: DataRow;
+  schema?: { properties?: Record<string, JsonSchemaProperty>; required?: string[] };
+  selectedEntrypoint?: EntrypointSpec;
+  selectedModelReport?: ArtifactMetadata;
+}): RunDiagnostic[] {
+  const diagnostics: RunDiagnostic[] = [];
+  if (!entry) {
+    diagnostics.push({ level: "block", title: "No registry entry", detail: `Select a registered ${kind}.` });
+    return diagnostics;
+  }
+  if (!activeExport?.path) {
+    diagnostics.push({ level: "block", title: "No dataset loaded", detail: "Load an export from Source Hub before running this job." });
+  } else {
+    diagnostics.push({ level: "ok", title: "Dataset selected", detail: shortPath(activeExport.path) });
+  }
+  const missingParams = requiredParamKeys(schema).filter((key) => !asText(params[key]).trim());
+  if (missingParams.length) {
+    diagnostics.push({ level: "block", title: "Missing parameters", detail: missingParams.map(titleCase).join(", ") });
+  }
+  const requiredTables = requiredDatasetTables(entry);
+  const missingTables = requiredTables.filter((table) => !Object.prototype.hasOwnProperty.call(activeExport?.table_counts ?? {}, table));
+  if (missingTables.length) {
+    diagnostics.push({ level: "block", title: "Dataset table mismatch", detail: `Missing required table(s): ${missingTables.join(", ")}.` });
+  }
+  const dateDiagnostics = parameterDateDiagnostics(params, activeExport);
+  diagnostics.push(...dateDiagnostics);
+  if (entrypoint === "rolling_eval" || entrypoint === "rolling") {
+    diagnostics.push(rollingWindowDiagnostic(params, selectedEntrypoint, activeExport));
+  }
+  if (kind === "strategy") {
+    diagnostics.push(...strategyModelReportDiagnostics(modelReportPath, selectedModelReport, activeExport, params));
+  }
+  if (!diagnostics.some((item) => item.level === "block" || item.level === "warn")) {
+    diagnostics.push({ level: "ok", title: "Inputs ready", detail: "No blocking client-side issues detected." });
+  }
+  return dedupeDiagnostics(diagnostics);
+}
+
+function parameterDateDiagnostics(params: DataRow, activeExport?: ArtifactMetadata): RunDiagnostic[] {
+  const diagnostics: RunDiagnostic[] = [];
+  const dateKeys = ["train_start", "train_end", "test_start", "test_end"];
+  for (const key of dateKeys) {
+    const value = asText(params[key]).trim();
+    if (value && !isIsoDate(value)) {
+      diagnostics.push({ level: "block", title: `${titleCase(key)} format`, detail: "Use YYYY-MM-DD." });
+    }
+  }
+  diagnostics.push(...datePairDiagnostics(params, "train_start", "train_end", "Training window"));
+  diagnostics.push(...datePairDiagnostics(params, "test_start", "test_end", "Test window"));
+  const trainEnd = asText(params.train_end).trim();
+  const testStart = asText(params.test_start).trim();
+  if (isIsoDate(trainEnd) && isIsoDate(testStart) && trainEnd >= testStart) {
+    diagnostics.push({
+      level: "warn",
+      title: "Train/test overlap",
+      detail: "Training should usually end before the test window starts.",
+    });
+  }
+  const exportRange = activeExport?.coverage?.date_range;
+  if (exportRange?.start && exportRange.end) {
+    for (const key of dateKeys) {
+      const value = asText(params[key]).trim();
+      if (isIsoDate(value) && !dateInRange(value, exportRange)) {
+        diagnostics.push({
+          level: "block",
+          title: `${titleCase(key)} outside dataset`,
+          detail: `${value} is outside ${exportRange.start} to ${exportRange.end}.`,
+        });
+      }
+    }
+  }
+  return diagnostics;
+}
+
+function datePairDiagnostics(params: DataRow, startKey: string, endKey: string, label: string): RunDiagnostic[] {
+  const start = asText(params[startKey]).trim();
+  const end = asText(params[endKey]).trim();
+  if (!start || !end || !isIsoDate(start) || !isIsoDate(end)) return [];
+  if (start > end) return [{ level: "block", title: label, detail: `${titleCase(startKey)} must be on or before ${titleCase(endKey)}.` }];
+  return [{ level: "ok", title: label, detail: `${start} to ${end}.` }];
+}
+
+function rollingWindowDiagnostic(
+  params: DataRow,
+  selectedEntrypoint: EntrypointSpec | undefined,
+  activeExport?: ArtifactMetadata,
+): RunDiagnostic {
+  const range = activeExport?.coverage?.date_range;
+  const trainDays = Number(paramWithDefault(params, selectedEntrypoint, "train_days"));
+  const totalDays = countDateRangeDays(range);
+  if (!range?.start || !range.end || totalDays === null) {
+    return { level: "warn", title: "Rolling test range", detail: "Dataset date coverage is unavailable, so the scored window cannot be previewed." };
+  }
+  if (!Number.isFinite(trainDays) || trainDays < 1) {
+    return { level: "block", title: "Rolling train days", detail: "train_days must be at least 1." };
+  }
+  if (totalDays <= trainDays) {
+    return { level: "block", title: "Rolling test range", detail: `Dataset has ${totalDays} day(s), which is not enough for ${trainDays} train day(s).` };
+  }
+  const testStart = addUtcDays(range.start, trainDays);
+  return { level: "ok", title: "Rolling test range", detail: `This run should score ${testStart} to ${range.end}.` };
+}
+
+function strategyModelReportDiagnostics(
+  modelReportPath: string,
+  selectedModelReport: ArtifactMetadata | undefined,
+  activeExport: ArtifactMetadata | undefined,
+  params: DataRow,
+): RunDiagnostic[] {
+  const diagnostics: RunDiagnostic[] = [];
+  if (!asText(modelReportPath).trim()) {
+    return [{ level: "block", title: "Model report required", detail: "Select or paste the model report that supplies strategy predictions." }];
+  }
+  if (!selectedModelReport) {
+    diagnostics.push({ level: "warn", title: "Model report not indexed", detail: "This path is not in the artifact library, so linkage and coverage cannot be verified before launch." });
+    return diagnostics;
+  }
+  if (activeExport?.id && selectedModelReport.source_export_id && selectedModelReport.source_export_id !== activeExport.id) {
+    diagnostics.push({
+      level: "block",
+      title: "Model report dataset mismatch",
+      detail: `Report is linked to ${selectedModelReport.source_export_id}, not ${activeExport.id}.`,
+    });
+  } else if (activeExport?.id && selectedModelReport.source_export_id === activeExport.id) {
+    diagnostics.push({ level: "ok", title: "Model report linked", detail: "Selected model report is associated with this export." });
+  } else {
+    diagnostics.push({ level: "warn", title: "Model report linkage unknown", detail: "No source_export_id is available for this report." });
+  }
+  const coverage = modelReportPredictionRange(selectedModelReport);
+  const needed = neededStrategyPredictionRange(params);
+  if (coverage && needed) {
+    if (!dateInRange(needed.start, coverage) || !dateInRange(needed.end, coverage)) {
+      diagnostics.push({
+        level: "block",
+        title: "Model predictions do not cover strategy dates",
+        detail: `Strategy needs ${needed.start} to ${needed.end}, but the model report covers ${coverage.start} to ${coverage.end}.`,
+      });
+    } else {
+      diagnostics.push({ level: "ok", title: "Prediction coverage", detail: `Model predictions cover ${needed.start} to ${needed.end}.` });
+    }
+  } else if (needed) {
+    diagnostics.push({ level: "warn", title: "Prediction coverage unknown", detail: "The selected model report does not expose test_start_date/test_end_date metadata." });
+  }
+  return diagnostics;
+}
+
+function buildCommandPreview({
+  activeExport,
+  entrypointSpec,
+  kind,
+  modelReportPath,
+  outputPathPreview,
+  params,
+  schema,
+}: {
+  activeExport?: ArtifactMetadata;
+  entrypointSpec?: EntrypointSpec;
+  kind: "model" | "strategy";
+  modelReportPath: string;
+  outputPathPreview: string;
+  params: DataRow;
+  schema?: { properties?: Record<string, JsonSchemaProperty> };
+}): string {
+  const command = [...(entrypointSpec?.command ?? [])];
+  if (!command.length) return "";
+  const context = {
+    "inputs.dataset.path": activeExport?.path ?? "",
+    "inputs.model_report.path": kind === "strategy" ? modelReportPath : "",
+    "outputs.report_dir": outputPathPreview,
+  };
+  const resolved = command.map((part) => {
+    let value = part;
+    for (const [key, replacement] of Object.entries(context)) {
+      value = value.replaceAll(`{{ ${key} }}`, replacement).replaceAll(`{{${key}}}`, replacement);
+    }
+    return value;
+  });
+  for (const [key, value] of Object.entries(coercedParams(params, schema))) {
+    if (["output_path", "timeout_seconds"].includes(key)) continue;
+    if (typeof value === "boolean") {
+      if (value) resolved.push(`--${key.replaceAll("_", "-")}`);
+    } else {
+      resolved.push(`--${key.replaceAll("_", "-")}`, asText(value));
+    }
+  }
+  return resolved.map(commandArg).join(" ");
+}
+
+function commandArg(value: string): string {
+  if (!value) return '""';
+  if (!/[\s"'`]/.test(value)) return value;
+  return `"${value.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
+}
+
+function requiredParamKeys(schema?: { required?: string[] }): string[] {
+  return schema?.required ?? [];
+}
+
+function requiredDatasetTables(entry: RegistryEntry): string[] {
+  const dataset = entry.inputs?.dataset;
+  if (!dataset || typeof dataset !== "object") return [];
+  const tables = (dataset as DataRow).required_tables;
+  return Array.isArray(tables) ? tables.map(asText).filter(Boolean) : [];
+}
+
+function modelReportPredictionRange(report: ArtifactMetadata): { start?: string | null; end?: string | null } | null {
+  const summary = report.summary ?? {};
+  const start = asText(summary.test_start_date || summary.prediction_start_date || report.coverage?.date_range?.start);
+  const end = asText(summary.test_end_date || summary.prediction_end_date || report.coverage?.date_range?.end);
+  return start && end ? { start, end } : null;
+}
+
+function neededStrategyPredictionRange(params: DataRow): { start: string; end: string } | null {
+  const values = ["train_start", "train_end", "test_start", "test_end"]
+    .map((key) => asText(params[key]).trim())
+    .filter(isIsoDate)
+    .sort();
+  if (!values.length) return null;
+  return { start: values[0], end: values[values.length - 1] };
+}
+
+function dateInRange(value: string, range: { start?: string | null; end?: string | null }): boolean {
+  return (!range.start || value >= range.start) && (!range.end || value <= range.end);
+}
+
+function isIsoDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  return new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
+}
+
+function dedupeDiagnostics(items: RunDiagnostic[]): RunDiagnostic[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = `${item.level}:${item.title}:${item.detail}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function generatedOutputPathPreview(
+  kind: "model" | "strategy",
+  entry: RegistryEntry | undefined,
+  entrypoint: string,
+  selectedEntrypoint: EntrypointSpec | undefined,
+  params: DataRow,
+  activeExport?: ArtifactMetadata,
+): string {
+  const root = kind === "strategy" ? "reports/strategy" : "reports/model";
+  const parts = [
+    pathToken(entry?.id || kind),
+    pathToken(entrypoint || "entrypoint"),
+  ];
+  const mode = paramWithDefault(params, selectedEntrypoint, "mode");
+  if (mode) parts.push(pathToken(mode));
+  const trainDays = paramWithDefault(params, selectedEntrypoint, "train_days");
+  const testDays = paramWithDefault(params, selectedEntrypoint, "test_days");
+  if (trainDays) parts.push(`${pathToken(trainDays)}DTRAIN`);
+  if (testDays) parts.push(`${pathToken(testDays)}DTEST`);
+  const testRange = previewTestDateRange(entrypoint, selectedEntrypoint, params, activeExport);
+  if (testRange) {
+    parts.push("TEST", compactDate(testRange.start), compactDate(testRange.end));
+  } else if (activeExport?.id) {
+    parts.push(pathToken(activeExport.id));
+  }
+  parts.push("CREATED", "YYYYMMDDTHHMMSSZ");
+  return `${root}/${parts.filter(Boolean).join("_")}`;
+}
+
+function previewTestDateRange(
+  entrypoint: string,
+  selectedEntrypoint: EntrypointSpec | undefined,
+  params: DataRow,
+  activeExport?: ArtifactMetadata,
+): { start: string; end: string } | null {
+  const fixedStart = asText(params.test_start).trim();
+  const fixedEnd = asText(params.test_end).trim();
+  if (fixedStart && fixedEnd) return { start: fixedStart, end: fixedEnd };
+  if (entrypoint !== "rolling_eval" && entrypoint !== "rolling") return null;
+  const range = activeExport?.coverage?.date_range;
+  if (!range?.start || !range.end) return null;
+  const trainDays = Number(paramWithDefault(params, selectedEntrypoint, "train_days"));
+  if (!Number.isFinite(trainDays) || trainDays < 1) return null;
+  const testStart = addUtcDays(range.start, trainDays);
+  if (!testStart) return null;
+  return { start: testStart, end: range.end };
+}
+
+function paramWithDefault(params: DataRow, entrypoint: EntrypointSpec | undefined, key: string): string {
+  const value = asText(params[key]).trim();
+  if (value) return value;
+  const fallback = entrypoint?.params_schema?.properties?.[key]?.default;
+  return fallback === undefined || fallback === null ? "" : asText(fallback);
+}
+
+function addUtcDays(value: string, days: number): string {
+  const parsed = Date.parse(`${value.slice(0, 10)}T00:00:00Z`);
+  if (!Number.isFinite(parsed)) return "";
+  return new Date(parsed + days * 86_400_000).toISOString().slice(0, 10);
+}
+
+function compactDate(value: string): string {
+  return value.slice(0, 10).replaceAll("-", "");
+}
+
+function pathToken(value: unknown): string {
+  return asText(value).trim().replace(/[^A-Za-z0-9]+/g, "_").replace(/^_+|_+$/g, "").toUpperCase();
+}
+
 function defaultParams(schema?: { properties?: Record<string, JsonSchemaProperty> }): DataRow {
   const output: DataRow = {};
   for (const [key, spec] of Object.entries(schema?.properties ?? {})) {
@@ -3037,8 +3847,8 @@ function scatterOption(rows: DataRow[], xKey: string, yKey: string, groupKey: st
 
 function metricHeatmapOption(rows: DataRow[], yKey: string, xKey: string, valueKey: string): EChartsOption {
   if (!rows.length) return emptyChartOption("No metric rows available.");
-  const xs = unique(rows.map((row) => row[xKey]));
-  const ys = unique(rows.map((row) => row[yKey]));
+  const xs = sortedCategoryValues(rows.map((row) => row[xKey]));
+  const ys = sortedCategoryValues(rows.map((row) => row[yKey]));
   const values = rows.map((row) => asNumber(row[valueKey])).filter((value): value is number => value !== null);
   const max = Math.max(1, ...values);
   return {
@@ -3055,9 +3865,9 @@ function metricHeatmapOption(rows: DataRow[], yKey: string, xKey: string, valueK
         return `<div class="chart-tooltip"><span>${escapeHtml(titleCase(yKey))}</span><strong>${escapeHtml(data?.y ?? "-")}</strong><span>${escapeHtml(titleCase(xKey))}</span><strong>${escapeHtml(data?.x ?? "-")}</strong><span>${escapeHtml(titleCase(valueKey))}</span><strong>${escapeHtml(formatNumber(value))}</strong></div>`;
       },
     },
-    grid: chartGrid({ left: 190, right: 78, top: 62, bottom: 132 }),
-    xAxis: categoryAxis(titleCase(xKey), xs),
-    yAxis: { type: "category", data: ys.map(titleCase), axisLabel: { color: cssVar("--muted") } },
+    grid: chartGrid({ left: 190, right: 78, top: 62, bottom: 156 }),
+    xAxis: heatmapCategoryAxis(titleCase(xKey), xs, "x"),
+    yAxis: heatmapCategoryAxis(titleCase(yKey), ys, "y"),
     visualMap: {
       min: 0,
       max,
@@ -3069,14 +3879,146 @@ function metricHeatmapOption(rows: DataRow[], yKey: string, xKey: string, valueK
     },
     series: [{
       type: "heatmap",
-      data: rows.map((row) => ({
-        value: [xs.indexOf(asText(row[xKey])), ys.indexOf(asText(row[yKey])), asNumber(row[valueKey]) ?? 0],
-        x: asText(row[xKey]),
-        y: asText(row[yKey]),
-      })),
+      data: rows
+        .map((row) => {
+          const x = asText(row[xKey]);
+          const y = asText(row[yKey]);
+          return {
+            value: [xs.indexOf(x), ys.indexOf(y), asNumber(row[valueKey]) ?? 0],
+            x,
+            y,
+          };
+        })
+        .filter((row) => Number(row.value[0]) >= 0 && Number(row.value[1]) >= 0),
       label: { show: false },
     }],
   } as EChartsOption;
+}
+
+const LOWER_IS_BETTER_MODEL_METRICS = new Set(["mae", "rmse", "log_loss", "brier", "rps"]);
+const ABS_LOWER_IS_BETTER_MODEL_METRICS = new Set(["bias"]);
+
+function modelCheckpointHeatmapOption(rows: DataRow[]): EChartsOption {
+  if (!rows.length) return emptyChartOption("No checkpoint metric rows available.");
+  const metrics = sortedCategoryValues(rows.map((row) => row.metric));
+  const checkpoints = sortedCategoryValues(rows.map((row) => row.checkpoint));
+  const valuesByMetric = new Map<string, number[]>();
+  for (const metric of metrics) {
+    valuesByMetric.set(metric, rows
+      .filter((row) => asText(row.metric) === metric)
+      .map((row) => asNumber(row.value))
+      .filter((value): value is number => value !== null));
+  }
+  return {
+    ...chartBase(),
+    tooltip: {
+      trigger: "item",
+      confine: true,
+      backgroundColor: cssVar("--surface"),
+      borderColor: cssVar("--line"),
+      textStyle: { color: cssVar("--text") },
+      formatter: (params: { data?: { checkpoint?: string; metric?: string; rawValue?: number; quality?: number } }) => {
+        const data = params.data;
+        const metric = asText(data?.metric);
+        const direction = modelMetricDirection(metric);
+        return `<div class="chart-tooltip"><span>Checkpoint</span><strong>${escapeHtml(data?.checkpoint ?? "-")}</strong><span>Metric</span><strong>${escapeHtml(cleanLabel(metric))}</strong><span>Raw value</span><strong>${escapeHtml(formatNumber(data?.rawValue))}</strong><span>Quality score</span><strong>${escapeHtml(formatPercent(data?.quality ?? 0))}</strong><span>Direction</span><strong>${escapeHtml(direction)}</strong></div>`;
+      },
+    },
+    grid: chartGrid({ left: 190, right: 78, top: 62, bottom: 156 }),
+    xAxis: heatmapCategoryAxis("Metric", metrics, "x"),
+    yAxis: heatmapCategoryAxis("Checkpoint", checkpoints, "y"),
+    visualMap: {
+      min: 0,
+      max: 1,
+      orient: "horizontal",
+      left: "center",
+      bottom: 10,
+      text: ["Better", "Worse"],
+      inRange: { color: ["#e5efeb", "#86c4b6", "#0f6861"] },
+      textStyle: { color: cssVar("--muted") },
+    },
+    series: [{
+      type: "heatmap",
+      data: rows
+        .map((row) => {
+          const metric = asText(row.metric);
+          const checkpoint = asText(row.checkpoint);
+          const rawValue = asNumber(row.value) ?? 0;
+          const quality = normalizeModelMetric(metric, rawValue, valuesByMetric.get(metric) ?? []);
+          return {
+            value: [metrics.indexOf(metric), checkpoints.indexOf(checkpoint), quality],
+            checkpoint,
+            metric,
+            rawValue,
+            quality,
+          };
+        })
+        .filter((row) => Number(row.value[0]) >= 0 && Number(row.value[1]) >= 0),
+      label: { show: false },
+    }],
+  } as EChartsOption;
+}
+
+function normalizeModelMetric(metric: string, value: number, metricValues: number[]): number {
+  if (!metricValues.length) return 0;
+  const values = ABS_LOWER_IS_BETTER_MODEL_METRICS.has(metric) ? metricValues.map((item) => Math.abs(item)) : metricValues;
+  const comparableValue = ABS_LOWER_IS_BETTER_MODEL_METRICS.has(metric) ? Math.abs(value) : value;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  if (max <= min) return 1;
+  const normalized = (comparableValue - min) / (max - min);
+  return LOWER_IS_BETTER_MODEL_METRICS.has(metric) || ABS_LOWER_IS_BETTER_MODEL_METRICS.has(metric)
+    ? 1 - normalized
+    : normalized;
+}
+
+function modelMetricDirection(metric: string): string {
+  if (ABS_LOWER_IS_BETTER_MODEL_METRICS.has(metric)) return "closer to zero is better";
+  if (LOWER_IS_BETTER_MODEL_METRICS.has(metric)) return "lower is better";
+  return "higher is better";
+}
+
+function heatmapCategoryAxis(name: string, values: string[], orientation: "x" | "y"): DataRow {
+  if (orientation === "y") {
+    return {
+      type: "category",
+      name,
+      nameLocation: "middle",
+      nameGap: 116,
+      nameTextStyle: { color: cssVar("--muted"), fontWeight: 700 },
+      data: values,
+      axisLabel: {
+        color: cssVar("--muted"),
+        fontSize: values.length > 20 ? 11 : 12,
+        interval: 0,
+        margin: 12,
+        formatter: (value: string) => cleanLabel(value),
+      },
+      axisLine: { lineStyle: { color: cssVar("--line") } },
+      splitLine: { show: false },
+    };
+  }
+  return {
+    type: "category",
+    name,
+    nameLocation: "middle",
+    nameGap: values.length > 6 ? 88 : 62,
+    nameTextStyle: { color: cssVar("--muted"), fontWeight: 700 },
+    data: values,
+    axisLabel: {
+      color: cssVar("--muted"),
+      fontSize: values.length > 8 ? 11 : 12,
+      interval: 0,
+      hideOverlap: false,
+      margin: 14,
+      rotate: values.length > 6 ? 35 : 0,
+      overflow: "truncate",
+      width: 118,
+      formatter: (value: string) => cleanLabel(value),
+    },
+    axisLine: { lineStyle: { color: cssVar("--line") } },
+    splitLine: { show: false },
+  };
 }
 
 function disagreementOption(rows: DataRow[]): EChartsOption {
@@ -3112,6 +4054,66 @@ function strategyPnlOption(rows: DataRow[]): EChartsOption {
         lineStyle: { color: cssVar("--accent"), width: 3 },
         itemStyle: { color: cssVar("--accent") },
         data: rows.map((row) => [asText(row.target_date), asNumber(row.cumulative_pnl)]),
+      },
+    ],
+  } as EChartsOption;
+}
+
+function tradeTimingOption(rows: DataRow[]): EChartsOption {
+  if (!rows.length) return emptyChartOption("No trade timing rows are available.");
+  const labels = rows.map((row) => asText(row.bucket));
+  return {
+    ...chartBase(),
+    tooltip: strategyAxisTooltip(),
+    grid: chartGrid({ right: 98, bottom: 116 }),
+    xAxis: categoryAxis("Entry time", labels),
+    yAxis: [
+      moneyAxis("PnL"),
+      { ...rateAxis("ROI / hit rate"), position: "right" },
+      { ...valueAxis("Trades"), position: "right", offset: 58 },
+    ],
+    series: [
+      {
+        name: "PnL",
+        type: "bar",
+        yAxisIndex: 0,
+        barMaxWidth: 24,
+        itemStyle: {
+          color: (params: { dataIndex?: number }) => {
+            const value = asNumber(rows[params.dataIndex ?? 0]?.total_pnl) ?? 0;
+            return value < 0 ? cssVar("--bad") : cssVar("--accent-2");
+          },
+          opacity: 0.78,
+        },
+        data: rows.map((row) => [asText(row.bucket), asNumber(row.total_pnl)]),
+      },
+      {
+        name: "ROI",
+        type: "line",
+        yAxisIndex: 1,
+        smooth: true,
+        lineStyle: { color: colorForIndex(4), width: 2, type: "dashed" },
+        itemStyle: { color: colorForIndex(4) },
+        data: rows.map((row) => [asText(row.bucket), asNumber(row.roi)]),
+      },
+      {
+        name: "Hit rate",
+        type: "line",
+        yAxisIndex: 1,
+        smooth: true,
+        lineStyle: { color: cssVar("--accent"), width: 3 },
+        itemStyle: { color: cssVar("--accent") },
+        data: rows.map((row) => [asText(row.bucket), asNumber(row.hit_rate)]),
+      },
+      {
+        name: "Trades",
+        type: "line",
+        yAxisIndex: 2,
+        smooth: true,
+        symbolSize: 6,
+        lineStyle: { color: cssVar("--muted"), width: 2 },
+        itemStyle: { color: cssVar("--muted") },
+        data: rows.map((row) => [asText(row.bucket), asNumber(row.trades)]),
       },
     ],
   } as EChartsOption;

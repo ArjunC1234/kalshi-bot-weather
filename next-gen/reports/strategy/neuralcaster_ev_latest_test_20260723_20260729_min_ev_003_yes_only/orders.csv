@@ -1,0 +1,2 @@
+city,contracts,edge,entry_price,event_ticker,market_ticker,model_probability,order_id,side,snapshot_hour_utc,target_date
+mia,5.0,0.03427371859784534,0.6,KXHIGHMIA-26JUL29,KXHIGHMIA-26JUL29-B94.5,0.6342737185978453,neural-ev-000001,buy_yes,2026-07-29 09:00:00+00:00,2026-07-29

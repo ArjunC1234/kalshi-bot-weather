@@ -1,0 +1,507 @@
+{
+  "fit_start": "2026-07-15",
+  "fit_end": "2026-08-03",
+  "fit_asof": "2026-08-04T00:00:00Z",
+  "validation": [
+    "2026-08-04",
+    "2026-08-17"
+  ],
+  "retrospective_test": [
+    "2026-08-18",
+    "2026-08-31"
+  ],
+  "model_names": [
+    "market",
+    "market_calibrated",
+    "weather_regularized",
+    "weather_market",
+    "neural",
+    "neural_shrink50",
+    "neural_shrink25"
+  ],
+  "policies": [
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 10,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 10,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 10,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 10,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 14,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 14,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 14,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 14,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 18,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 18,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 18,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 18,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 10,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 10,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 10,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 10,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 14,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 14,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 14,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 14,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 18,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 18,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 18,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "no",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 18,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 10,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 10,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 10,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 10,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 14,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 14,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 14,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 14,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 18,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 18,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 18,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.5,
+      "max_price": 0.85,
+      "min_hours": 18,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 10,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 10,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 10,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 10,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 14,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 14,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 14,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 14,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 18,
+      "min_net_edge": 0.02,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 18,
+      "min_net_edge": 0.02,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 18,
+      "min_net_edge": 0.05,
+      "bounded_only": false,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    },
+    {
+      "side": "all",
+      "min_price": 0.65,
+      "max_price": 0.95,
+      "min_hours": 18,
+      "min_net_edge": 0.05,
+      "bounded_only": true,
+      "min_probability": 0.85,
+      "max_spread": 0.05
+    }
+  ],
+  "slippage": 0.01,
+  "seed": 17,
+  "selection": "min 20 trades, 80% hit, each validation week profitable; rank worst-week net PnL"
+}

@@ -20,14 +20,17 @@ from backtest.health import (
     daily_health_summary,
     write_daily_health_report,
 )
+from backtest.label_import import import_final_temperature_labels
 from backtest.load_dataset import load_dataset
 from backtest.pipeline import run_export_validate_pipeline
 from backtest.quality import build_quality_report, write_quality_report
 from backtest.reports import write_dataset_summary, write_result
+from backtest.settlement_source_report import write_settlement_source_report
 from backtest.validators import validate_dataset
 from libs.config import load_dotenv
 from libs.errors import SourceError
 from libs.json_utils import write_json
+from libs.settlement_policy import clamp_to_post_settlement_start
 from libs.supabase_client import SupabaseClient
 
 
@@ -43,6 +46,11 @@ def main(argv: list[str] | None = None) -> int:
         "--output",
         type=Path,
         help="Output folder. Defaults to data/export_<start>_<end>_<UTC timestamp>.",
+    )
+    export_parser.add_argument(
+        "--include-pre-settlement-system-data",
+        action="store_true",
+        help="Allow exporting dates before the 2026-08-27 settlement-system cutoff.",
     )
 
     validate_parser = commands.add_parser("validate", help="Validate a frozen local dataset.")
@@ -70,6 +78,33 @@ def main(argv: list[str] | None = None) -> int:
             "Output folder. Defaults to "
             "reports/quality/daily_health_<date>_<source>_<UTC timestamp>."
         ),
+    )
+
+    source_report_parser = commands.add_parser(
+        "settlement-sources",
+        help="Write settlement-source coverage and NWS-vs-Weather Company label comparisons.",
+    )
+    source_report_parser.add_argument("--data", type=Path, required=True)
+    source_report_parser.add_argument(
+        "--output",
+        type=Path,
+        help=(
+            "Output folder. Defaults to "
+            "reports/quality/settlement_sources_<dataset>_<UTC timestamp>."
+        ),
+    )
+
+    import_labels_parser = commands.add_parser(
+        "import-labels",
+        help="Import alternate final-temperature labels into a local export.",
+    )
+    import_labels_parser.add_argument("--data", type=Path, required=True)
+    import_labels_parser.add_argument("--labels", type=Path, required=True)
+    import_labels_parser.add_argument(
+        "--source-provider",
+        required=True,
+        choices=["nws_cli_daily", "weather_company_daily", "weather_company_hourly"],
+        help="Official source for the imported final_high_f rows.",
     )
 
     monitor_parser = commands.add_parser(
@@ -101,6 +136,11 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     pipeline_parser.add_argument("--require-settlements", action="store_true")
+    pipeline_parser.add_argument(
+        "--include-pre-settlement-system-data",
+        action="store_true",
+        help="Allow exporting dates before the 2026-08-27 settlement-system cutoff.",
+    )
 
     evaluate_parser = commands.add_parser("evaluate", help="Evaluate stored model probabilities.")
     evaluate_parser.add_argument("--data", type=Path, required=True)
@@ -116,8 +156,18 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     if args.command == "export":
-        output = args.output or timestamped_export_dir(args.start, args.end)
-        export_supabase(args.start, args.end, output)
+        effective_start = (
+            args.start
+            if args.include_pre_settlement_system_data
+            else clamp_to_post_settlement_start(args.start).isoformat()
+        )
+        output = args.output or timestamped_export_dir(effective_start, args.end)
+        export_supabase(
+            args.start,
+            args.end,
+            output,
+            post_settlement_system_only=not args.include_pre_settlement_system_data,
+        )
         print(f"export complete: {output}")
         return 0
     if args.command == "validate":
@@ -150,6 +200,35 @@ def main(argv: list[str] | None = None) -> int:
         print(daily_health_summary(report))
         print(f"daily health report complete: {output}")
         return 0
+    if args.command == "settlement-sources":
+        source = LocalExportSource(args.data)
+        output = args.output or timestamped_report_dir(
+            "quality",
+            f"settlement_sources_{dataset_name(args.data)}",
+        )
+        result = write_settlement_source_report(
+            source,
+            output,
+            source_export_id=dataset_name(args.data),
+        )
+        print(
+            "settlement source report complete: "
+            f"labels={result['label_rows']} comparable_pairs={result['nws_weather_company_pairs']} "
+            f"output={output}"
+        )
+        return 0
+    if args.command == "import-labels":
+        result = import_final_temperature_labels(
+            args.data,
+            args.labels,
+            source_provider=args.source_provider,
+        )
+        print(
+            "labels imported: "
+            f"source={result['source_provider']} imported={result['imported_rows']} "
+            f"total={result['total_label_rows']} export={args.data}"
+        )
+        return 0
     if args.command == "monitor":
         client = SupabaseClient.from_env()
         try:
@@ -172,10 +251,19 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "pipeline":
         stamp = utc_filename_timestamp()
-        data_output = args.data_output or timestamped_export_dir(args.start, args.end, stamp=stamp)
+        effective_start = (
+            args.start
+            if args.include_pre_settlement_system_data
+            else clamp_to_post_settlement_start(args.start).isoformat()
+        )
+        data_output = args.data_output or timestamped_export_dir(
+            effective_start,
+            args.end,
+            stamp=stamp,
+        )
         report_output = args.report_output or timestamped_report_dir(
             "quality",
-            f"pipeline_{args.start}_{args.end}",
+            f"pipeline_{effective_start}_{args.end}",
             stamp=stamp,
         )
         result = run_export_validate_pipeline(
@@ -184,6 +272,7 @@ def main(argv: list[str] | None = None) -> int:
             data_output,
             report_output,
             require_settlements=args.require_settlements,
+            post_settlement_system_only=not args.include_pre_settlement_system_data,
         )
         print(f"pipeline complete: data={result.data_dir} report={result.report_dir}")
         return 0

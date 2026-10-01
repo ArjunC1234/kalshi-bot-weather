@@ -1,0 +1,759 @@
+folder,direct_files,recursive_files,python_files,markdown_files,json_files,csv_files,png_files,gz_files,joblib_files,typescript_files,role
+legacy-experimentation,21,903,17,5,70,233,55,516,0,0,supporting source/config/docs
+legacy-experimentation\backtest_data,1,539,0,0,3,18,6,511,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\demo_server_bot,5,6,1,1,1,0,0,0,0,0,supporting source/config/docs
+legacy-experimentation\output,4,335,0,0,66,215,49,5,0,0,legacy generated output
+legacy-experimentation\systemd,2,2,0,0,0,0,0,0,0,0,supporting source/config/docs
+legacy-experimentation\backtest_data\cohorts,0,538,0,0,3,18,6,511,0,0,frozen export/data artifacts
+legacy-experimentation\demo_server_bot\systemd,1,1,0,0,0,0,0,0,0,0,supporting source/config/docs
+legacy-experimentation\output\backtest_eval_smoke,0,22,0,0,3,11,5,3,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_smoke,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_v2_smoke,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\calibrated_temperature_error_model,4,4,0,0,1,2,1,0,0,0,legacy generated output
+legacy-experimentation\output\evaluation_latest.json,9,9,0,0,1,6,2,0,0,0,legacy generated output
+legacy-experimentation\output\evaluation_refresh_20260623T135208,9,9,0,0,1,6,2,0,0,0,legacy generated output
+legacy-experimentation\output\evaluation_refresh_20260624T214654,9,9,0,0,1,6,2,0,0,0,legacy generated output
+legacy-experimentation\output\evaluation_refresh_20260625T195941,9,9,0,0,1,6,2,0,0,0,legacy generated output
+legacy-experimentation\output\hrrr_jun30_research,19,32,0,0,20,8,4,0,0,0,legacy generated output
+legacy-experimentation\output\hrrr_regression_design_analysis_20260701_134915,1,1,0,0,0,1,0,0,0,0,legacy generated output
+legacy-experimentation\output\hrrr_regression_design_analysis_20260701_134956,1,1,0,0,0,1,0,0,0,0,legacy generated output
+legacy-experimentation\output\hrrr_regression_design_analysis_20260701_135041,6,6,0,0,0,6,0,0,0,0,legacy generated output
+legacy-experimentation\output\hrrr_top3_comparison,2,2,0,0,0,1,1,0,0,0,legacy generated output
+legacy-experimentation\output\june30_hrrr_holdout_20260701_133221,2,2,0,0,0,2,0,0,0,0,legacy generated output
+legacy-experimentation\output\june30_hrrr_holdout_20260701_133521,8,8,0,0,1,6,1,0,0,0,legacy generated output
+legacy-experimentation\output\legacy_winner_on_nextgen_20260701_20260720,6,6,0,0,1,5,0,0,0,0,legacy generated output
+legacy-experimentation\output\legacy_winner_on_nextgen_20260701_20260720_legacy_checkpoints,6,6,0,0,1,5,0,0,0,0,legacy generated output
+legacy-experimentation\output\market_comparison,3,3,0,0,1,1,1,0,0,0,legacy generated output
+legacy-experimentation\output\model_improvement_report,9,9,0,0,1,6,2,0,0,0,legacy generated output
+legacy-experimentation\output\model_improvement_report_staged_hrrr_quick,9,9,0,0,1,6,2,0,0,0,legacy generated output
+legacy-experimentation\output\offline_trained_model,7,7,0,0,3,3,1,0,0,0,legacy generated output
+legacy-experimentation\output\offline_trained_weather_only,7,7,0,0,3,3,1,0,0,0,legacy generated output
+legacy-experimentation\output\regression_checkpoint_deviation_by_city_20260701_142240,3,3,0,0,0,2,1,0,0,0,legacy generated output
+legacy-experimentation\output\regression_model_visual_20260701_141052,2,2,0,0,0,1,1,0,0,0,legacy generated output
+legacy-experimentation\output\regression_time_bracket_heatmap_20260701_141509,2,2,0,0,0,0,2,0,0,0,legacy generated output
+legacy-experimentation\output\strategy_simulation,9,9,0,0,1,7,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_20260701_20260720_codex_fast,15,15,0,0,3,11,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_anchored_regression_top_gap_ev,15,15,0,0,3,11,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_calibrated_temperature_error,11,11,0,0,2,8,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_grouped_regression_edge,15,15,0,0,3,11,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_kelly,9,9,0,0,1,7,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_kelly_longshot_cap1,9,9,0,0,1,7,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_kelly_minask05,9,9,0,0,1,7,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_kelly_trained_blend_cap1,9,9,0,0,1,7,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_refresh_20260701_044831,9,9,0,0,1,7,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_regression_hrrr_20260701_095801,9,9,0,0,1,7,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_top_gap_ev,15,15,0,0,3,11,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_trade_regression,11,11,0,0,2,8,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\strategy_simulation_trade_regression_sensitivity,11,11,0,0,2,8,1,0,0,0,strategy/evaluation source or artifacts
+legacy-experimentation\output\trajectory_correction,2,2,0,0,1,1,0,0,0,0,legacy generated output
+legacy-experimentation\output\weather_model_bracket_errors,3,3,0,0,0,2,1,0,0,0,legacy generated output
+legacy-experimentation\backtest_data\cohorts\pilot-v1,1,538,0,0,3,18,6,511,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts,0,109,0,0,0,0,0,109,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing,0,196,0,0,0,0,0,196,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\reports,0,27,0,0,3,18,6,0,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements,0,64,0,0,0,0,0,64,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots,0,141,0,0,0,0,0,141,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-20,0,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-21,0,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-22,0,10,0,0,0,0,0,10,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-26,0,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-27,0,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01,0,95,0,0,0,0,0,95,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-20,0,8,0,0,0,0,0,8,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-21,0,19,0,0,0,0,0,19,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-22,0,10,0,0,0,0,0,10,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-23,0,11,0,0,0,0,0,11,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-24,0,23,0,0,0,0,0,23,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-25,0,18,0,0,0,0,0,18,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-26,0,17,0,0,0,0,0,17,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-27,0,20,0,0,0,0,0,20,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-28,0,18,0,0,0,0,0,18,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-29,0,22,0,0,0,0,0,22,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-30,0,11,0,0,0,0,0,11,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-07-01,0,19,0,0,0,0,0,19,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\reports\20260622T004339Z,9,9,0,0,1,6,2,0,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\reports\20260622T053110Z,9,9,0,0,1,6,2,0,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\reports\20260622T160506Z,9,9,0,0,1,6,2,0,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements\2026-06-20,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements\2026-06-21,6,6,0,0,0,0,0,6,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements\2026-06-22,6,6,0,0,0,0,0,6,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements\2026-06-23,6,6,0,0,0,0,0,6,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements\2026-06-24,6,6,0,0,0,0,0,6,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements\2026-06-25,6,6,0,0,0,0,0,6,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements\2026-06-26,6,6,0,0,0,0,0,6,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements\2026-06-27,6,6,0,0,0,0,0,6,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements\2026-06-28,6,6,0,0,0,0,0,6,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements\2026-06-29,6,6,0,0,0,0,0,6,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\settlements\2026-06-30,6,6,0,0,0,0,0,6,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-20,0,6,0,0,0,0,0,6,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-21,0,11,0,0,0,0,0,11,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-22,0,20,0,0,0,0,0,20,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-23,0,19,0,0,0,0,0,19,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-24,0,7,0,0,0,0,0,7,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-25,0,12,0,0,0,0,0,12,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-26,0,13,0,0,0,0,0,13,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-27,0,10,0,0,0,0,0,10,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-28,0,12,0,0,0,0,0,12,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-29,0,8,0,0,0,0,0,8,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-30,0,19,0,0,0,0,0,19,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-07-01,0,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-20\la,0,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-21\la,0,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-22\mia,0,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-22\nyc,0,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-26\la,0,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-27\mia,0,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\aus,0,20,0,0,0,0,0,20,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\den,0,20,0,0,0,0,0,20,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\la,0,15,0,0,0,0,0,15,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\mia,0,20,0,0,0,0,0,20,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\nyc,0,20,0,0,0,0,0,20,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-20\la\t_plus_18h,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-21\la\t_minus_6h,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-22\mia\t_plus_14h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-22\nyc\t_plus_14h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-26\la\t_plus_14h,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-06-27\mia\t_plus_14h,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\aus\t_minus_6h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\aus\t_plus_10h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\aus\t_plus_14h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\aus\t_plus_6h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\den\t_minus_6h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\den\t_plus_10h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\den\t_plus_14h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\den\t_plus_6h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\la\t_minus_6h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\la\t_plus_10h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\la\t_plus_6h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\mia\t_minus_6h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\mia\t_plus_10h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\mia\t_plus_14h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\mia\t_plus_6h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\nyc\t_minus_6h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\nyc\t_plus_10h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\nyc\t_plus_14h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\attempts\2026-07-01\nyc\t_plus_6h,5,5,0,0,0,0,0,5,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-20\aus,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-20\den,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-20\la,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-20\mia,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-20\nyc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-20\okc,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-21\aus,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-21\den,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-21\la,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-21\mia,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-21\nyc,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-21\okc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-22\aus,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-22\den,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-22\la,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-22\mia,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-22\nyc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-22\okc,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-23\aus,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-23\den,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-23\la,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-23\mia,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-23\nyc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-23\okc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-24\aus,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-24\den,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-24\la,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-24\mia,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-24\nyc,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-24\okc,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-25\aus,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-25\den,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-25\la,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-25\mia,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-25\nyc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-25\okc,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-26\aus,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-26\den,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-26\la,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-26\mia,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-26\nyc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-26\okc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-27\aus,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-27\den,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-27\la,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-27\mia,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-27\nyc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-27\okc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-28\aus,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-28\den,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-28\la,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-28\mia,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-28\nyc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-28\okc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-29\aus,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-29\den,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-29\la,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-29\mia,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-29\nyc,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-29\okc,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-30\aus,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-30\den,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-30\la,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-30\mia,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-30\nyc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-06-30\okc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-07-01\aus,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-07-01\den,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-07-01\la,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-07-01\mia,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\missing\2026-07-01\nyc,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-20\aus,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-20\den,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-20\la,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-20\okc,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-21\aus,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-21\den,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-21\la,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-21\mia,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-21\nyc,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-21\okc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-22\aus,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-22\den,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-22\la,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-22\mia,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-22\nyc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-22\okc,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-23\aus,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-23\den,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-23\la,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-23\mia,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-23\nyc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-23\okc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-24\aus,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-24\den,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-24\la,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-24\mia,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-24\nyc,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-24\okc,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-25\aus,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-25\den,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-25\la,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-25\mia,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-25\nyc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-25\okc,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-26\aus,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-26\den,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-26\la,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-26\mia,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-26\nyc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-26\okc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-27\aus,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-27\den,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-27\la,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-27\mia,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-27\nyc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-27\okc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-28\aus,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-28\den,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-28\la,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-28\mia,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-28\nyc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-28\okc,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-29\aus,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-29\den,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-29\la,2,2,0,0,0,0,0,2,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-29\mia,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-29\nyc,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-29\okc,1,1,0,0,0,0,0,1,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-30\aus,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-30\den,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-30\la,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-30\mia,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-30\nyc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-06-30\okc,3,3,0,0,0,0,0,3,0,0,frozen export/data artifacts
+legacy-experimentation\backtest_data\cohorts\pilot-v1\snapshots\2026-07-01\okc,4,4,0,0,0,0,0,4,0,0,frozen export/data artifacts
+legacy-experimentation\output\backtest_eval_smoke\cohorts,0,3,0,0,0,0,0,3,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_eval_smoke\report,4,4,0,0,1,2,1,0,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_eval_smoke\report2,6,6,0,0,1,3,2,0,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_eval_smoke\report3,9,9,0,0,1,6,2,0,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_smoke\cohorts,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_v2_smoke\cohorts,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\hrrr_jun30_research\raw_single_runs,13,13,0,0,13,0,0,0,0,0,legacy generated output
+legacy-experimentation\output\backtest_eval_smoke\cohorts\smoke,1,3,0,0,0,0,0,3,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_eval_smoke\cohorts\smoke\settlements,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_eval_smoke\cohorts\smoke\snapshots,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_eval_smoke\cohorts\smoke\settlements\2026-06-20,1,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_eval_smoke\cohorts\smoke\snapshots\2026-06-20,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_eval_smoke\cohorts\smoke\snapshots\2026-06-20\nyc,1,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_smoke\cohorts\smoke,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_smoke\cohorts\smoke\snapshots,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_smoke\cohorts\smoke\snapshots\2026-06-20,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_smoke\cohorts\smoke\snapshots\2026-06-20\nyc,1,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_v2_smoke\cohorts\smoke,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_v2_smoke\cohorts\smoke\snapshots,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_v2_smoke\cohorts\smoke\snapshots\2026-06-20,0,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+legacy-experimentation\output\backtest_v2_smoke\cohorts\smoke\snapshots\2026-06-20\mia,1,1,0,0,0,0,0,1,0,0,backtest/export/evaluation source or legacy data
+next-gen,10,3310,158,145,280,2234,294,53,14,66,supporting source/config/docs
+next-gen\.control,1,13,0,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\backtest,16,25,23,2,0,0,0,0,0,0,backtest/export/evaluation source or legacy data
+next-gen\control,7,34,22,1,11,0,0,0,0,0,control plane/workbench code
+next-gen\control-center,0,75,0,1,4,0,0,0,0,54,control plane/workbench code
+next-gen\data,0,77,0,0,16,8,0,53,0,0,supporting source/config/docs
+next-gen\edgecaster,3,10,9,1,0,0,0,0,0,0,supporting source/config/docs
+next-gen\libs,21,22,21,1,0,0,0,0,0,0,shared libraries
+next-gen\marketedge_v2,4,5,4,1,0,0,0,0,0,0,supporting source/config/docs
+next-gen\maxtemp-engine,1,50,40,10,0,0,0,0,0,0,weather model source code
+next-gen\models,0,38,0,0,16,8,0,0,14,0,supporting source/config/docs
+next-gen\production,3,30,13,4,0,0,0,0,0,0,deployable production code/runbooks
+next-gen\reports,1,2860,0,119,229,2218,294,0,0,0,supporting source/config/docs
+next-gen\strategy,9,10,10,0,0,0,0,0,0,0,strategy/evaluation source or artifacts
+next-gen\strategy-engine,1,2,0,2,0,0,0,0,0,0,strategy/evaluation source or artifacts
+next-gen\tests,11,11,10,1,0,0,0,0,0,0,supporting source/config/docs
+next-gen\trends,6,38,5,1,4,0,0,0,0,12,analysis workbench code
+next-gen\.control\jobs,1,12,0,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\backtest\tests,9,9,8,1,0,0,0,0,0,0,backtest/export/evaluation source or legacy data
+next-gen\control\artifacts,4,4,4,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\control\exporting,0,0,0,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\control\exports,2,2,2,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\control\jobs,3,3,3,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\control\providers,2,2,2,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\control\registry,3,14,3,0,11,0,0,0,0,0,control plane/workbench code
+next-gen\control\visualizations,2,2,2,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\control-center\ui,17,75,0,1,4,0,0,0,0,54,control plane/workbench code
+next-gen\data\.archive,0,10,0,0,2,0,0,8,0,0,frozen export/data artifacts
+next-gen\data\codex_export_20260701_20260720_from_20260622_20260720,10,10,0,0,2,0,0,8,0,0,frozen export/data artifacts
+next-gen\data\codex_latest_20260702_20260730_for_neuralcaster_edgecaster,10,10,0,0,2,0,0,8,0,0,frozen export/data artifacts
+next-gen\data\codex_latest_20260702_20260730_settled_for_v2ev_v3_20260731,10,10,0,0,2,0,0,8,0,0,frozen export/data artifacts
+next-gen\data\export_20260622_20260721_20260722T192955Z,10,10,0,0,2,0,0,8,0,0,frozen export/data artifacts
+next-gen\data\export_20260622_20260722_20260723T140150Z,10,10,0,0,2,0,0,8,0,0,frozen export/data artifacts
+next-gen\data\export_20260702_20260722T143730,7,7,0,0,2,0,0,5,0,0,frozen export/data artifacts
+next-gen\data\smoke_20260701_20260703,10,10,0,0,2,8,0,0,0,0,frozen export/data artifacts
+next-gen\edgecaster\tests,1,1,1,0,0,0,0,0,0,0,supporting source/config/docs
+next-gen\edgecaster\v2,6,6,5,1,0,0,0,0,0,0,supporting source/config/docs
+next-gen\libs\tests,1,1,1,0,0,0,0,0,0,0,shared libraries
+next-gen\marketedge_v2\tests,1,1,1,0,0,0,0,0,0,0,supporting source/config/docs
+next-gen\maxtemp-engine\cloudcaster,0,7,7,0,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\neuralcaster,0,11,9,2,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\raycaster,1,17,14,3,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\tests,1,1,0,1,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\thetemp,1,13,10,3,0,0,0,0,0,0,weather model source code
+next-gen\models\raycaster,0,38,0,0,16,8,0,0,14,0,supporting source/config/docs
+next-gen\production\deployable,8,27,13,3,0,0,0,0,0,0,deployable production code/runbooks
+next-gen\reports\model,3,1485,0,9,107,1144,225,0,0,0,model report artifacts
+next-gen\reports\quality,1,44,0,1,13,30,0,0,0,0,data quality artifacts
+next-gen\reports\strategy,2,1329,0,107,109,1044,69,0,0,0,strategy report artifacts
+next-gen\reports\trends,1,1,0,1,0,0,0,0,0,0,analysis workbench code
+next-gen\strategy\tests,1,1,1,0,0,0,0,0,0,0,strategy/evaluation source or artifacts
+next-gen\strategy-engine\tests,1,1,0,1,0,0,0,0,0,0,strategy/evaluation source or artifacts
+next-gen\trends\static,3,3,0,0,0,0,0,0,0,0,analysis workbench code
+next-gen\trends\ui,14,29,0,0,4,0,0,0,0,12,analysis workbench code
+next-gen\.control\jobs\logs,11,11,0,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\control\registry\builtin,0,9,0,0,9,0,0,0,0,0,control plane/workbench code
+next-gen\control\registry\schemas,2,2,0,0,2,0,0,0,0,0,control plane/workbench code
+next-gen\control\registry\builtin\bot_runtimes,1,1,0,0,1,0,0,0,0,0,control plane/workbench code
+next-gen\control\registry\builtin\data_sources,1,1,0,0,1,0,0,0,0,0,control plane/workbench code
+next-gen\control\registry\builtin\export_profiles,2,2,0,0,2,0,0,0,0,0,control plane/workbench code
+next-gen\control\registry\builtin\models,2,2,0,0,2,0,0,0,0,0,control plane/workbench code
+next-gen\control\registry\builtin\strategies,1,1,0,0,1,0,0,0,0,0,control plane/workbench code
+next-gen\control\registry\builtin\visualizations,2,2,0,0,2,0,0,0,0,0,control plane/workbench code
+next-gen\control-center\ui\dist,1,3,0,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\control-center\ui\src,3,55,0,0,0,0,0,0,0,52,control plane/workbench code
+next-gen\control-center\ui\dist\assets,2,2,0,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\control-center\ui\src\api,3,3,0,0,0,0,0,0,0,3,control plane/workbench code
+next-gen\control-center\ui\src\components,1,20,0,0,0,0,0,0,0,19,control plane/workbench code
+next-gen\control-center\ui\src\features,0,20,0,0,0,0,0,0,0,20,control plane/workbench code
+next-gen\control-center\ui\src\layout,4,4,0,0,0,0,0,0,0,4,control plane/workbench code
+next-gen\control-center\ui\src\styles,2,2,0,0,0,0,0,0,0,0,control plane/workbench code
+next-gen\control-center\ui\src\types,3,3,0,0,0,0,0,0,0,3,control plane/workbench code
+next-gen\control-center\ui\src\components\brand,2,2,0,0,0,0,0,0,0,2,control plane/workbench code
+next-gen\control-center\ui\src\components\charts,3,3,0,0,0,0,0,0,0,3,control plane/workbench code
+next-gen\control-center\ui\src\components\status,3,3,0,0,0,0,0,0,0,3,control plane/workbench code
+next-gen\control-center\ui\src\components\tables,3,3,0,0,0,0,0,0,0,3,control plane/workbench code
+next-gen\control-center\ui\src\components\visualization,8,8,0,0,0,0,0,0,0,7,control plane/workbench code
+next-gen\control-center\ui\src\features\dataExplorer,2,2,0,0,0,0,0,0,0,2,control plane/workbench code
+next-gen\control-center\ui\src\features\exports,6,6,0,0,0,0,0,0,0,6,control plane/workbench code
+next-gen\control-center\ui\src\features\jobs,6,6,0,0,0,0,0,0,0,6,control plane/workbench code
+next-gen\control-center\ui\src\features\models,2,2,0,0,0,0,0,0,0,2,control plane/workbench code
+next-gen\control-center\ui\src\features\reports,2,2,0,0,0,0,0,0,0,2,control plane/workbench code
+next-gen\control-center\ui\src\features\strategies,2,2,0,0,0,0,0,0,0,2,control plane/workbench code
+next-gen\data\.archive\export_20260702_20260721_control_20260723T183519Z,10,10,0,0,2,0,0,8,0,0,frozen export/data artifacts
+next-gen\maxtemp-engine\cloudcaster\v1,6,7,7,0,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\neuralcaster\v1,3,3,2,1,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\neuralcaster\v2,3,3,2,1,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\neuralcaster\v3,5,5,5,0,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\raycaster\v1,12,16,14,2,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\thetemp\v1,10,12,10,2,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\cloudcaster\v1\tests,1,1,1,0,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\neuralcaster\v1\tests,0,0,0,0,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\raycaster\v1\tests,4,4,3,1,0,0,0,0,0,0,weather model source code
+next-gen\maxtemp-engine\thetemp\v1\tests,2,2,1,1,0,0,0,0,0,0,weather model source code
+next-gen\models\raycaster\v1,0,38,0,0,16,8,0,0,14,0,supporting source/config/docs
+next-gen\models\raycaster\v1\all_collected_20260713T150924Z,5,5,0,0,2,1,0,0,2,0,supporting source/config/docs
+next-gen\models\raycaster\v1\all_collected_corrected_20260713T152758Z,5,5,0,0,2,1,0,0,2,0,supporting source/config/docs
+next-gen\models\raycaster\v1\fallback_control_train_20260702_eval_20260702_20260703_20260704T154801Z,3,3,0,0,2,1,0,0,0,0,control plane/workbench code
+next-gen\models\raycaster\v1\full_latest_20260710T081422Z,5,5,0,0,2,1,0,0,2,0,supporting source/config/docs
+next-gen\models\raycaster\v1\full_latest_debiased_20260710T082451Z,5,5,0,0,2,1,0,0,2,0,supporting source/config/docs
+next-gen\models\raycaster\v1\full_latest_residual_20260710T083523Z,5,5,0,0,2,1,0,0,2,0,supporting source/config/docs
+next-gen\models\raycaster\v1\train_20260702_eval_20260702_20260703_20260704T154801Z,5,5,0,0,2,1,0,0,2,0,supporting source/config/docs
+next-gen\models\raycaster\v1\train_20260707_latest_20260707T161108Z,5,5,0,0,2,1,0,0,2,0,supporting source/config/docs
+next-gen\production\deployable\collector,10,10,9,1,0,0,0,0,0,0,deployable production code/runbooks
+next-gen\production\deployable\logs,4,4,0,0,0,0,0,0,0,0,deployable production code/runbooks
+next-gen\production\deployable\systemd,4,4,0,1,0,0,0,0,0,0,deployable production code/runbooks
+next-gen\production\deployable\tests,1,1,1,0,0,0,0,0,0,0,deployable production code/runbooks
+next-gen\reports\model\cloudcaster_v1_ablation_city_20260713T202852,11,13,0,0,1,10,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_ablation_city_checkpoint_20260713T202852,11,13,0,0,1,10,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_ablation_city_residual_20260713T202852,11,13,0,0,1,10,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_ablation_weather_only_20260713T202852,11,13,0,0,1,10,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_city_residual_20260713T201145,11,13,0,0,1,10,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_corrected_20260713T_eval,11,13,0,0,1,10,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_corrected_20260713T_temp_scaled,11,13,0,0,1,10,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_source_families_family_20260714T,0,0,0,0,0,0,0,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_source_families_family_20260714T_retry,18,20,0,0,1,17,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_source_families_legacy_20260714T,18,20,0,0,1,17,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_weather_only_20260714T_market_relative,18,20,0,0,1,17,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_weather_only_20260714T_retrained_jul13,11,13,0,0,1,10,2,0,0,0,model report artifacts
+next-gen\reports\model\edgecaster_v2_fixed_window_market_20260723Z20260702_20260722T,10,11,0,1,2,7,1,0,0,0,model report artifacts
+next-gen\reports\model\edgecaster_v2_fixed_window_weather_20260723Z20260702_20260722T,10,11,0,1,2,7,1,0,0,0,model report artifacts
+next-gen\reports\model\marketedge_v2_20260714T_one_shot,17,17,0,1,1,14,1,0,0,0,model report artifacts
+next-gen\reports\model\marketedge_v2_source_families_20260714T,17,17,0,1,1,14,1,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v1_mlp_weather_only_20260715T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_codex_train_20260701_20260708_score_20260709_20260720,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_ev_20260702_20260730_market_expanding14_blend95_20260731,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_ev_20260702_20260730_market_rolling14_blend95,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_export_20260622_20260721_20260722T192955Z_20260723T035332Z,14,17,0,0,2,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_export_20260702_20260722T143730_20260723T202256Z,14,17,0,0,2,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_export_20260702_20260722T143730_20260723T202439Z,14,17,0,0,2,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_fixed_train_20260702_20260714_score_20260702_20260716_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_fixed_window_market_20260723T20260702_20260722Z,14,17,0,0,2,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_fixed_window_weather_20260723T20260702_20260722Z,14,17,0,0,2,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_14d_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_20260715T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_blend80_20260715T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_blend95_14d_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_blend95_20260715T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt11_blend95_7d_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_01_h24_d15_lr0p001_wd0p02_p15_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_02_h24_d20_lr0p001_wd0p02_p20_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_03_h24_d20_lr0p002_wd0p02_p20_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_04_h24_d25_lr0p001_wd0p03_p20_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_05_h32_d15_lr0p001_wd0p02_p15_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_06_h32_d20_lr0p001_wd0p02_p20_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_07_h32_d20_lr0p002_wd0p02_p20_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_08_h32_d25_lr0p001_wd0p03_p20_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_09_h48_d15_lr0p001_wd0p02_p15_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_10_h48_d20_lr0p001_wd0p03_p20_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_11_blend95_14d_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_11_h48_d25_lr0p001_wd0p05_p20_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_12_h16_d20_lr0p001_wd0p02_p20_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_13_h16_d15_lr0p002_wd0p02_p20_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_seed99_20260715T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_small_20260715T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_small_regularized_14d_20260717T,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_train7_20260715T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_wide_20260715T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_weather_14d_20260717T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_weather_20260715T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_latest_20260702_20260729_market_rolling14_blend95,13,16,0,0,1,12,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_gru_offset_20260702_20260730_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_gru_offset_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_huber_market_delta_calibrated_sigma_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_huber_market_delta_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_huber_offset_20260702_20260730_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_huber_offset_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_market_baseline_20260702_20260730_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_market_baseline_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_mlp_offset_20260702_20260730_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_mlp_offset_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_nws_baseline_20260702_20260730_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_nws_baseline_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_ridge_market_delta_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_ridge_offset_20260702_20260730_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_ridge_offset_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_source_blend_20260702_20260730_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_source_blend_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_tree_market_delta_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_tree_offset_20260702_20260730_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_tree_offset_rolling14_test1,16,18,0,0,1,15,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_benchmark_corrected_20260713T_exec,7,9,0,0,1,6,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_benchmark_corrected_20260713T_hybrid,11,14,0,1,1,9,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_benchmark_corrected_20260713T_weighted,11,14,0,1,1,9,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_city_profiles_20260713T201145,13,16,0,1,1,11,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_20260707_latest_20260707T161108Z,9,11,0,0,1,8,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_all_collected_20260713T150924Z,10,13,0,0,1,9,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_all_collected_corrected_20260713T152758Z,11,14,0,0,1,10,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_full_latest_20260710T081422Z,11,13,0,0,1,9,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_full_latest_debiased_20260710T082451Z,9,11,0,0,1,8,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_full_latest_residual_20260710T083523Z,12,14,0,0,1,10,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_export_20260622_20260721_20260722T192955Z_20260723T034721Z,13,15,0,0,2,11,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_export_20260702_20260703_20260703T171513Z,9,11,0,0,1,8,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_fallback_control_train_20260702_eval_20260702_20260703_20260704T154801Z,9,11,0,0,1,8,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_feasibility_14d_20260717T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_fixed_all_collected_20260713T150924Z,9,11,0,0,1,8,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_fixed_all_collected_corrected_20260713T152758Z,9,11,0,0,1,8,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_rolling5_20260707_latest_20260707T161108Z,9,10,0,0,1,8,1,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_rolling5_20260707_regen_20260707T162725Z,9,11,0,0,1,8,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_rolling_20260707_latest_20260707T161108Z,9,9,0,0,1,8,0,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_smoke_20260701_20260703,9,11,0,0,1,8,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_source_families_20260714T,0,0,0,0,0,0,0,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_source_families_20260714T_retry,13,16,0,1,1,11,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_train_20260702_eval_20260702_20260703_20260704T154801Z,9,11,0,0,1,8,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_train_20260707_latest_20260707T161108Z,9,11,0,0,1,8,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_weather_only_rolling5_20260715T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_weather_only_rolling7_20260715T,12,14,0,0,1,11,2,0,0,0,model report artifacts
+next-gen\reports\quality\codex_latest_20260702_20260730_quality,5,5,0,0,2,3,0,0,0,0,data quality artifacts
+next-gen\reports\quality\daily_health_20260721_export_20260622_20260721_20260722t192955z_20260722T193036Z,4,4,0,0,1,3,0,0,0,0,data quality artifacts
+next-gen\reports\quality\daily_health_20260721_export_20260622_20260722_20260723t140150z_20260723T184428Z,4,4,0,0,1,3,0,0,0,0,data quality artifacts
+next-gen\reports\quality\daily_health_20260721_supabase_20260723T184740Z,4,4,0,0,1,3,0,0,0,0,data quality artifacts
+next-gen\reports\quality\daily_health_20260722_export_20260622_20260722_20260723t140150z_20260723T140229Z,4,4,0,0,1,3,0,0,0,0,data quality artifacts
+next-gen\reports\quality\daily_health_20260722_export_20260622_20260722_20260723t140150z_20260723T184428Z,4,4,0,0,1,3,0,0,0,0,data quality artifacts
+next-gen\reports\quality\daily_health_20260722_supabase_20260723T184743Z,4,4,0,0,1,3,0,0,0,0,data quality artifacts
+next-gen\reports\quality\daily_health_20260723_supabase_20260723T140259Z,4,4,0,0,1,3,0,0,0,0,data quality artifacts
+next-gen\reports\quality\pipeline_20260622_20260721_20260722T192955Z,5,5,0,0,2,3,0,0,0,0,data quality artifacts
+next-gen\reports\quality\pipeline_20260622_20260722_20260723T140150Z,5,5,0,0,2,3,0,0,0,0,data quality artifacts
+next-gen\reports\strategy\cloudcaster_v1_ablation_city_20260713T202852,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_ablation_city_checkpoint_20260713T202852,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_ablation_city_residual_20260713T202852,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_ablation_weather_only_20260713T202852,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_budget10_20260713T_cheap_tier,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_budget10_20260713T_comparison,3,3,0,1,0,1,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_budget10_20260713T_edge_tier,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_budget10_20260713T_fixed,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_budget10_20260713T_kelly,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_budget10_20260713T_prob_tier,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_best_edge,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_best_edge_008_012,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_cities_okc_mia,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge005_max012,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_012_price015_050,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_012_prob020_050,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_012_prob020_050_latest,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_012_prob020_050_price015_050,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_max012,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_max012_v2,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_hour06,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_latest,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_latest_edge008_max012,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_paper_20260713T_edge008,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_paper_20260713T_edge012,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_paper_20260713T_exec,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_paper_20260713T_exec_v2,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_paper_20260713T_spread010,10,12,0,1,1,8,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\codex_neuralcaster_v2_fixed_20260701_20260720,12,12,0,1,1,10,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\codex_neuralcaster_v2_fixed_20260701_20260720_loose,12,14,0,1,1,10,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_hgb_weather_only_20260714T_model_only_0p00,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_hgb_weather_only_20260714T_model_only_0p02,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_hgb_weather_only_20260714T_model_only_0p05,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_hgb_weather_only_20260714T_model_only_0p08,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_hgb_weather_only_20260714T_model_only_0p10,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_default,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_model_only_0p00,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_model_only_0p02,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_model_only_0p05,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_model_only_0p08,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_model_only_neg0p02,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_model_only_neg0p05,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_sweep_0p00,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_sweep_0p02,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_sweep_0p03,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_sweep_0p05,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_sweep_0p08,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v1_weather_only_20260714T_sweep_neg0p02,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_calibrated_train_20260709_20260715_test_20260716_20260720,10,11,0,1,1,8,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_calibrated_train_source_train_20260709_20260715_test_20260716_20260720,10,11,0,1,1,8,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_codex_train_20260709_20260715_test_20260716_20260720_clean,9,10,0,1,1,7,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_codex_train_20260709_20260716_test_20260716_20260720,9,10,0,1,1,7,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_export_20260622_20260721_20260722T192955Z_20260723T041537Z,10,11,0,1,2,7,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_fixed_train_20260702_20260714_test_20260715_20260716_20260717T,10,11,0,1,1,8,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_latest_fixed_train_20260716_20260722_test_20260723_20260729_calibrated,10,11,0,1,1,8,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_latest_fixed_train_20260716_20260722_test_20260723_20260729_gateless,9,10,0,1,1,7,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_latest_fixed_train_20260716_20260722_test_20260723_20260729_standard,9,10,0,1,1,7,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_latest_train_20260716_20260722_test_20260723_20260729_calibrated,9,9,0,1,1,7,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_latest_validation_gate_train_20260716_20260722_test_20260723_20260729,11,12,0,1,1,9,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_smoke_20260717T,9,10,0,1,1,7,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_standard_with_crosses_train_20260709_20260715_test_20260716_20260720,9,10,0,1,1,7,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_train_gate_analysis_20260717T,2,2,0,0,1,1,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_train_gate_applied_to_test_20260717T,4,4,0,0,1,3,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\live_replay_weather_only_20260714T_early_gate,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\live_replay_weather_only_20260714T_early_gate_retrained_jul13,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\live_replay_weather_only_20260714T_impl,11,11,0,1,1,9,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\live_replay_weather_only_20260714T_market_relative_baseline,16,16,0,1,1,14,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\live_replay_weather_only_20260714T_market_relative_slice_gate,16,16,0,1,1,14,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\live_replay_weather_only_20260714T_market_relative_slice_gate_city_checkpoint_side,16,16,0,1,1,14,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\live_replay_weather_only_20260714T_safety_v2,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_ev_latest_20260723_20260729_min_ev_003_price_02_80,13,13,0,1,1,11,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_ev_latest_test_20260723_20260729_min_ev_003_no_only,13,13,0,1,1,11,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_ev_latest_test_20260723_20260729_min_ev_003_price_02_80,13,13,0,1,1,11,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_ev_latest_test_20260723_20260729_min_ev_003_price_25_80,13,13,0,1,1,11,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_ev_latest_test_20260723_20260729_min_ev_003_yes_only,13,13,0,1,1,11,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_ev_latest_test_20260723_20260729_min_ev_005_price_02_80,13,13,0,1,1,11,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_ev_validation_20260716_20260722_min_ev_003_price_02_80,13,13,0,1,1,11,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_ev_validation_20260716_20260722_min_ev_003_price_25_80,13,13,0,1,1,11,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_ev_validation_20260716_20260722_min_ev_003_yes_only,13,13,0,1,1,11,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_ev_validation_20260716_20260722_min_ev_005_price_02_80,13,13,0,1,1,11,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v2_edgecaster_fixed_train_20260702_20260714_test_20260715_20260716_20260717T,10,29,0,2,2,25,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v2_edgecaster_hgb_fixed_train_20260702_20260714_test_20260715_20260716_20260717T,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v2_ev_expanding14_calibrated_train_20260716_20260723_test_20260724_20260730_20260731,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v2_ev_train_20260716_20260723_test_20260724_20260730,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v2_opt11_blend95_edgecaster_fallback_20260717T,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v2_opt11_blend95_edgecaster_strict_20260717T,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v2_original_blend95_edgecaster_fallback_20260717T,10,10,0,1,1,8,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_gru_offset_ev_train_20260716_20260723_test_20260724_20260730,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_gru_offset_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_huber_market_delta_calibrated_sigma_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_huber_market_delta_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_huber_offset_ev_train_20260716_20260723_test_20260724_20260730,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_huber_offset_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_market_baseline_ev_train_20260716_20260723_test_20260724_20260730,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_market_baseline_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_mlp_offset_ev_train_20260716_20260723_test_20260724_20260730,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_mlp_offset_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_nws_baseline_ev_train_20260716_20260723_test_20260724_20260730,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_nws_baseline_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_ridge_market_delta_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_ridge_offset_ev_train_20260716_20260723_test_20260724_20260730,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_ridge_offset_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_source_blend_ev_train_20260716_20260723_test_20260724_20260730,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_source_blend_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_tree_market_delta_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_tree_offset_ev_train_20260716_20260723_test_20260724_20260730,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v3_tree_offset_ev_validation_train_20260716_20260722_test_20260723_20260729,14,14,0,1,1,12,0,0,0,0,strategy report artifacts
+next-gen\reports\model\cloudcaster_v1_ablation_city_20260713T202852\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_ablation_city_checkpoint_20260713T202852\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_ablation_city_residual_20260713T202852\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_ablation_weather_only_20260713T202852\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_city_residual_20260713T201145\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_corrected_20260713T_eval\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_corrected_20260713T_temp_scaled\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_source_families_family_20260714T_retry\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_source_families_legacy_20260714T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_weather_only_20260714T_market_relative\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\cloudcaster_v1_weather_only_20260714T_retrained_jul13\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\edgecaster_v2_fixed_window_market_20260723Z20260702_20260722T\charts,1,1,0,0,0,0,1,0,0,0,model report artifacts
+next-gen\reports\model\edgecaster_v2_fixed_window_weather_20260723Z20260702_20260722T\charts,1,1,0,0,0,0,1,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v1_mlp_weather_only_20260715T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_codex_train_20260701_20260708_score_20260709_20260720\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_ev_20260702_20260730_market_expanding14_blend95_20260731\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_ev_20260702_20260730_market_rolling14_blend95\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_export_20260622_20260721_20260722T192955Z_20260723T035332Z\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_export_20260702_20260722T143730_20260723T202256Z\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_export_20260702_20260722T143730_20260723T202439Z\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_fixed_train_20260702_20260714_score_20260702_20260716_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_fixed_window_market_20260723T20260702_20260722Z\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_fixed_window_weather_20260723T20260702_20260722Z\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_14d_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_20260715T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_blend80_20260715T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_blend95_14d_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_blend95_20260715T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt11_blend95_7d_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_01_h24_d15_lr0p001_wd0p02_p15_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_02_h24_d20_lr0p001_wd0p02_p20_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_03_h24_d20_lr0p002_wd0p02_p20_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_04_h24_d25_lr0p001_wd0p03_p20_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_05_h32_d15_lr0p001_wd0p02_p15_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_06_h32_d20_lr0p001_wd0p02_p20_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_07_h32_d20_lr0p002_wd0p02_p20_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_08_h32_d25_lr0p001_wd0p03_p20_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_09_h48_d15_lr0p001_wd0p02_p15_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_10_h48_d20_lr0p001_wd0p03_p20_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_11_blend95_14d_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_11_h48_d25_lr0p001_wd0p05_p20_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_12_h16_d20_lr0p001_wd0p02_p20_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_opt_13_h16_d15_lr0p002_wd0p02_p20_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_seed99_20260715T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_small_20260715T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_small_regularized_14d_20260717T\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_train7_20260715T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_market_wide_20260715T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_weather_14d_20260717T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_gru_weather_20260715T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v2_latest_20260702_20260729_market_rolling14_blend95\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_gru_offset_20260702_20260730_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_gru_offset_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_huber_market_delta_calibrated_sigma_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_huber_market_delta_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_huber_offset_20260702_20260730_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_huber_offset_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_market_baseline_20260702_20260730_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_market_baseline_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_mlp_offset_20260702_20260730_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_mlp_offset_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_nws_baseline_20260702_20260730_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_nws_baseline_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_ridge_market_delta_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_ridge_offset_20260702_20260730_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_ridge_offset_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_source_blend_20260702_20260730_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_source_blend_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_tree_market_delta_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_tree_offset_20260702_20260730_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\neuralcaster_v3_tree_offset_rolling14_test1\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_benchmark_corrected_20260713T_exec\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_benchmark_corrected_20260713T_hybrid\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_benchmark_corrected_20260713T_weighted\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_city_profiles_20260713T201145\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_20260707_latest_20260707T161108Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_all_collected_20260713T150924Z\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_all_collected_corrected_20260713T152758Z\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_full_latest_20260710T081422Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_full_latest_debiased_20260710T082451Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_expanding_full_latest_residual_20260710T083523Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_export_20260622_20260721_20260722T192955Z_20260723T034721Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_export_20260702_20260703_20260703T171513Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_fallback_control_train_20260702_eval_20260702_20260703_20260704T154801Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_feasibility_14d_20260717T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_fixed_all_collected_20260713T150924Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_fixed_all_collected_corrected_20260713T152758Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_rolling5_20260707_latest_20260707T161108Z\charts,1,1,0,0,0,0,1,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_rolling5_20260707_regen_20260707T162725Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_smoke_20260701_20260703\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_source_families_20260714T_retry\charts,3,3,0,0,0,0,3,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_train_20260702_eval_20260702_20260703_20260704T154801Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_train_20260707_latest_20260707T161108Z\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_weather_only_rolling5_20260715T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\model\raycaster_v1_weather_only_rolling7_20260715T\charts,2,2,0,0,0,0,2,0,0,0,model report artifacts
+next-gen\reports\strategy\cloudcaster_v1_ablation_city_20260713T202852\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_ablation_city_checkpoint_20260713T202852\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_ablation_city_residual_20260713T202852\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_ablation_weather_only_20260713T202852\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_budget10_20260713T_cheap_tier\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_budget10_20260713T_edge_tier\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_budget10_20260713T_fixed\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_budget10_20260713T_kelly\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_budget10_20260713T_prob_tier\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_best_edge\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_best_edge_008_012\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_cities_okc_mia\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge005_max012\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_012_price015_050\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_012_prob020_050\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_012_prob020_050_latest\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_012_prob020_050_price015_050\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_max012\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_edge008_max012_v2\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_hour06\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_latest\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_diag_20260713T_latest_edge008_max012\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_paper_20260713T_edge008\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_paper_20260713T_edge012\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_paper_20260713T_exec\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_paper_20260713T_exec_v2\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\cloudcaster_v1_paper_20260713T_spread010\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\codex_neuralcaster_v2_fixed_20260701_20260720\charts,0,0,0,0,0,0,0,0,0,0,strategy report artifacts
+next-gen\reports\strategy\codex_neuralcaster_v2_fixed_20260701_20260720_loose\charts,2,2,0,0,0,0,2,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_calibrated_train_20260709_20260715_test_20260716_20260720\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_calibrated_train_source_train_20260709_20260715_test_20260716_20260720\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_codex_train_20260709_20260715_test_20260716_20260720_clean\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_codex_train_20260709_20260716_test_20260716_20260720\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_export_20260622_20260721_20260722T192955Z_20260723T041537Z\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_fixed_train_20260702_20260714_test_20260715_20260716_20260717T\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_latest_fixed_train_20260716_20260722_test_20260723_20260729_calibrated\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_latest_fixed_train_20260716_20260722_test_20260723_20260729_gateless\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_latest_fixed_train_20260716_20260722_test_20260723_20260729_standard\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_latest_validation_gate_train_20260716_20260722_test_20260723_20260729\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_smoke_20260717T\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\edgecaster_v2_standard_with_crosses_train_20260709_20260715_test_20260716_20260720\charts,1,1,0,0,0,0,1,0,0,0,strategy report artifacts
+next-gen\reports\strategy\neuralcaster_v2_edgecaster_fixed_train_20260702_20260714_test_20260715_20260716_20260717T\opportunity_analysis,19,19,0,1,1,17,0,0,0,0,strategy report artifacts
+next-gen\trends\ui\dist,1,3,0,0,0,0,0,0,0,0,analysis workbench code
+next-gen\trends\ui\scripts,1,1,0,0,0,0,0,0,0,0,analysis workbench code
+next-gen\trends\ui\src,8,11,0,0,0,0,0,0,0,10,analysis workbench code
+next-gen\trends\ui\dist\assets,2,2,0,0,0,0,0,0,0,0,analysis workbench code
+next-gen\trends\ui\src\components,3,3,0,0,0,0,0,0,0,3,analysis workbench code

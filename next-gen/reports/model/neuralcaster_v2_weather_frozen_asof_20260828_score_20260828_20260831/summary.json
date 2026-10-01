@@ -1,0 +1,79 @@
+{
+  "model_name": "neuralcaster_v2",
+  "mode": "weather_frozen_artifact_train_2026-08-14_2026-08-27_score_2026-08-28_2026-08-31",
+  "source_export_id": "current_20260701_20260831_lightweight",
+  "generated_at_utc": "2026-09-01T21:16:45.075610+00:00",
+  "temperature_prediction_count": 539,
+  "bracket_prediction_count": 539,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 1.3530018624215487,
+      "count": 539
+    },
+    {
+      "metric": "rmse",
+      "value": 1.8186283455751089,
+      "count": 539
+    },
+    {
+      "metric": "bias",
+      "value": -0.4165886052685456,
+      "count": 539
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.5064935064935064,
+      "count": 539
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.7235621521335807,
+      "count": 539
+    }
+  ],
+  "bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 1.11027245323698,
+      "count": 539
+    },
+    {
+      "metric": "brier",
+      "value": 0.5763638409739992,
+      "count": 539
+    },
+    {
+      "metric": "rps",
+      "value": 0.07882751925330338,
+      "count": 539
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.5640074211502782,
+      "count": 539
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.44691236433141107,
+      "count": 539
+    }
+  ],
+  "model_family": "pytorch_gru_gaussian_residual",
+  "neural_mode": "weather",
+  "scoring_mode": "frozen_artifact_no_training",
+  "artifact_dir": "models/neuralcaster_v2/weather_rolling14_asof_20260828_seed71",
+  "artifact_train_start_date": "2026-08-14",
+  "artifact_train_end_date": "2026-08-27",
+  "score_start_date": "2026-08-28",
+  "score_end_date": "2026-08-31",
+  "max_seq_len": 24,
+  "hidden_size": 48,
+  "layers": 1,
+  "dropout": 0.1,
+  "market_probability_blend": 0.0,
+  "seed": 71,
+  "device": "cuda",
+  "scored_snapshot_rows": 539,
+  "scored_labeled_snapshot_rows": 539
+}

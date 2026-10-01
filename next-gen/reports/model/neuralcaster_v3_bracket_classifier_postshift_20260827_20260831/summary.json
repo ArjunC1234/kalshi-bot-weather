@@ -1,0 +1,156 @@
+{
+  "model_name": "neuralcaster_v3",
+  "mode": "nws_residual_bracket_classifier_rolling_window_2d_train_1d_test",
+  "source_export_id": null,
+  "generated_at_utc": "2026-09-03T02:54:27.273314+00:00",
+  "temperature_prediction_count": 395,
+  "bracket_prediction_count": 395,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 1.5981265822784814,
+      "count": 395
+    },
+    {
+      "metric": "rmse",
+      "value": 1.9698326087079359,
+      "count": 395
+    },
+    {
+      "metric": "bias",
+      "value": -0.6989367088607584,
+      "count": 395
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.3569620253164557,
+      "count": 395
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.6506329113924051,
+      "count": 395
+    }
+  ],
+  "bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 9.045125580653137,
+      "count": 395
+    },
+    {
+      "metric": "brier",
+      "value": 1.083028973734124,
+      "count": 395
+    },
+    {
+      "metric": "rps",
+      "value": 0.16213605440338297,
+      "count": 395
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.4050632911392405,
+      "count": 395
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.38157935568110474,
+      "count": 395
+    }
+  ],
+  "model_family": "nws_residual_distribution",
+  "model_kind": "bracket_classifier",
+  "train_days": 2,
+  "test_days": 1,
+  "min_target_date": "2026-08-27",
+  "min_training_rows": 1,
+  "probability_floor": 0.0,
+  "seed": 31,
+  "device": "auto",
+  "labeled_target_dates": [
+    "2026-08-27",
+    "2026-08-28",
+    "2026-08-29",
+    "2026-08-30",
+    "2026-08-31"
+  ],
+  "independent_city_days": 348,
+  "snapshot_rows_with_labels": 8047,
+  "residual_metrics": [
+    {
+      "metric": "offset_mae",
+      "value": 1.5981265822784814,
+      "count": 395
+    },
+    {
+      "metric": "offset_rmse",
+      "value": 1.9698326087079359,
+      "count": 395
+    },
+    {
+      "metric": "offset_bias",
+      "value": -0.6989367088607584,
+      "count": 395
+    },
+    {
+      "metric": "nws_baseline_mae",
+      "value": 3.091139240506329,
+      "count": 395
+    },
+    {
+      "metric": "model_temperature_mae",
+      "value": 1.5981265822784814,
+      "count": 395
+    },
+    {
+      "metric": "mae_improvement_vs_nws",
+      "value": 1.4930126582278478,
+      "count": 395
+    }
+  ],
+  "folds": [
+    {
+      "model_kind": "bracket_classifier",
+      "train_start_date": "2026-08-27",
+      "train_end_date": "2026-08-28",
+      "test_start_date": "2026-08-29",
+      "test_end_date": "2026-08-29",
+      "training_rows": 288,
+      "fit_rows": 288,
+      "validation_rows": 288,
+      "global_sigma": 2.1193195317784848,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 20,
+      "independent_train_city_days": 12
+    },
+    {
+      "model_kind": "bracket_classifier",
+      "train_start_date": "2026-08-28",
+      "train_end_date": "2026-08-29",
+      "test_start_date": "2026-08-30",
+      "test_end_date": "2026-08-30",
+      "training_rows": 288,
+      "fit_rows": 288,
+      "validation_rows": 288,
+      "global_sigma": 2.1830714696653124,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 22,
+      "independent_train_city_days": 12
+    },
+    {
+      "model_kind": "bracket_classifier",
+      "train_start_date": "2026-08-29",
+      "train_end_date": "2026-08-30",
+      "test_start_date": "2026-08-31",
+      "test_end_date": "2026-08-31",
+      "training_rows": 288,
+      "fit_rows": 288,
+      "validation_rows": 288,
+      "global_sigma": 2.144362926631383,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 21,
+      "independent_train_city_days": 12
+    }
+  ]
+}

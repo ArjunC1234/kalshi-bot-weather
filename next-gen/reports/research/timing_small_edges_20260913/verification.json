@@ -1,0 +1,18 @@
+{
+  "raw_market_payloads": 2016,
+  "price_fields_matched": 48384,
+  "quantity_fields_matched": 48384,
+  "input_model_code_hashes_match": true,
+  "timing_v1_v2_models_and_predictions_equal": true,
+  "evaluation_price_changes_and_predictions_reconciled": 588,
+  "small_edge_trades_reconciled": 3,
+  "delayed_requests_after_signals_verified": 2,
+  "probe_markouts_reconciled": 3,
+  "posthoc_no_change_predictor_mse": 0.0435225133063413,
+  "posthoc_no_change_note": "Descriptive persistence control only; not a new fitted or selected trading model.",
+  "median_updateTime_age_at_receipt_minutes": 48.45545006666667,
+  "median_generatedAt_age_at_receipt_minutes": 31.867257849999998,
+  "median_updateTime_age_at_entry_minutes": 108.55216545000002,
+  "warning": "updateTime/generatedAt are stored source timestamps, not independently observed first-publication times.",
+  "audit_code_sha256": "0de3bc6779359298357169d8257eb3bbc12325280840c67ae4eba20d5ae0daa4"
+}

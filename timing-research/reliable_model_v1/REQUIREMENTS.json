@@ -1,0 +1,46 @@
+{
+  "name": "monotone-barrier-v1",
+  "frozen_before_outcome_inspection": "2026-09-18",
+  "development_start": "2026-07-01",
+  "development_end": "2026-08-31",
+  "selection_start": "2026-09-01",
+  "selection_end": "2026-09-12",
+  "prospective_test_start": "2026-09-13",
+  "prospective_test_end": "2026-09-26",
+  "available_interim_end": "2026-09-17",
+  "one_trade_per_event": true,
+  "entry_adverse_dollars": 0.01,
+  "fee_multipliers": [1, 2],
+  "candidate_grid": {
+    "minimum_observed_gap_f": [1, 2],
+    "maximum_no_ask": [0.9, 0.95, 0.97],
+    "maximum_spread": [0.03, 0.05],
+    "maximum_climate_hour": [12, 15, 18],
+    "maximum_observation_age_minutes": [45, 75]
+  },
+  "selection_requirements": {
+    "minimum_trades": 12,
+    "minimum_hit_rate": 0.8,
+    "positive_net_pnl": true,
+    "positive_fee_stress_pnl": true,
+    "zero_observation_label_contradictions": true
+  },
+  "success_requirements": {
+    "full_14_day_window_complete": true,
+    "minimum_trades": 20,
+    "minimum_active_days": 7,
+    "minimum_cities": 4,
+    "maximum_city_trade_fraction": 0.5,
+    "minimum_hit_rate": 0.8,
+    "minimum_iid_exact_95_hit_lower_bound": 0.6,
+    "positive_net_pnl": true,
+    "positive_fee_stress_pnl": true,
+    "positive_day_bootstrap_95_lower_bound": true,
+    "positive_pnl_in_each_seven_day_half": true,
+    "nonnegative_leave_one_city_out_pnl": true,
+    "minimum_label_coverage": 0.95,
+    "zero_observation_label_contradictions": true,
+    "zero_availability_violations": true
+  },
+  "live_trading_authorized": false
+}

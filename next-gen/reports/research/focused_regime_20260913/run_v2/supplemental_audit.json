@@ -1,0 +1,183 @@
+{
+  "post_scoring_diagnostic_only": true,
+  "runtime": {
+    "python": "3.12.0",
+    "numpy": "2.4.4",
+    "pandas": "2.2.3",
+    "scipy": "1.15.1"
+  },
+  "input_and_code_hashes_match_lock": true,
+  "prediction_csv_max_roundtrip_difference": {
+    "mixed_market": 1.1102230246251565e-16,
+    "mixed_weather": 1.1102230246251565e-16,
+    "post_market": 1.1102230246251565e-16,
+    "post_weather": 1.1102230246251565e-16
+  },
+  "evaluation_predictions_precede_outcomes": true,
+  "evaluation_temperature_winner_consistency": true,
+  "weather_gradient_checks": [
+    {
+      "model": "mixed_weather",
+      "fitted_weather_coefficient": 0.0,
+      "unpenalized_training_loss_derivative_at_zero_weather": 0.029492078404610014,
+      "finite_difference": 0.02949228939343339,
+      "interpretation": "Positive derivative means adding a small positive weather weight worsens training log loss, before its penalty."
+    },
+    {
+      "model": "post_weather",
+      "fitted_weather_coefficient": 0.0,
+      "unpenalized_training_loss_derivative_at_zero_weather": 0.026408989376506598,
+      "finite_difference": 0.026409188729388983,
+      "interpretation": "Positive derivative means adding a small positive weather weight worsens training log loss, before its penalty."
+    }
+  ],
+  "evaluation_city_days": 84,
+  "selected_city_days": 84,
+  "gate_counts": [
+    {
+      "model": "mixed_market",
+      "stage": "all_NO_brackets",
+      "brackets": 504,
+      "events": 84
+    },
+    {
+      "model": "mixed_market",
+      "stage": "ask_50_to_85_cents",
+      "brackets": 46,
+      "events": 40
+    },
+    {
+      "model": "mixed_market",
+      "stage": "spread_at_most_5_cents",
+      "brackets": 30,
+      "events": 29
+    },
+    {
+      "model": "mixed_market",
+      "stage": "visible_depth_at_least_one",
+      "brackets": 30,
+      "events": 29
+    },
+    {
+      "model": "mixed_market",
+      "stage": "predicted_probability_at_least_85_percent",
+      "brackets": 4,
+      "events": 4
+    },
+    {
+      "model": "mixed_market",
+      "stage": "net_edge_at_least_5_cents",
+      "brackets": 0,
+      "events": 0
+    },
+    {
+      "model": "mixed_weather",
+      "stage": "all_NO_brackets",
+      "brackets": 504,
+      "events": 84
+    },
+    {
+      "model": "mixed_weather",
+      "stage": "ask_50_to_85_cents",
+      "brackets": 46,
+      "events": 40
+    },
+    {
+      "model": "mixed_weather",
+      "stage": "spread_at_most_5_cents",
+      "brackets": 30,
+      "events": 29
+    },
+    {
+      "model": "mixed_weather",
+      "stage": "visible_depth_at_least_one",
+      "brackets": 30,
+      "events": 29
+    },
+    {
+      "model": "mixed_weather",
+      "stage": "predicted_probability_at_least_85_percent",
+      "brackets": 4,
+      "events": 4
+    },
+    {
+      "model": "mixed_weather",
+      "stage": "net_edge_at_least_5_cents",
+      "brackets": 0,
+      "events": 0
+    },
+    {
+      "model": "post_market",
+      "stage": "all_NO_brackets",
+      "brackets": 504,
+      "events": 84
+    },
+    {
+      "model": "post_market",
+      "stage": "ask_50_to_85_cents",
+      "brackets": 46,
+      "events": 40
+    },
+    {
+      "model": "post_market",
+      "stage": "spread_at_most_5_cents",
+      "brackets": 30,
+      "events": 29
+    },
+    {
+      "model": "post_market",
+      "stage": "visible_depth_at_least_one",
+      "brackets": 30,
+      "events": 29
+    },
+    {
+      "model": "post_market",
+      "stage": "predicted_probability_at_least_85_percent",
+      "brackets": 4,
+      "events": 4
+    },
+    {
+      "model": "post_market",
+      "stage": "net_edge_at_least_5_cents",
+      "brackets": 0,
+      "events": 0
+    },
+    {
+      "model": "post_weather",
+      "stage": "all_NO_brackets",
+      "brackets": 504,
+      "events": 84
+    },
+    {
+      "model": "post_weather",
+      "stage": "ask_50_to_85_cents",
+      "brackets": 46,
+      "events": 40
+    },
+    {
+      "model": "post_weather",
+      "stage": "spread_at_most_5_cents",
+      "brackets": 30,
+      "events": 29
+    },
+    {
+      "model": "post_weather",
+      "stage": "visible_depth_at_least_one",
+      "brackets": 30,
+      "events": 29
+    },
+    {
+      "model": "post_weather",
+      "stage": "predicted_probability_at_least_85_percent",
+      "brackets": 4,
+      "events": 4
+    },
+    {
+      "model": "post_weather",
+      "stage": "net_edge_at_least_5_cents",
+      "brackets": 0,
+      "events": 0
+    }
+  ],
+  "audit_code_sha256": "b6813b42abcbfc6bc227a851d7ab271fa9b8bbcc584b4d5cedd875eb95eb9980"
+}

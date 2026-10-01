@@ -1,0 +1,147 @@
+{
+  "model": "causal-bracket-logit-v2",
+  "status": "FAIL",
+  "status_reason": "At least one frozen 14-day success requirement failed.",
+  "selected": {
+    "model": "weather_logit_c0.1",
+    "policy_id": "no_p0.80_e0.05_px0.50-0.80_s0.05_h10",
+    "policy": {
+      "side": "no",
+      "minimum_probability": 0.8,
+      "minimum_net_edge": 0.05,
+      "minimum_entry_price": 0.5,
+      "maximum_entry_price": 0.8,
+      "maximum_spread": 0.05,
+      "minimum_climate_hour": 10
+    },
+    "model_ready_at": "2026-08-27T15:01:27.237804+00:00",
+    "selection": {
+      "intentions": 12,
+      "settled_trades": 12,
+      "label_coverage": 1.0,
+      "wins": 9,
+      "losses": 3,
+      "hit_rate": 0.75,
+      "iid_exact_95_hit_lower_bound": 0.4726733964396561,
+      "gross_pnl": 1.04,
+      "fees": 0.24,
+      "net_pnl": 0.7999999999999998,
+      "stress_fees": 0.41,
+      "stress_net_pnl": 0.6299999999999999,
+      "day_bootstrap_net_pnl_95_lower": -1.7600000000000002,
+      "active_days": 7,
+      "cities": 6,
+      "city_counts": {
+        "aus": 3,
+        "den": 2,
+        "la": 2,
+        "mia": 2,
+        "nyc": 2,
+        "okc": 1
+      },
+      "maximum_city_trade_fraction": 0.25,
+      "availability_violations": 0,
+      "observation_label_contradictions": 0,
+      "leave_one_city_out_net_pnl": {
+        "aus": 0.9499999999999997,
+        "den": 2.07,
+        "la": 0.09999999999999981,
+        "mia": 0.34999999999999976,
+        "nyc": 0.16999999999999985,
+        "okc": 0.3599999999999998
+      },
+      "seven_day_halves": []
+    }
+  },
+  "test": {
+    "intentions": 20,
+    "settled_trades": 20,
+    "label_coverage": 1.0,
+    "wins": 12,
+    "losses": 8,
+    "hit_rate": 0.6,
+    "iid_exact_95_hit_lower_bound": 0.39358488675696957,
+    "gross_pnl": -0.6500000000000002,
+    "fees": 0.4,
+    "net_pnl": -1.0500000000000005,
+    "stress_fees": 0.74,
+    "stress_net_pnl": -1.3900000000000003,
+    "day_bootstrap_net_pnl_95_lower": -5.390000000000001,
+    "active_days": 12,
+    "cities": 6,
+    "city_counts": {
+      "aus": 5,
+      "den": 3,
+      "la": 3,
+      "mia": 2,
+      "nyc": 5,
+      "okc": 2
+    },
+    "maximum_city_trade_fraction": 0.25,
+    "availability_violations": 0,
+    "observation_label_contradictions": 0,
+    "leave_one_city_out_net_pnl": {
+      "aus": -0.6400000000000006,
+      "den": -1.1200000000000006,
+      "la": -0.9500000000000005,
+      "mia": -0.9200000000000005,
+      "nyc": 0.2899999999999996,
+      "okc": -1.9100000000000004
+    },
+    "seven_day_halves": [
+      {
+        "half": 1,
+        "start": "2026-09-04",
+        "end": "2026-09-10",
+        "trades": 13,
+        "net_pnl": -0.16000000000000048
+      },
+      {
+        "half": 2,
+        "start": "2026-09-11",
+        "end": "2026-09-17",
+        "trades": 7,
+        "net_pnl": -0.8900000000000001
+      }
+    ]
+  },
+  "success_checks": {
+    "full_14_day_window_complete": false,
+    "minimum_trades": false,
+    "minimum_active_days": true,
+    "minimum_cities": true,
+    "maximum_city_trade_fraction": true,
+    "minimum_hit_rate": false,
+    "minimum_iid_exact_95_hit_lower_bound": false,
+    "positive_net_pnl": false,
+    "positive_fee_stress_pnl": false,
+    "positive_day_bootstrap_95_lower_bound": false,
+    "positive_pnl_in_each_seven_day_half": false,
+    "nonnegative_leave_one_city_out_pnl": false,
+    "minimum_label_coverage": true,
+    "zero_availability_violations": true,
+    "zero_input_integrity_errors": true
+  },
+  "input_integrity_errors": [],
+  "data_quality": {
+    "weather_rows_excluded_missing_source_receipt": 117,
+    "causally_aligned_contract_rows": 60846,
+    "test_valid_settlements_by_day": {
+      "2026-09-04": 6,
+      "2026-09-05": 6,
+      "2026-09-06": 6,
+      "2026-09-07": 6,
+      "2026-09-08": 6,
+      "2026-09-09": 6,
+      "2026-09-10": 6,
+      "2026-09-11": 6,
+      "2026-09-12": 6,
+      "2026-09-13": 6,
+      "2026-09-14": 6,
+      "2026-09-15": 6,
+      "2026-09-16": 5,
+      "2026-09-17": 6
+    }
+  },
+  "test_independence_warning": "September 4-10 outcomes were examined in prior research, so this is a strict chronological replay but not a pristine independent confirmation."
+}

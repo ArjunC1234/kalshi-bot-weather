@@ -1,0 +1,9 @@
+{
+  "data_dir": "data\\codex_latest_20260702_20260730_for_neuralcaster_edgecaster",
+  "end": "2026-07-30",
+  "exported_at_utc": "2026-07-31T02:07:33.219418+00:00",
+  "report_dir": "reports\\quality\\codex_latest_20260702_20260730_quality",
+  "require_settlements": false,
+  "start": "2026-07-02",
+  "validation_status": "valid"
+}

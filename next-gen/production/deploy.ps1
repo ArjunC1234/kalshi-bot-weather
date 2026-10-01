@@ -72,6 +72,8 @@ if ($Rsync) {
     rsync -avz @DeleteArgs `
         --exclude ".env" `
         --exclude ".venv/" `
+        --exclude "__pycache__/" `
+        --exclude "*.pyc" `
         --exclude "*.pem" `
         --exclude "*.key" `
         --exclude "collector_spool*/" `
@@ -90,7 +92,7 @@ if ($Rsync) {
         Remove-Item -LiteralPath $TempArchive -Force
     }
 
-    tar -czf $TempArchive -C $DeployablePath .
+    tar --exclude "__pycache__" --exclude "*.pyc" -czf $TempArchive -C $DeployablePath .
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to create deployment archive."
     }

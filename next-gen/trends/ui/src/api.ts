@@ -7,18 +7,35 @@ import type {
 } from "./types";
 
 async function jsonRequest<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(path, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
-  });
-  const value = (await response.json()) as T & { error?: string };
-  if (!response.ok) {
-    throw new Error(value.error || response.statusText);
+  let response: Response;
+  try {
+    response = await fetch(path, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        ...(init?.headers ?? {}),
+      },
+    });
+  } catch (error) {
+    throw new Error(`Source API offline at ${path}${error instanceof Error ? ` (${error.message})` : ""}`);
   }
-  return value as T;
+
+  const text = await response.text();
+  let value: (T & { error?: string }) | null = null;
+  if (text) {
+    try {
+      value = JSON.parse(text) as T & { error?: string };
+    } catch {
+      if (!response.ok) {
+        throw new Error(text.trim() || response.statusText || `HTTP ${response.status}`);
+      }
+      throw new Error("Source API returned invalid JSON");
+    }
+  }
+  if (!response.ok) {
+    throw new Error(value?.error || response.statusText || `HTTP ${response.status}`);
+  }
+  return (value ?? {}) as T;
 }
 
 export function getSources(): Promise<SourcesResponse> {

@@ -1,0 +1,151 @@
+{
+  "mode": "hit80_14d_research",
+  "data_path": "data/current_20260701_20260831_lightweight",
+  "model_report": "reports/model/neuralcaster_v2_weather_strict_train_20260701_20260817_test_20260818_20260831",
+  "validation_start": "2026-07-15",
+  "validation_end": "2026-08-17",
+  "test_start": "2026-08-18",
+  "test_end": "2026-08-31",
+  "target_hit_rate": 0.8,
+  "min_validation_trades": 20,
+  "selection_status": "selected_best_available_policy_below_validation_hit_target",
+  "selected_policy": {
+    "side_mode": "all",
+    "min_ev": 0.05,
+    "max_ev": null,
+    "max_spread": 0.05,
+    "min_entry_price": 0.5,
+    "max_entry_price": 0.65,
+    "min_model_probability": 0.75,
+    "min_hours_elapsed": null,
+    "entry_policy": "best-ev"
+  },
+  "selected_validation": {
+    "side_mode": "all",
+    "min_ev": 0.05,
+    "max_ev": null,
+    "max_spread": 0.05,
+    "min_entry_price": 0.5,
+    "max_entry_price": 0.65,
+    "min_model_probability": 0.75,
+    "min_hours_elapsed": null,
+    "entry_policy": "best-ev",
+    "validation_trades": 0,
+    "validation_total_contracts": 0.0,
+    "validation_total_risk": 0.0,
+    "validation_total_pnl": 0.0,
+    "validation_roi": 0.0,
+    "validation_hit_rate": 0.0,
+    "validation_max_drawdown": 0.0,
+    "validation_mean_clv": null,
+    "validation_median_clv": null,
+    "validation_positive_clv_rate": null,
+    "validation_hit_lcb80": 0.0
+  },
+  "candidate_counts": {
+    "all": 23796,
+    "validation": 0,
+    "test": 23796
+  },
+  "trades": 41,
+  "total_contracts": 199.0,
+  "total_risk": 112.5,
+  "total_pnl": 7.500000000000002,
+  "roi": 0.06666666666666668,
+  "hit_rate": 0.6097560975609756,
+  "average_entry_price": 0.5692682926829268,
+  "average_model_probability": 0.817180324533977,
+  "average_edge": 0.24791203185105018,
+  "max_drawdown": -18.110000000000003,
+  "mean_clv": 0.03841463414634146,
+  "median_clv": 0.385,
+  "positive_clv_rate": 0.6097560975609756,
+  "test_hit_lcb80": 0.5098241853198142,
+  "fee_stress": [
+    {
+      "fee_per_contract": 0.0,
+      "total_fee": 0.0,
+      "net_pnl": 7.500000000000002,
+      "net_roi": 0.06666666666666668
+    },
+    {
+      "fee_per_contract": 0.005,
+      "total_fee": 0.995,
+      "net_pnl": 6.505000000000002,
+      "net_roi": 0.05782222222222224
+    },
+    {
+      "fee_per_contract": 0.01,
+      "total_fee": 1.99,
+      "net_pnl": 5.510000000000002,
+      "net_roi": 0.048977777777777794
+    },
+    {
+      "fee_per_contract": 0.015,
+      "total_fee": 2.985,
+      "net_pnl": 4.515000000000002,
+      "net_roi": 0.040133333333333354
+    },
+    {
+      "fee_per_contract": 0.02,
+      "total_fee": 3.98,
+      "net_pnl": 3.520000000000002,
+      "net_roi": 0.03128888888888891
+    }
+  ],
+  "data_audit": {
+    "source_export_id": "current_20260701_20260831_lightweight",
+    "export_start": "2026-07-01",
+    "export_end": "2026-08-31",
+    "target_dates": [
+      "2026-08-18",
+      "2026-08-19",
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-22",
+      "2026-08-23",
+      "2026-08-24",
+      "2026-08-25",
+      "2026-08-26",
+      "2026-08-27",
+      "2026-08-28",
+      "2026-08-29",
+      "2026-08-30",
+      "2026-08-31"
+    ],
+    "target_date_count": 14,
+    "cities": [
+      "aus",
+      "den",
+      "la",
+      "mia",
+      "nyc",
+      "okc"
+    ],
+    "city_count": 6,
+    "event_rows": 661,
+    "market_rows": 11874,
+    "settlement_rows": 84,
+    "final_temperature_rows": 168,
+    "settled_city_days": 84,
+    "settlement_sources": {
+      "compatible": false,
+      "label_source": "nws_cli_daily",
+      "label_sources": {
+        "nws_cli_daily": 348,
+        "weather_company_daily": 348
+      },
+      "market_settlement_source": "unknown",
+      "market_settlement_sources": {
+        "unknown": 612
+      },
+      "settlement_row_sources": {
+        "unknown": 348
+      },
+      "settlement_source": "unknown",
+      "warnings": [
+        "Market rule settlement source is unknown; verify Kalshi rules before trading."
+      ]
+    }
+  }
+}

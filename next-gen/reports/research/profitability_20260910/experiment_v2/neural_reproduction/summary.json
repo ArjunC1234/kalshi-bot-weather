@@ -1,0 +1,80 @@
+{
+  "model_name": "neuralcaster_v2",
+  "mode": "weather_frozen_artifact_train_2026-07-01_2026-08-17_score_2026-08-18_2026-08-31",
+  "source_export_id": "current_20260701_20260831_lightweight",
+  "generated_at_utc": "2026-09-12T15:08:01.473833+00:00",
+  "temperature_prediction_count": 1983,
+  "bracket_prediction_count": 1983,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 1.1843922812903822,
+      "count": 1983
+    },
+    {
+      "metric": "rmse",
+      "value": 1.6355568103348708,
+      "count": 1983
+    },
+    {
+      "metric": "bias",
+      "value": -0.11246937992713453,
+      "count": 1983
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.610690872415532,
+      "count": 1983
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.8199697428139183,
+      "count": 1983
+    }
+  ],
+  "bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 1.1007275326061703,
+      "count": 1983
+    },
+    {
+      "metric": "brier",
+      "value": 0.5630228546022846,
+      "count": 1983
+    },
+    {
+      "metric": "rps",
+      "value": 0.07308954432421495,
+      "count": 1983
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.5537065052950075,
+      "count": 1983
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.4368542329122396,
+      "count": 1983
+    }
+  ],
+  "model_family": "pytorch_gru_gaussian_residual",
+  "neural_mode": "weather",
+  "scoring_mode": "frozen_artifact_no_training",
+  "artifact_dir": "reports/research/profitability_20260910/experiment_v2/neural_artifact",
+  "artifact_train_start_date": "2026-07-01",
+  "artifact_train_end_date": "2026-08-17",
+  "score_start_date": "2026-08-18",
+  "score_end_date": "2026-08-31",
+  "min_target_date": "2026-07-01",
+  "max_seq_len": 24,
+  "hidden_size": 48,
+  "layers": 1,
+  "dropout": 0.1,
+  "market_probability_blend": 0.0,
+  "seed": 17,
+  "device": "cuda",
+  "scored_snapshot_rows": 1983,
+  "scored_labeled_snapshot_rows": 1983
+}

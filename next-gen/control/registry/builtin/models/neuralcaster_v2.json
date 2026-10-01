@@ -3,11 +3,130 @@
   "kind": "model",
   "version": 2,
   "label": "Neuralcaster v2",
-  "description": "Temporal neural weather model with rolling and fixed-window evaluation outputs.",
+  "description": "Temporal neural weather model with expanding walk-forward, rolling, and fixed-window evaluation outputs.",
   "code": {
     "working_directory": "."
   },
   "entrypoints": {
+    "fixed_window": {
+      "label": "Fixed Window",
+      "command": [
+        "python",
+        "maxtemp-engine/neuralcaster/v2/cli.py",
+        "fixed-window",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "required": ["train_start", "train_end", "test_start", "test_end"],
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["weather", "market"],
+            "default": "market",
+            "description": "Use market for the recommended contract-probability engine; weather is for weather-only baselines."
+          },
+          "train_start": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First target date included in the training window. Use ISO date format.",
+            "examples": ["2026-07-02"]
+          },
+          "train_end": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last target date included in the training window. Use ISO date format.",
+            "examples": ["2026-07-16"]
+          },
+          "test_start": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First target date included in the test window. Use ISO date format.",
+            "examples": ["2026-07-17"]
+          },
+          "test_end": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last target date included in the test window. Use ISO date format.",
+            "examples": ["2026-07-21"]
+          },
+          "epochs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500,
+            "default": 350
+          },
+          "max_seq_len": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 24
+          },
+          "hidden_size": {
+            "type": "integer",
+            "minimum": 4,
+            "default": 48
+          },
+          "layers": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "dropout": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.1
+          },
+          "patience": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 45
+          },
+          "learning_rate": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0.003
+          },
+          "weight_decay": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0.01
+          },
+          "min_training_examples": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 60
+          },
+          "probability_floor": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.001
+          },
+          "market_probability_blend": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0
+          },
+          "seed": {
+            "type": "integer",
+            "default": 17
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "model_report",
+        "contract": "weather_model_report.v1"
+      }
+    },
     "rolling_eval": {
       "label": "Rolling Evaluation",
       "command": [
@@ -33,13 +152,236 @@
             "maximum": 500,
             "default": 350
           },
+          "training_policy": {
+            "type": "string",
+            "enum": ["expanding", "rolling"],
+            "default": "rolling"
+          },
           "train_days": {
             "type": "integer",
-            "default": 5
+            "description": "Minimum prior target dates for expanding walk-forward, or exact lookback for rolling.",
+            "default": 14
           },
           "test_days": {
             "type": "integer",
             "default": 1
+          },
+          "max_seq_len": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 24
+          },
+          "hidden_size": {
+            "type": "integer",
+            "minimum": 4,
+            "default": 48
+          },
+          "layers": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "dropout": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.1
+          },
+          "patience": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 45
+          },
+          "learning_rate": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0.003
+          },
+          "weight_decay": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0.01
+          },
+          "min_training_examples": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 60
+          },
+          "probability_floor": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.001
+          },
+          "market_probability_blend": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.95,
+            "description": "Recommended current value for market-aware contract probability quality."
+          },
+          "seed": {
+            "type": "integer",
+            "default": 17
+          },
+          "device": {
+            "type": "string",
+            "default": "auto",
+            "description": "Torch device: auto, cpu, cuda, or cuda:0."
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "model_report",
+        "contract": "weather_model_report.v1"
+      }
+    },
+    "train_artifact": {
+      "label": "Train Frozen Artifact",
+      "command": [
+        "python",
+        "maxtemp-engine/neuralcaster/v2/cli.py",
+        "train-artifact",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--artifact",
+        "{{ outputs.artifact_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "required": ["train_start", "train_end"],
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["weather", "market"],
+            "default": "weather",
+            "description": "Use weather for the current paper-trade candidate; market enables market-aware features."
+          },
+          "train_start": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First target date included in the frozen model training window. Use YYYY-MM-DD.",
+            "examples": ["2026-08-13"]
+          },
+          "train_end": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last target date included in the frozen model training window. Use YYYY-MM-DD.",
+            "examples": ["2026-08-26"]
+          },
+          "epochs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500,
+            "default": 350
+          },
+          "max_seq_len": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 24
+          },
+          "hidden_size": {
+            "type": "integer",
+            "minimum": 4,
+            "default": 48
+          },
+          "layers": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          },
+          "dropout": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.1
+          },
+          "patience": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 45
+          },
+          "learning_rate": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0.003
+          },
+          "weight_decay": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0.01
+          },
+          "min_training_examples": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 60
+          },
+          "seed": {
+            "type": "integer",
+            "default": 17,
+            "description": "Use the rolling fold seed when reproducing a specific rolling-eval fold."
+          },
+          "device": {
+            "type": "string",
+            "default": "auto",
+            "description": "Torch device: auto, cpu, cuda, or cuda:0."
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "model_artifact",
+        "contract": "neuralcaster_v2_frozen_model.v1"
+      }
+    },
+    "score_artifact": {
+      "label": "Score Frozen Artifact",
+      "command": [
+        "python",
+        "maxtemp-engine/neuralcaster/v2/cli.py",
+        "score-artifact",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--artifact",
+        "{{ inputs.model_artifact.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "required": ["start_date", "end_date"],
+        "properties": {
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First target date to score from the frozen artifact. Use YYYY-MM-DD.",
+            "examples": ["2026-08-27"]
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last target date to score from the frozen artifact. Use YYYY-MM-DD.",
+            "examples": ["2026-08-27"]
+          },
+          "probability_floor": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.001
+          },
+          "market_probability_blend": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Optional override. Leave blank for weather-only artifacts."
+          },
+          "device": {
+            "type": "string",
+            "default": "auto",
+            "description": "Torch device: auto, cpu, cuda, or cuda:0."
           }
         }
       },
@@ -54,6 +396,10 @@
       "type": "local_export",
       "required_tables": ["events", "weather_snapshots", "market_snapshots"],
       "optional_tables": ["settlements", "final_temperature_labels"]
+    },
+    "model_artifact": {
+      "type": "model_artifact",
+      "required_files": ["model.pt", "artifact.json"]
     }
   },
   "artifact_contract": {

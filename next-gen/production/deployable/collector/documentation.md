@@ -11,12 +11,14 @@ Collector v3 records facts only:
 - NWS daily forecast periods.
 - NWS hourly forecast periods.
 - NWS station observations.
+- Weather Company final label payloads when configured.
 - Open-Meteo ensemble forecast summaries and raw payloads.
 - Open-Meteo HRRR and NBM forecast summaries and raw payloads.
 - Compact derived weather and market facts.
 - Provider failures.
 - Final Kalshi settlement facts after markets resolve.
 - Final NWS high labels after NWS climate products become available.
+- Final Weather Company daily high labels after the configured Weather Company feed is available.
 
 It never stores model runs, model outputs, Trends reports, strategy simulations, or PnL.
 
@@ -31,6 +33,7 @@ python collector/collector.py collect-once
 python collector/collector.py sync-spool
 python collector/collector.py settle-pending
 python collector/collector.py ingest-final-highs
+python collector/collector.py ingest-weather-company-highs
 python collector/collector.py status
 python collector/collector.py export --start 2026-07-01 --end 2026-09-30 --output-dir exports/2026q3
 ```
@@ -46,7 +49,8 @@ python collector/collector.py export --start 2026-07-01 --end 2026-09-30 --outpu
 5. Insert compact immutable rows into Postgres.
 6. Attempt pending settlement ingestion.
 7. Attempt final NWS high ingestion.
-8. Leave missing labels pending rather than backfilling with guessed values.
+8. Attempt final Weather Company daily high ingestion when configured.
+9. Leave missing labels pending rather than backfilling with guessed values.
 
 ## Design Rules
 
@@ -66,6 +70,23 @@ python collector/collector.py export --start 2026-07-01 --end 2026-09-30 --outpu
 - `SUPABASE_STORAGE_BUCKET`
 - `DATABASE_URL`
 - `COLLECTOR_DATA_DIR`
+- `WEATHER_COMPANY_DAILY_LABEL_URL_TEMPLATE` optional; enables direct Weather Company final-label collection.
+- `WEATHER_COMPANY_API_KEY` optional; appended as `apiKey` unless the URL template contains `{api_key}`.
+
+The Weather Company URL template can include `{city}`, `{city_name}`,
+`{station_id}`, `{latitude}`, `{longitude}`, `{event_ticker}`, `{target_date}`,
+and `{api_key}`. The parser accepts explicit daily-final fields such as
+`final_high_f`, `dailyHighF`, and `temperatureMaxF`; if the payload does not
+include a clear final daily high, ingestion records a provider error and leaves
+the label pending.
+
+No Weather Company API key is required for the fallback path. When no direct
+Weather Company URL template is configured, `ingest-weather-company-highs` uses
+Kalshi's settled `expiration_value` as the official resolved Weather Company
+daily label once the market has settled. Those rows are stored with
+`source_provider = weather_company_daily` and `source =
+kalshi_settlement_expiration_value`, so exports can distinguish them from older
+NWS CLI labels.
 
 ## Files
 

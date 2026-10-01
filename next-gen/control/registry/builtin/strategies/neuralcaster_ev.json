@@ -1,0 +1,375 @@
+{
+  "id": "neuralcaster_ev",
+  "kind": "strategy",
+  "version": 1,
+  "label": "Neuralcaster EV",
+  "description": "Probability-edge strategy using Neuralcaster bracket distributions. Recommended default uses robust validation selection before test scoring.",
+  "code": {
+    "working_directory": "."
+  },
+  "entrypoints": {
+    "validation_fixed_window": {
+      "label": "Validation Fixed Window",
+      "command": [
+        "python",
+        "-m",
+        "strategy.cli",
+        "neural-ev-validation-fixed-window",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--model-report",
+        "{{ inputs.model_report.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "required": ["train_start", "train_end", "test_start", "test_end"],
+        "properties": {
+          "train_start": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First target date in the validation-selection window. Use YYYY-MM-DD.",
+            "examples": ["2026-07-16"]
+          },
+          "train_end": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last target date in the validation-selection window. Use YYYY-MM-DD.",
+            "examples": ["2026-07-22"]
+          },
+          "test_start": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First target date in the final test window. Use YYYY-MM-DD.",
+            "examples": ["2026-07-23"]
+          },
+          "test_end": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last target date in the final test window. Use YYYY-MM-DD.",
+            "examples": ["2026-07-29"]
+          },
+          "validation_objective": {
+            "type": "string",
+            "enum": ["robust", "pnl", "hit_rate"],
+            "default": "robust",
+            "description": "robust favors hit-rate and CLV lower bounds before raw PnL. hit_rate maximizes validation hit rate among policies with positive validation PnL."
+          },
+          "min_validation_trades": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 10
+          },
+          "min_validation_positive_clv": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.5
+          },
+          "daily_budget": {
+            "type": "number",
+            "default": 40.0
+          },
+          "max_order_cost": {
+            "type": "number",
+            "default": 3.0
+          },
+          "max_contracts_per_order": {
+            "type": "integer",
+            "default": 20
+          },
+          "max_no_contracts_per_order": {
+            "type": "integer",
+            "default": 10
+          },
+          "max_positions_per_event": {
+            "type": "integer",
+            "default": 1
+          },
+          "min_hours_elapsed": {
+            "type": "number",
+            "description": "Optional market-entry gate. Leave blank to let validation choose using all hours."
+          },
+          "entry_policy": {
+            "type": "string",
+            "enum": ["best-ev", "first", "latest"],
+            "default": "best-ev"
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "strategy_report",
+        "contract": "strategy_report.v1"
+      }
+    },
+    "single_window": {
+      "label": "Single Window",
+      "command": [
+        "python",
+        "-m",
+        "strategy.cli",
+        "neural-ev",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--model-report",
+        "{{ inputs.model_report.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "properties": {
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First target date to trade. Use YYYY-MM-DD.",
+            "examples": ["2026-07-23"]
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last target date to trade. Use YYYY-MM-DD.",
+            "examples": ["2026-07-29"]
+          },
+          "min_ev": {
+            "type": "number",
+            "default": 0.03
+          },
+          "max_ev": {
+            "type": "number",
+            "description": "Optional upper cap on predicted per-contract EV. Use to avoid overconfident model-edge tails."
+          },
+          "max_spread": {
+            "type": "number",
+            "default": 0.15
+          },
+          "min_entry_price": {
+            "type": "number",
+            "default": 0.35
+          },
+          "max_entry_price": {
+            "type": "number",
+            "default": 0.65
+          },
+          "daily_budget": {
+            "type": "number",
+            "default": 40.0
+          },
+          "max_order_cost": {
+            "type": "number",
+            "default": 3.0
+          },
+          "max_positions_per_event": {
+            "type": "integer",
+            "default": 1
+          },
+          "min_hours_elapsed": {
+            "type": "number"
+          },
+          "allow_yes": {
+            "type": "boolean",
+            "default": true
+          },
+          "allow_no": {
+            "type": "boolean",
+            "default": true
+          },
+          "entry_policy": {
+            "type": "string",
+            "enum": ["best-ev", "first", "latest"],
+            "default": "best-ev"
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "strategy_report",
+        "contract": "strategy_report.v1"
+      }
+    },
+    "learned_gate": {
+      "label": "Learned Gate",
+      "command": [
+        "python",
+        "-m",
+        "strategy.cli",
+        "neural-ev-learned-gate",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--model-report",
+        "{{ inputs.model_report.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "required": ["train_start", "train_end", "test_start", "test_end"],
+        "properties": {
+          "train_start": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First target date used to train the learned gate. Use YYYY-MM-DD.",
+            "examples": ["2026-08-06"]
+          },
+          "train_end": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last target date available to the learned gate. The backend still excludes the test date itself. Use YYYY-MM-DD.",
+            "examples": ["2026-08-26"]
+          },
+          "test_start": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "First target date scored by the learned gate. Use YYYY-MM-DD.",
+            "examples": ["2026-08-27"]
+          },
+          "test_end": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Last target date scored by the learned gate. Use YYYY-MM-DD.",
+            "examples": ["2026-08-27"]
+          },
+          "gate_model_type": {
+            "type": "string",
+            "enum": ["hist_gradient_boosting", "ridge"],
+            "default": "hist_gradient_boosting",
+            "description": "Reward model used by the learned gate."
+          },
+          "min_training_examples": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 400
+          },
+          "min_training_dates": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 5
+          },
+          "min_predicted_reward": {
+            "type": "number",
+            "default": 0.0
+          },
+          "min_trade_probability": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.55
+          },
+          "selection_score": {
+            "type": "string",
+            "enum": ["predicted_reward", "trade_probability"],
+            "default": "predicted_reward"
+          },
+          "gate_application": {
+            "type": "string",
+            "enum": ["fixed_gate_veto", "rerank_candidates"],
+            "default": "fixed_gate_veto",
+            "description": "fixed_gate_veto only rejects trades selected by the fixed EV gate. rerank_candidates can replace them with different learned-approved trades."
+          },
+          "min_ev": {
+            "type": "number",
+            "default": 0.0
+          },
+          "max_ev": {
+            "type": "number",
+            "description": "Optional upper cap on predicted per-contract EV. Use to avoid overconfident model-edge tails."
+          },
+          "max_spread": {
+            "type": "number",
+            "default": 0.1
+          },
+          "min_entry_price": {
+            "type": "number",
+            "default": 0.5
+          },
+          "max_entry_price": {
+            "type": "number",
+            "default": 0.65
+          },
+          "daily_budget": {
+            "type": "number",
+            "default": 40.0
+          },
+          "max_order_cost": {
+            "type": "number",
+            "default": 3.0
+          },
+          "max_contracts_per_order": {
+            "type": "integer",
+            "default": 20
+          },
+          "max_no_contracts_per_order": {
+            "type": "integer",
+            "default": 10
+          },
+          "max_positions_per_event": {
+            "type": "integer",
+            "default": 1
+          },
+          "min_hours_elapsed": {
+            "type": "number",
+            "description": "Optional hard safety gate applied before learning."
+          },
+          "allow_yes": {
+            "type": "boolean",
+            "default": true
+          },
+          "allow_no": {
+            "type": "boolean",
+            "default": true
+          },
+          "entry_policy": {
+            "type": "string",
+            "enum": ["best-ev", "first", "latest"],
+            "default": "best-ev"
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "strategy_report",
+        "contract": "strategy_report.v1"
+      }
+    }
+  },
+  "inputs": {
+    "dataset": {
+      "type": "local_export",
+      "required_tables": ["events", "market_snapshots", "weather_snapshots", "settlements"]
+    },
+    "model_report": {
+      "type": "model_report",
+      "required_tables": ["bracket_distributions", "predictions"]
+    }
+  },
+  "artifact_contract": {
+    "required_files": ["summary.json"],
+    "optional_files": [
+      "signals.csv",
+      "orders.csv",
+      "trades.csv",
+      "positions.csv",
+      "daily_pnl.csv",
+      "edge_buckets.csv",
+      "probability_buckets.csv",
+      "price_buckets.csv",
+      "city_metrics.csv",
+      "side_metrics.csv",
+      "checkpoint_metrics.csv",
+      "validation_policy_sweep.csv",
+      "learned_candidates.csv",
+      "learned_gate_diagnostics.csv",
+      "baseline_trades.csv",
+      "learned_gate_report.md"
+    ]
+  }
+}

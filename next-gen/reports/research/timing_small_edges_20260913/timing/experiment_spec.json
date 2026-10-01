@@ -1,0 +1,8 @@
+{
+  "created_at": "2026-09-13T21:48:34.650017+00:00",
+  "protocol_sha256": "3f53e6cb4cbb27907373f56bba15d740f9c0288d5d163e8e21fe44257c35cb98",
+  "availability_note_sha256": "83a58256c82fb09fd913de9673d3f7e3dacfd6d21b142cb9886f11413c49cfca",
+  "source_code_sha256": "5a76d4b9e8a267112675ae72e24cb0ef825959c63c9204f770fee7652d15a56f",
+  "fit_cutoff": "2026-08-28T00:00:00+00:00",
+  "live_trading_enabled": false
+}

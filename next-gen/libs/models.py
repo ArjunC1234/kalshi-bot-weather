@@ -76,6 +76,11 @@ class EventSnapshot:
     climate_window_start_utc: datetime
     climate_window_end_utc: datetime
     station_id: str
+    settlement_sources: dict[str, Any] = field(default_factory=dict)
+    rules_primary: str | None = None
+    rules_secondary: str | None = None
+    settlement_source_provider: str | None = None
+    settlement_station_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -96,6 +101,9 @@ class MarketSnapshot:
     no_ask_size: float | None = None
     last_price: float | None = None
     normalized_market_midpoint_probability: float | None = None
+    rules_primary: str | None = None
+    rules_secondary: str | None = None
+    settlement_sources: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -121,6 +129,9 @@ class Settlement:
     winner_ticker: str
     settlement_temperature_f: float | None = None
     settlement_bracket_index: int | None = None
+    market_settlement_source: str | None = None
+    rules_primary: str | None = None
+    rules_secondary: str | None = None
     validation_status: str = "valid"
 
     def __post_init__(self) -> None:

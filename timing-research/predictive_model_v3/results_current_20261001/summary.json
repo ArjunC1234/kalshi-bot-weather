@@ -1,0 +1,138 @@
+{
+  "model": "rolling-walk-forward-v3",
+  "status": "ABSTAIN",
+  "status_reason": "No policy met the stricter validation requirements.",
+  "selected_policy": null,
+  "test_summary": null,
+  "success_checks": {},
+  "data_quality": {
+    "weather_rows_excluded_missing_source_receipt": 117,
+    "causally_aligned_contract_rows": 60846
+  },
+  "input_integrity_errors": [],
+  "probability_leaderboard": [
+    {
+      "fold": "expanding_post_switch",
+      "model": "raw_market",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 0.5784006961590892,
+      "mean_brier": 0.3175469403093879,
+      "top1_accuracy": 0.7596710325921413,
+      "mean_winner_probability": 0.6612363674911038
+    },
+    {
+      "fold": "rolling_14",
+      "model": "raw_market",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 0.5784006961590892,
+      "mean_brier": 0.3175469403093879,
+      "top1_accuracy": 0.7596710325921413,
+      "mean_winner_probability": 0.6612363674911038
+    },
+    {
+      "fold": "rolling_21",
+      "model": "raw_market",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 0.5784006961590892,
+      "mean_brier": 0.3175469403093879,
+      "top1_accuracy": 0.7596710325921413,
+      "mean_winner_probability": 0.6612363674911038
+    },
+    {
+      "fold": "rolling_28",
+      "model": "raw_market",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 0.5784006961590892,
+      "mean_brier": 0.3175469403093879,
+      "top1_accuracy": 0.7596710325921413,
+      "mean_winner_probability": 0.6612363674911038
+    },
+    {
+      "fold": "expanding_post_switch",
+      "model": "market_weather_logit_c0.1",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 1.0119261625424358,
+      "mean_brier": 0.4896791593522899,
+      "top1_accuracy": 0.7608894303990252,
+      "mean_winner_probability": 0.38999959900354547
+    },
+    {
+      "fold": "rolling_28",
+      "model": "market_weather_logit_c0.1",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 1.018209231609033,
+      "mean_brier": 0.492796442456639,
+      "top1_accuracy": 0.7605848309473043,
+      "mean_winner_probability": 0.386877823397742
+    },
+    {
+      "fold": "rolling_21",
+      "model": "market_weather_logit_c0.1",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 1.046786107796457,
+      "mean_brier": 0.5070757692422964,
+      "top1_accuracy": 0.7596710325921413,
+      "mean_winner_probability": 0.3736454247154617
+    },
+    {
+      "fold": "rolling_14",
+      "model": "market_weather_logit_c0.1",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 1.1225570193988126,
+      "mean_brier": 0.5453946155134445,
+      "top1_accuracy": 0.7605848309473043,
+      "mean_winner_probability": 0.34216755575483165
+    },
+    {
+      "fold": "expanding_post_switch",
+      "model": "weather_logit_c0.1",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 1.7163177692544582,
+      "mean_brier": 0.8095148855467293,
+      "top1_accuracy": 0.21657021017362169,
+      "mean_winner_probability": 0.18202707758234762
+    },
+    {
+      "fold": "rolling_28",
+      "model": "weather_logit_c0.1",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 1.7178575278668036,
+      "mean_brier": 0.8099537188840201,
+      "top1_accuracy": 0.21657021017362169,
+      "mean_winner_probability": 0.18167914732628873
+    },
+    {
+      "fold": "rolling_21",
+      "model": "weather_logit_c0.1",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 1.721374636737389,
+      "mean_brier": 0.8110296138235943,
+      "top1_accuracy": 0.21657021017362169,
+      "mean_winner_probability": 0.18069986942601612
+    },
+    {
+      "fold": "rolling_14",
+      "model": "weather_logit_c0.1",
+      "quote_groups": 3283,
+      "events": 143,
+      "mean_log_loss": 1.7291815549519827,
+      "mean_brier": 0.8134695970414751,
+      "top1_accuracy": 0.21657021017362169,
+      "mean_winner_probability": 0.1787458131810438
+    }
+  ],
+  "oos_prediction_rows": 236376,
+  "fold_count": 288,
+  "test_independence_warning": "Historical rolling folds are development evidence. A final claim still requires a frozen future window."
+}

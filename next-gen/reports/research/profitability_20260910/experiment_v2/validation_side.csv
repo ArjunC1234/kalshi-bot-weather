@@ -1,0 +1,2 @@
+side,trades,settled_trades,wins,unsettled_trades,hit_rate,net_pnl,fees,gross_pnl,cash_debit,roi,contracts,breakeven_contract_hit_rate,contract_hit_rate,max_daily_drawdown,mean_probability
+no,25,25,18,0,0.72,0.129999999999999,1.1400000000000001,1.2699999999999974,56.87,0.0022859152452962724,77.0,0.7385714285714285,0.7402597402597403,-6.48,0.9309844814351307

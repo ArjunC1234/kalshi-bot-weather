@@ -31,6 +31,12 @@ FEATURE_COLUMNS = [
     "source_std_f",
     "source_range_f",
     "observed_high_so_far_f",
+    "settlement_observed_high_so_far_f",
+    "settlement_observed_source_count",
+    "settlement_observed_age_hours",
+    "settlement_observed_source_range_f",
+    "settlement_observed_source_stddev_f",
+    "settlement_observed_nws_delta_f",
     "hours_elapsed",
     "hours_remaining",
     "bracket_index",
@@ -86,6 +92,8 @@ class RuntimeConfig:
     late_day_observed_gap_block_f: float = 2.0
     late_day_min_source_confirmations: int = 2
     min_training_rows: int = 120
+    training_days: int = 30
+    model_refresh_seconds: int = 21600
     temperature: float = 0.35
     probability_floor: float = 0.001
     audit_log_path: Path = Path("logs/trading_audit.jsonl")
@@ -678,19 +686,22 @@ class OrderManager:
         return results
 
 
-def run_once(config: RuntimeConfig, dry_run: bool) -> dict[str, Any]:
-    _validate_config(config, dry_run)
-    store = TradingStore(config.database_url)
-    client = KalshiTradingClient(
-        config.kalshi_base_url,
-        config.kalshi_api_key_id,
-        config.kalshi_private_key_path,
-    )
-    manager = OrderManager(config, client)
-    training_rows = store.fetch_training_rows()
-    live_rows = store.fetch_latest_open_rows(config.max_data_age_minutes)
+def _fit_live_model(store: TradingStore, config: RuntimeConfig) -> LiveCloudcaster:
+    training_rows = store.fetch_training_rows(config.training_days)
     model = LiveCloudcaster(config)
     model.fit(training_rows)
+    return model
+
+
+def _run_live_cycle(
+    config: RuntimeConfig,
+    dry_run: bool,
+    store: TradingStore,
+    manager: OrderManager,
+    model: LiveCloudcaster,
+    model_fitted_at_utc: datetime,
+) -> dict[str, Any]:
+    live_rows = store.fetch_latest_open_rows(config.max_data_age_minutes)
     probabilities = model.predict_probabilities(live_rows)
     balance = manager.account_balance_dollars()
     daily_budget = _daily_budget(balance, config)
@@ -710,6 +721,7 @@ def run_once(config: RuntimeConfig, dry_run: bool) -> dict[str, Any]:
         "timestamp_utc": datetime.now(UTC).isoformat(),
         "mode": "dry_run" if dry_run else "demo_trading",
         "model_mode": model.mode,
+        "model_fitted_at_utc": model_fitted_at_utc.isoformat(),
         "city_residual_enabled": config.enable_city_residual,
         "training_rows": model.training_rows,
         "live_market_rows": len(live_rows),
@@ -725,10 +737,51 @@ def run_once(config: RuntimeConfig, dry_run: bool) -> dict[str, Any]:
     return result
 
 
+def run_once(config: RuntimeConfig, dry_run: bool) -> dict[str, Any]:
+    _validate_config(config, dry_run)
+    store = TradingStore(config.database_url)
+    client = KalshiTradingClient(
+        config.kalshi_base_url,
+        config.kalshi_api_key_id,
+        config.kalshi_private_key_path,
+    )
+    manager = OrderManager(config, client)
+    model_fitted_at_utc = datetime.now(UTC)
+    model = _fit_live_model(store, config)
+    return _run_live_cycle(config, dry_run, store, manager, model, model_fitted_at_utc)
+
+
 def run_daemon(config: RuntimeConfig, dry_run: bool) -> None:
+    _validate_config(config, dry_run)
+    store = TradingStore(config.database_url)
+    client = KalshiTradingClient(
+        config.kalshi_base_url,
+        config.kalshi_api_key_id,
+        config.kalshi_private_key_path,
+    )
+    manager = OrderManager(config, client)
+    model: LiveCloudcaster | None = None
+    model_fitted_at_utc: datetime | None = None
     while True:
         try:
-            print(json.dumps(_summary(run_once(config, dry_run=dry_run)), indent=2), flush=True)
+            now = datetime.now(UTC)
+            model_is_stale = (
+                model is None
+                or model_fitted_at_utc is None
+                or (now - model_fitted_at_utc).total_seconds() >= config.model_refresh_seconds
+            )
+            if model_is_stale:
+                model = _fit_live_model(store, config)
+                model_fitted_at_utc = now
+            result = _run_live_cycle(
+                config,
+                dry_run,
+                store,
+                manager,
+                model,
+                model_fitted_at_utc,
+            )
+            print(json.dumps(_summary(result), indent=2), flush=True)
         except Exception as exc:  # noqa: BLE001 - keep supervised loop alive.
             write_audit(
                 config.audit_log_path,
@@ -777,6 +830,8 @@ def config_from_env() -> RuntimeConfig:
             "KALSHI_LATE_DAY_MIN_SOURCE_CONFIRMATIONS",
             2,
         ),
+        training_days=_int_env("KALSHI_TRAINING_DAYS", 30),
+        model_refresh_seconds=_int_env("KALSHI_MODEL_REFRESH_SECONDS", 21600),
         loop_seconds=_int_env("KALSHI_BOT_LOOP_SECONDS", 300),
     )
 
@@ -807,6 +862,9 @@ def _base_market_sql(extra_join_where: str, winner_expr: str) -> str:
           m.normalized_market_midpoint_probability,
           m.bracket_index, m.bracket_lower_f, m.bracket_upper_f,
           w.nws_anchor_high_f, w.nws_hourly_window_max_f, w.observed_high_so_far_f,
+          w.settlement_observed_high_so_far_f, w.settlement_observed_source_count,
+          w.settlement_observed_age_hours, w.settlement_observed_source_range_f,
+          w.settlement_observed_source_stddev_f, w.settlement_observed_nws_delta_f,
           w.hrrr_projected_high_f, w.nbm_projected_high_f, w.ensemble_raw_median_high_f,
           w.hours_since_climate_start, w.hours_until_climate_end,
           s.settlement_temperature_f,
@@ -841,6 +899,22 @@ def _market_row(row: dict[str, Any]) -> MarketRow:
             "nws_anchor_high_f": _number(row.get("nws_anchor_high_f")),
             "nws_hourly_window_max_f": _number(row.get("nws_hourly_window_max_f")),
             "observed_high_so_far_f": _number(row.get("observed_high_so_far_f")),
+            "settlement_observed_high_so_far_f": _number(
+                row.get("settlement_observed_high_so_far_f")
+            ),
+            "settlement_observed_source_count": _number(
+                row.get("settlement_observed_source_count")
+            ),
+            "settlement_observed_age_hours": _number(row.get("settlement_observed_age_hours")),
+            "settlement_observed_source_range_f": _number(
+                row.get("settlement_observed_source_range_f")
+            ),
+            "settlement_observed_source_stddev_f": _number(
+                row.get("settlement_observed_source_stddev_f")
+            ),
+            "settlement_observed_nws_delta_f": _number(
+                row.get("settlement_observed_nws_delta_f")
+            ),
             "hrrr_projected_high_f": _number(row.get("hrrr_projected_high_f")),
             "nbm_projected_high_f": _number(row.get("nbm_projected_high_f")),
             "ensemble_raw_median_high_f": _number(row.get("ensemble_raw_median_high_f")),
@@ -864,7 +938,19 @@ def _features(
         "expected_high_f": expected,
         "source_std_f": _source_std(row),
         "source_range_f": _source_range(row),
-        "observed_high_so_far_f": row.weather.get("observed_high_so_far_f"),
+        "observed_high_so_far_f": _observed(row),
+        "settlement_observed_high_so_far_f": row.weather.get(
+            "settlement_observed_high_so_far_f"
+        ),
+        "settlement_observed_source_count": row.weather.get("settlement_observed_source_count"),
+        "settlement_observed_age_hours": row.weather.get("settlement_observed_age_hours"),
+        "settlement_observed_source_range_f": row.weather.get(
+            "settlement_observed_source_range_f"
+        ),
+        "settlement_observed_source_stddev_f": row.weather.get(
+            "settlement_observed_source_stddev_f"
+        ),
+        "settlement_observed_nws_delta_f": row.weather.get("settlement_observed_nws_delta_f"),
         "hours_elapsed": row.weather.get("hours_elapsed"),
         "hours_remaining": row.weather.get("hours_remaining"),
         "bracket_index": float(row.bracket_index),
@@ -888,12 +974,12 @@ def _expected_high(
 ) -> float:
     values = sorted(value for value in _source_values(row) if value is not None)
     if not values:
-        expected = row.weather.get("observed_high_so_far_f") or 75.0
+        expected = _observed(row) or 75.0
     elif len(values) % 2:
         expected = values[len(values) // 2]
     else:
         expected = (values[len(values) // 2 - 1] + values[len(values) // 2]) / 2.0
-    observed = row.weather.get("observed_high_so_far_f")
+    observed = _observed(row)
     if residual_calibrator is not None:
         expected += residual_calibrator.correction(row)
     return max(expected, observed) if observed is not None else expected
@@ -911,6 +997,11 @@ def _source_values(row: MarketRow) -> list[float]:
         )
         if value is not None
     ]
+
+
+def _observed(row: MarketRow) -> float | None:
+    observed = row.weather.get("settlement_observed_high_so_far_f")
+    return observed if observed is not None else row.weather.get("observed_high_so_far_f")
 
 
 def _source_probability(
@@ -1279,7 +1370,7 @@ def _passes_late_day_sanity(
     config: RuntimeConfig,
 ) -> bool:
     del probability
-    observed = row.weather.get("observed_high_so_far_f")
+    observed = _observed(row)
     hours_elapsed = row.weather.get("hours_elapsed")
     if (
         observed is None
@@ -1298,14 +1389,14 @@ def _passes_late_day_sanity(
 
 
 def _observed_high_excludes_yes(row: MarketRow, margin_f: float = 0.0) -> bool:
-    observed = row.weather.get("observed_high_so_far_f")
+    observed = _observed(row)
     if observed is None or row.bracket_upper_f is None:
         return False
     return float(observed) >= float(row.bracket_upper_f) + margin_f
 
 
 def _observed_high_confirms_yes(row: MarketRow) -> bool:
-    observed = row.weather.get("observed_high_so_far_f")
+    observed = _observed(row)
     if observed is None or row.bracket_lower_f is None or row.bracket_upper_f is not None:
         return False
     return int(float(observed) + 0.5) >= int(row.bracket_lower_f)

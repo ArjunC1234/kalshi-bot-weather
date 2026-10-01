@@ -227,10 +227,17 @@ export type VisualizationQueryRequest = {
   artifact_path: string;
   query: {
     table: string;
+    tables?: string[];
     x?: string;
     y?: string;
     group?: string[];
     groups?: string[];
+    group_by_table?: boolean;
+    join?: {
+      table: string;
+      keys: string[];
+      fields: string[];
+    };
     filters?: Record<string, unknown>;
     hour_blocks?: number;
     aggregation?: string | { op: string; field?: string; as?: string };
@@ -244,6 +251,7 @@ export type VisualizationQueryRequest = {
 
 export type VisualizationQueryResponse = {
   table: string;
+  tables?: string[];
   schema: ArtifactTableSchema;
   rows: DataRow[];
   metadata: {

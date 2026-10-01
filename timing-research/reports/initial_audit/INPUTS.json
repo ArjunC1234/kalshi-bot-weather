@@ -1,0 +1,47 @@
+[
+  {
+    "path": "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\timing-research\\data\\timing_capture_20260914\\archive\\20260914\\20260914T021821657827Z_1a8a64c0bb0126fc45c3fa2c4647443a.json.gz",
+    "sha256": "8a65a617aaa2f0fb6b3fdb23ef8f4e9ba5c3d2b031354e4a551ada8f2840a536",
+    "bytes": 62535
+  },
+  {
+    "path": "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\timing-research\\data\\timing_capture_20260914\\archive\\20260914\\20260914T022031541678Z_67ad715a4da6e4d616bf47af2d5d8a8b.json.gz",
+    "sha256": "ccd71b246efa49dc7e39b9234e6eab111a646790420bda457b019f44097949d7",
+    "bytes": 62555
+  },
+  {
+    "path": "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\timing-research\\data\\timing_capture_20260914\\archive\\20260914\\20260914T022531360199Z_d4616c69f5e338fb80d938f3f810eacb.json.gz",
+    "sha256": "eb697ec5e0ade0bd3574658c5a55ceae2da399352a2a1ab1ca1e5bcb61fd6984",
+    "bytes": 62498
+  },
+  {
+    "path": "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\timing-research\\data\\timing_capture_20260914\\archive\\20260914\\20260914T023031498066Z_da4371491d5275796512dac7ecc535de.json.gz",
+    "sha256": "f37a24150c5f6bc22ad49c5d3ce402e064c2681ead395d5fa112e1cec777fd65",
+    "bytes": 62551
+  },
+  {
+    "path": "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\timing-research\\data\\timing_capture_20260914\\archive\\20260914\\20260914T023531421104Z_2040b123adca65bc3c1b8b4a13ca3091.json.gz",
+    "sha256": "6f261191d5e15b353b0a0ae3267b765c57794ef7ce1707afab1f02fdc22de4ba",
+    "bytes": 62497
+  },
+  {
+    "path": "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\timing-research\\data\\timing_capture_20260914\\archive\\20260914\\20260914T024031450024Z_5a99929581b4d62dfb71071e61effd62.json.gz",
+    "sha256": "1ae4ed1864453b61ee0342000493e5b56bd9ee1a992d1ae2f958c14d285c4d4c",
+    "bytes": 62491
+  },
+  {
+    "path": "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\timing-research\\data\\timing_capture_20260914\\archive\\20260914\\20260914T024531438316Z_d0d6c9eec80365ffda057d5d8e2ceb05.json.gz",
+    "sha256": "6de6011eeae0876045f467ea8787831762c8b76ee629f5c798182cbe7f83b8f3",
+    "bytes": 62424
+  },
+  {
+    "path": "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\timing-research\\data\\timing_capture_20260914\\archive\\20260914\\20260914T025031459274Z_e6750f18c0eaa4538b1da7bcb65fc92d.json.gz",
+    "sha256": "3c4071300b99f4dbbdcc22a45fbec7d37eae174629e0664ba24e7e9be3479ca5",
+    "bytes": 62467
+  },
+  {
+    "path": "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\timing-research\\data\\timing_capture_20260914\\archive\\20260914\\20260914T025531462417Z_752e8fc32b215c0288e44ae6791dee7e.json.gz",
+    "sha256": "a34520bcd3908534137cd544c7aebd031195ae4f47340068e1571b26dc765621",
+    "bytes": 62570
+  }
+]

@@ -1,0 +1,59 @@
+{
+  "artifact_type": "local_export",
+  "created_utc": "2026-09-01T20:59:04.060272+00:00",
+  "end": "2026-08-31",
+  "excluded_columns": {
+    "market_snapshots": [
+      "raw_payload_id"
+    ],
+    "weather_snapshots": [
+      "raw_payload_id"
+    ]
+  },
+  "export_name": "current_20260701_20260831_lightweight",
+  "export_profile_id": "lightweight_model_eval",
+  "exported_at_utc": "2026-09-01T20:59:04.060272+00:00",
+  "settlement_sources": {
+    "compatible": false,
+    "label_source": "nws_cli_daily",
+    "label_sources": {
+      "nws_cli_daily": 348,
+      "weather_company_daily": 348
+    },
+    "market_settlement_source": "unknown",
+    "market_settlement_sources": {
+      "unknown": 612
+    },
+    "settlement_row_sources": {
+      "unknown": 348
+    },
+    "settlement_source": "unknown",
+    "warnings": [
+      "Market rule settlement source is unknown; verify Kalshi rules before trading."
+    ]
+  },
+  "source": "supabase.weather",
+  "start": "2026-07-01",
+  "tables": {
+    "events": {
+      "rows": 8048,
+      "source_table": "events"
+    },
+    "final_temperature_labels": {
+      "rows": 696,
+      "source_table": "final_temperature_labels"
+    },
+    "market_snapshots": {
+      "rows": 48288,
+      "source_table": "market_snapshots"
+    },
+    "settlements": {
+      "rows": 348,
+      "source_table": "settlements"
+    },
+    "weather_snapshots": {
+      "rows": 8048,
+      "source_table": "weather_snapshots"
+    }
+  }
+}

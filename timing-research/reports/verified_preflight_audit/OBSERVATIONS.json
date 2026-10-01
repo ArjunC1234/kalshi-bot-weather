@@ -1,0 +1,5618 @@
+[
+  {
+    "run_id": "1a8a64c0bb0126fc45c3fa2c4647443a",
+    "city": "nyc",
+    "snapshot": "2026-09-14 02:18:21.657827+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:18:21.806914+00:00",
+      "received": "2026-09-14 02:18:21.885804+00:00",
+      "event": "KXHIGHNY-26SEP13",
+      "raw_id": "d024e02ba6cacd8c2f35fa7eb452febe",
+      "rows": [
+        {
+          "ticker": "KXHIGHNY-26SEP13-T78",
+          "lower": null,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 289982.87,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 105919.19,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 84410.89,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 51320.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B84.5",
+          "lower": 84,
+          "upper": 85,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 26385.46,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-T85",
+          "lower": 86,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 32719.16,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 1.0441176470588234
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "7a1fc2148cd181df7a788866c4c19419",
+      "timing_nws_daily_forecast": "af03c25a15fc3aa5b0a8d558eb3c297a",
+      "timing_nws_hourly_forecast": "9514a5fb55c58d25c088aab7f17b1c75",
+      "timing_kalshi_post_forecast_markets": "d024e02ba6cacd8c2f35fa7eb452febe"
+    },
+    "source_age_minutes": 99.49671843333334
+  },
+  {
+    "run_id": "1a8a64c0bb0126fc45c3fa2c4647443a",
+    "city": "mia",
+    "snapshot": "2026-09-14 02:18:21.657827+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:18:21.952371+00:00",
+      "received": "2026-09-14 02:18:21.960697+00:00",
+      "event": "KXHIGHMIA-26SEP13",
+      "raw_id": "4c90bb1d9b3754c4d352449c972f1694",
+      "rows": [
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T85",
+          "lower": null,
+          "upper": 84,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 117583.76,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B85.5",
+          "lower": 85,
+          "upper": 86,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 87833.52,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B87.5",
+          "lower": 87,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 160461.27,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 183613.56,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.99,
+          "yes_bid_size": 20808.23,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T92",
+          "lower": 93,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16877.89,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 3.9558823529411766
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "55e4620d3e629e9f9a5ccd70d422be18",
+      "timing_nws_daily_forecast": "db6865fd73d44f793687d86f37f909a3",
+      "timing_nws_hourly_forecast": "6a274ec9cc060db8be2ff7b838d62ecd",
+      "timing_kalshi_post_forecast_markets": "4c90bb1d9b3754c4d352449c972f1694"
+    },
+    "source_age_minutes": 361.6658039833334
+  },
+  {
+    "run_id": "1a8a64c0bb0126fc45c3fa2c4647443a",
+    "city": "la",
+    "snapshot": "2026-09-14 02:18:21.657827+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:18:22.027136+00:00",
+      "received": "2026-09-14 02:18:22.035502+00:00",
+      "event": "KXHIGHLAX-26SEP13",
+      "raw_id": "44262063a97dadac1c4d47e2adaef4df",
+      "rows": [
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T76",
+          "lower": null,
+          "upper": 75,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 181753.45,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B76.5",
+          "lower": 76,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 243887.66,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 118654.79,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 140390.91,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 481316.19,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T83",
+          "lower": 84,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 632759.3,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.014705882352941
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "6326917970dab118865d272e651ee4ea",
+      "timing_nws_daily_forecast": "7ae5bb0306e0d9f80810ced48a0ce3e7",
+      "timing_nws_hourly_forecast": "31d6005b21895b1b529960c49c8338bc",
+      "timing_kalshi_post_forecast_markets": "44262063a97dadac1c4d47e2adaef4df"
+    },
+    "source_age_minutes": 351.5670515333333
+  },
+  {
+    "run_id": "1a8a64c0bb0126fc45c3fa2c4647443a",
+    "city": "den",
+    "snapshot": "2026-09-14 02:18:21.657827+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:18:22.102257+00:00",
+      "received": "2026-09-14 02:18:22.111933+00:00",
+      "event": "KXHIGHDEN-26SEP13",
+      "raw_id": "a43667490377226ee2c7cc05d7bdf7a3",
+      "rows": [
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T89",
+          "lower": null,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11285.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11324.79,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 9519.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B93.5",
+          "lower": 93,
+          "upper": 94,
+          "yes_bid": 0.99,
+          "yes_bid_size": 4324.08,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B95.5",
+          "lower": 95,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 4838.93,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T96",
+          "lower": 97,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 1776.96,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "43407ba72823bb390df5bd48b626b93b",
+      "timing_nws_daily_forecast": "63609bc8021c6266b9f394489be67e92",
+      "timing_nws_hourly_forecast": "d0ac4fdccda81f8e3575c75a479788fb",
+      "timing_kalshi_post_forecast_markets": "a43667490377226ee2c7cc05d7bdf7a3"
+    },
+    "source_age_minutes": 452.05163435000003
+  },
+  {
+    "run_id": "1a8a64c0bb0126fc45c3fa2c4647443a",
+    "city": "aus",
+    "snapshot": "2026-09-14 02:18:21.657827+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:18:22.182935+00:00",
+      "received": "2026-09-14 02:18:22.191433+00:00",
+      "event": "KXHIGHAUS-26SEP13",
+      "raw_id": "6c4d335cb11c42d82bf45d720ee808d5",
+      "rows": [
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 125093.02,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73991.13,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 62189.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 10960.39,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11152.71,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12243.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "f7a22eec1447ab5a8faa34540ff2dc38",
+      "timing_nws_daily_forecast": "af6a7148650c08198b146a85364186f6",
+      "timing_nws_hourly_forecast": "6746cf7e60b4dca65225987d85033d84",
+      "timing_kalshi_post_forecast_markets": "6c4d335cb11c42d82bf45d720ee808d5"
+    },
+    "source_age_minutes": 79.58631606666667
+  },
+  {
+    "run_id": "1a8a64c0bb0126fc45c3fa2c4647443a",
+    "city": "okc",
+    "snapshot": "2026-09-14 02:18:21.657827+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:18:22.297482+00:00",
+      "received": "2026-09-14 02:18:22.315429+00:00",
+      "event": "KXHIGHTOKC-26SEP13",
+      "raw_id": "af6b5550af7919ee72b16e93bf19f147",
+      "rows": [
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 78368.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73001.23,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 75052.71,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 14292.91,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16031.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12075.95,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "a2d875475c850cf6a6672a42280ff8d9",
+      "timing_nws_daily_forecast": "ce9a408b903ea3f3879d7a34cb2448a1",
+      "timing_nws_hourly_forecast": "8e6a24b5bf9fee1a3b94bad295e701c8",
+      "timing_kalshi_post_forecast_markets": "af6b5550af7919ee72b16e93bf19f147"
+    },
+    "source_age_minutes": 441.07155570000003
+  },
+  {
+    "run_id": "67ad715a4da6e4d616bf47af2d5d8a8b",
+    "city": "nyc",
+    "snapshot": "2026-09-14 02:20:31.541678+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:20:31.660987+00:00",
+      "received": "2026-09-14 02:20:31.763803+00:00",
+      "event": "KXHIGHNY-26SEP13",
+      "raw_id": "6d07649c72dfa04e4dc69b337f2a1e71",
+      "rows": [
+        {
+          "ticker": "KXHIGHNY-26SEP13-T78",
+          "lower": null,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 289982.87,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 105825.68,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 84410.89,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 51320.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B84.5",
+          "lower": 84,
+          "upper": 85,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 26385.46,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-T85",
+          "lower": 86,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 32719.16,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 1.0441176470588234
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "a34590dd96811218ea4798906e6d88ea",
+      "timing_nws_daily_forecast": "3f0285cd9593b5d3683b02f651317e8d",
+      "timing_nws_hourly_forecast": "5c43beaa2bf2ea197cd5165acc2597a9",
+      "timing_kalshi_post_forecast_markets": "6d07649c72dfa04e4dc69b337f2a1e71"
+    },
+    "source_age_minutes": 101.6609434
+  },
+  {
+    "run_id": "67ad715a4da6e4d616bf47af2d5d8a8b",
+    "city": "mia",
+    "snapshot": "2026-09-14 02:20:31.541678+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:20:31.814171+00:00",
+      "received": "2026-09-14 02:20:31.848413+00:00",
+      "event": "KXHIGHMIA-26SEP13",
+      "raw_id": "04aa92544f5d3ba5e40461a5a438e050",
+      "rows": [
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T85",
+          "lower": null,
+          "upper": 84,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 117583.76,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B85.5",
+          "lower": 85,
+          "upper": 86,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 87833.52,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B87.5",
+          "lower": 87,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 160461.27,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 183333.02,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.99,
+          "yes_bid_size": 20808.23,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T92",
+          "lower": 93,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16877.89,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 3.9558823529411766
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "313e2db8a614f210a1584c4c58ec7581",
+      "timing_nws_daily_forecast": "31bbc84b00e222defb4672253e747874",
+      "timing_nws_hourly_forecast": "a7e5ac17dfc868fef2038207f32282b7",
+      "timing_kalshi_post_forecast_markets": "04aa92544f5d3ba5e40461a5a438e050"
+    },
+    "source_age_minutes": 363.8301657
+  },
+  {
+    "run_id": "67ad715a4da6e4d616bf47af2d5d8a8b",
+    "city": "la",
+    "snapshot": "2026-09-14 02:20:31.541678+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:20:31.901538+00:00",
+      "received": "2026-09-14 02:20:31.911927+00:00",
+      "event": "KXHIGHLAX-26SEP13",
+      "raw_id": "9e3ef6696f865b7badb4834be36f6a59",
+      "rows": [
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T76",
+          "lower": null,
+          "upper": 75,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 181753.45,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B76.5",
+          "lower": 76,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 242671.95,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 118654.79,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 140390.91,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 481316.19,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T83",
+          "lower": 84,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 632759.3,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.014705882352941
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "9c68054d8fc45ace20a996308b3e7737",
+      "timing_nws_daily_forecast": "5aa913fd6d8cdce76fd5e5f3242d2431",
+      "timing_nws_hourly_forecast": "14cdccb3e205df5553ea0a4915cefc91",
+      "timing_kalshi_post_forecast_markets": "9e3ef6696f865b7badb4834be36f6a59"
+    },
+    "source_age_minutes": 353.73162084999996
+  },
+  {
+    "run_id": "67ad715a4da6e4d616bf47af2d5d8a8b",
+    "city": "den",
+    "snapshot": "2026-09-14 02:20:31.541678+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:20:31.965751+00:00",
+      "received": "2026-09-14 02:20:32.011414+00:00",
+      "event": "KXHIGHDEN-26SEP13",
+      "raw_id": "dbf81ace034cc3496de0f5bee078f3b2",
+      "rows": [
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T89",
+          "lower": null,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11285.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11324.79,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 9519.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B93.5",
+          "lower": 93,
+          "upper": 94,
+          "yes_bid": 0.99,
+          "yes_bid_size": 4324.08,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B95.5",
+          "lower": 95,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 4838.93,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T96",
+          "lower": 97,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 1776.96,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "b806ac12d7aefefd2a849469c7af161b",
+      "timing_nws_daily_forecast": "82aa5c861ff44afc6baecb1add4be68a",
+      "timing_nws_hourly_forecast": "ac46b3c1959b7cb93e1e962d988e0f55",
+      "timing_kalshi_post_forecast_markets": "dbf81ace034cc3496de0f5bee078f3b2"
+    },
+    "source_age_minutes": 454.2160241166667
+  },
+  {
+    "run_id": "67ad715a4da6e4d616bf47af2d5d8a8b",
+    "city": "aus",
+    "snapshot": "2026-09-14 02:20:31.541678+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:20:32.128936+00:00",
+      "received": "2026-09-14 02:20:32.154554+00:00",
+      "event": "KXHIGHAUS-26SEP13",
+      "raw_id": "25cd3cb14ce7d2130a6095fff11b0cfe",
+      "rows": [
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 125093.02,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73991.13,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 62189.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 10960.39,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11152.71,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12243.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "e47eea433c0d7c699bbfee1d3a2aa941",
+      "timing_nws_daily_forecast": "5d5ed7deed9d3a214ccad50026435d79",
+      "timing_nws_hourly_forecast": "0f3197df3dcb9a4ce4874aa61f05de50",
+      "timing_kalshi_post_forecast_markets": "25cd3cb14ce7d2130a6095fff11b0cfe"
+    },
+    "source_age_minutes": 81.75208160000001
+  },
+  {
+    "run_id": "67ad715a4da6e4d616bf47af2d5d8a8b",
+    "city": "okc",
+    "snapshot": "2026-09-14 02:20:31.541678+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:20:32.204919+00:00",
+      "received": "2026-09-14 02:20:32.242867+00:00",
+      "event": "KXHIGHTOKC-26SEP13",
+      "raw_id": "8d7cbd4b594bddc644528631512c6b3f",
+      "rows": [
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 78368.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73001.23,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 75052.71,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 14292.91,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16031.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12075.95,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "e629f76b3905a784cd0d272e084e2c5b",
+      "timing_nws_daily_forecast": "e4d9d143265ae8a1e1073219911aa45a",
+      "timing_nws_hourly_forecast": "0ea3cbd10cb8e189ce0713634b9d218e",
+      "timing_kalshi_post_forecast_markets": "8d7cbd4b594bddc644528631512c6b3f"
+    },
+    "source_age_minutes": 443.2366815666667
+  },
+  {
+    "run_id": "d4616c69f5e338fb80d938f3f810eacb",
+    "city": "nyc",
+    "snapshot": "2026-09-14 02:25:31.360199+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:25:31.537744+00:00",
+      "received": "2026-09-14 02:25:31.642919+00:00",
+      "event": "KXHIGHNY-26SEP13",
+      "raw_id": "3475b8510145bf8be287a92a93e1051f",
+      "rows": [
+        {
+          "ticker": "KXHIGHNY-26SEP13-T78",
+          "lower": null,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 289882.87,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 105825.68,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 83382.19,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 51287.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B84.5",
+          "lower": 84,
+          "upper": 85,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 26385.46,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-T85",
+          "lower": 86,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 32719.16,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 1.0441176470588234
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "3a640e459d0583c9dff9c2eb4020a151",
+      "timing_nws_daily_forecast": "f1043fb8298318779ac9f9f50275da96",
+      "timing_nws_hourly_forecast": "34ece9718874992db96faf2204aa2128",
+      "timing_kalshi_post_forecast_markets": "3475b8510145bf8be287a92a93e1051f"
+    },
+    "source_age_minutes": 106.65890169999999
+  },
+  {
+    "run_id": "d4616c69f5e338fb80d938f3f810eacb",
+    "city": "mia",
+    "snapshot": "2026-09-14 02:25:31.360199+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:25:31.730403+00:00",
+      "received": "2026-09-14 02:25:31.742488+00:00",
+      "event": "KXHIGHMIA-26SEP13",
+      "raw_id": "ffc7dd23f7590a94e4cde13c8a1d4a55",
+      "rows": [
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T85",
+          "lower": null,
+          "upper": 84,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 116884.76,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B85.5",
+          "lower": 85,
+          "upper": 86,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 87733.52,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B87.5",
+          "lower": 87,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 160353.27,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 183333.02,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.99,
+          "yes_bid_size": 20808.23,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T92",
+          "lower": 93,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16844.89,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 3.9558823529411766
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "912efa1c8887609b32232d908513eb11",
+      "timing_nws_daily_forecast": "fb3539be4b9229c5bd947c7e25fc2ac7",
+      "timing_nws_hourly_forecast": "77b00395e885d5cfbb2f0622f1cdb49d",
+      "timing_kalshi_post_forecast_markets": "ffc7dd23f7590a94e4cde13c8a1d4a55"
+    },
+    "source_age_minutes": 368.8287580333334
+  },
+  {
+    "run_id": "d4616c69f5e338fb80d938f3f810eacb",
+    "city": "la",
+    "snapshot": "2026-09-14 02:25:31.360199+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:25:31.812072+00:00",
+      "received": "2026-09-14 02:25:31.829154+00:00",
+      "event": "KXHIGHLAX-26SEP13",
+      "raw_id": "7a38e365cb09c0f6b14c31d3069a85bd",
+      "rows": [
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T76",
+          "lower": null,
+          "upper": 75,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 181753.45,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B76.5",
+          "lower": 76,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 242063.15,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 118654.79,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 139829.81,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 481183.19,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T83",
+          "lower": 84,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 631543.56,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.014705882352941
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "2f984bffc62f24fbae19559b3647a90d",
+      "timing_nws_daily_forecast": "54955e92094210016c28dea011ba6baa",
+      "timing_nws_hourly_forecast": "d57d5a6e1f8b4b58c2abaa9d17a6d569",
+      "timing_kalshi_post_forecast_markets": "7a38e365cb09c0f6b14c31d3069a85bd"
+    },
+    "source_age_minutes": 358.7301343
+  },
+  {
+    "run_id": "d4616c69f5e338fb80d938f3f810eacb",
+    "city": "den",
+    "snapshot": "2026-09-14 02:25:31.360199+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:25:31.890881+00:00",
+      "received": "2026-09-14 02:25:31.900145+00:00",
+      "event": "KXHIGHDEN-26SEP13",
+      "raw_id": "d10274bf0aed960f2ebe3f73f45adbe9",
+      "rows": [
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T89",
+          "lower": null,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11285.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11273.36,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 9519.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B93.5",
+          "lower": 93,
+          "upper": 94,
+          "yes_bid": 0.99,
+          "yes_bid_size": 4324.08,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B95.5",
+          "lower": 95,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 4838.93,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T96",
+          "lower": 97,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 1776.96,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "e53f5c9516f796b6ab1aa58ec339a85d",
+      "timing_nws_daily_forecast": "0152e452c07d3a61ba4222f55c3119a2",
+      "timing_nws_hourly_forecast": "cf8c72470cfe3eca6efb06ccad4359fc",
+      "timing_kalshi_post_forecast_markets": "d10274bf0aed960f2ebe3f73f45adbe9"
+    },
+    "source_age_minutes": 459.21478156666666
+  },
+  {
+    "run_id": "d4616c69f5e338fb80d938f3f810eacb",
+    "city": "aus",
+    "snapshot": "2026-09-14 02:25:31.360199+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:25:32.015874+00:00",
+      "received": "2026-09-14 02:25:32.048176+00:00",
+      "event": "KXHIGHAUS-26SEP13",
+      "raw_id": "563693e0236ed33618ab4c94b0bb0894",
+      "rows": [
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 125093.02,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73991.13,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 62156.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 10960.39,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 10685.12,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12243.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "56aab0c2bffe1e8f44829e8ce421b47d",
+      "timing_nws_daily_forecast": "680ea4e4d98e81d72e094b487866f0ed",
+      "timing_nws_hourly_forecast": "c7a9a689851c813867e584dfb9fd7246",
+      "timing_kalshi_post_forecast_markets": "563693e0236ed33618ab4c94b0bb0894"
+    },
+    "source_age_minutes": 86.75019496666667
+  },
+  {
+    "run_id": "d4616c69f5e338fb80d938f3f810eacb",
+    "city": "okc",
+    "snapshot": "2026-09-14 02:25:31.360199+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:25:32.115016+00:00",
+      "received": "2026-09-14 02:25:32.123581+00:00",
+      "event": "KXHIGHTOKC-26SEP13",
+      "raw_id": "71a96a4c053355435781846fa52b7562",
+      "rows": [
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 78368.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73001.23,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 75052.71,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 14292.91,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16031.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12075.95,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "a67841da098dd9a0ab3371f768c7cc85",
+      "timing_nws_daily_forecast": "c7c03129dfba67e19952faa5649c4202",
+      "timing_nws_hourly_forecast": "a52c738e7fb8b78fbadf4d60a6accecc",
+      "timing_kalshi_post_forecast_markets": "71a96a4c053355435781846fa52b7562"
+    },
+    "source_age_minutes": 448.23520833333333
+  },
+  {
+    "run_id": "da4371491d5275796512dac7ecc535de",
+    "city": "nyc",
+    "snapshot": "2026-09-14 02:30:31.498066+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:30:31.745783+00:00",
+      "received": "2026-09-14 02:30:31.867187+00:00",
+      "event": "KXHIGHNY-26SEP13",
+      "raw_id": "6faef050ffa1a0a9bb8cfdab4582a5c6",
+      "rows": [
+        {
+          "ticker": "KXHIGHNY-26SEP13-T78",
+          "lower": null,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 289883.87,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 105726.56,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 83288.68,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 51287.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B84.5",
+          "lower": 84,
+          "upper": 85,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 26386.46,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-T85",
+          "lower": 86,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 32720.16,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 1.0441176470588234
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "9235802d61aa23896cc13a0ac6b759ac",
+      "timing_nws_daily_forecast": "c9fef8f6daada2168238c4a017e2bf0e",
+      "timing_nws_hourly_forecast": "d8741ab95414c1039de03d9059690381",
+      "timing_kalshi_post_forecast_markets": "6faef050ffa1a0a9bb8cfdab4582a5c6"
+    },
+    "source_age_minutes": 111.66215298333333
+  },
+  {
+    "run_id": "da4371491d5275796512dac7ecc535de",
+    "city": "mia",
+    "snapshot": "2026-09-14 02:30:31.498066+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:30:31.990344+00:00",
+      "received": "2026-09-14 02:30:32.007783+00:00",
+      "event": "KXHIGHMIA-26SEP13",
+      "raw_id": "6cf395219bed387a7f34e2a17a4f26e8",
+      "rows": [
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T85",
+          "lower": null,
+          "upper": 84,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 116884.76,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B85.5",
+          "lower": 85,
+          "upper": 86,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 87733.52,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B87.5",
+          "lower": 87,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 160353.27,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 183333.02,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.99,
+          "yes_bid_size": 20806.5,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T92",
+          "lower": 93,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16657.86,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 3.9558823529411766
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "a38fbbd1c1c9202a9c93a9b0fe241d5d",
+      "timing_nws_daily_forecast": "0af11bdc923feeb148f11be12315898f",
+      "timing_nws_hourly_forecast": "1f3c3757e524678ee7b686b6a06a8253",
+      "timing_kalshi_post_forecast_markets": "6cf395219bed387a7f34e2a17a4f26e8"
+    },
+    "source_age_minutes": 373.83307179999997
+  },
+  {
+    "run_id": "da4371491d5275796512dac7ecc535de",
+    "city": "la",
+    "snapshot": "2026-09-14 02:30:31.498066+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:30:32.140976+00:00",
+      "received": "2026-09-14 02:30:32.153168+00:00",
+      "event": "KXHIGHLAX-26SEP13",
+      "raw_id": "268e144259fb37fd71b8a11a6f650949",
+      "rows": [
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T76",
+          "lower": null,
+          "upper": 75,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 181754.45,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B76.5",
+          "lower": 76,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 241978.12,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 118654.79,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 137192.19,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 481089.68,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T83",
+          "lower": 84,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 630609.37,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.014705882352941
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "d6e18043ad1af891143ed418270167df",
+      "timing_nws_daily_forecast": "5d0cc8f8544af4a318aa1ffa574f1fa9",
+      "timing_nws_hourly_forecast": "025d2444be38c593babc450c5683769f",
+      "timing_kalshi_post_forecast_markets": "268e144259fb37fd71b8a11a6f650949"
+    },
+    "source_age_minutes": 363.73556665
+  },
+  {
+    "run_id": "da4371491d5275796512dac7ecc535de",
+    "city": "den",
+    "snapshot": "2026-09-14 02:30:31.498066+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:30:32.293530+00:00",
+      "received": "2026-09-14 02:30:32.310324+00:00",
+      "event": "KXHIGHDEN-26SEP13",
+      "raw_id": "3716f5cf32bafd429cd4962407c6c8f1",
+      "rows": [
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T89",
+          "lower": null,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11285.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11273.36,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 9519.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B93.5",
+          "lower": 93,
+          "upper": 94,
+          "yes_bid": 0.99,
+          "yes_bid_size": 4324.08,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B95.5",
+          "lower": 95,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 4838.93,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T96",
+          "lower": 97,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 1776.96,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "fbe3e0eeea31fb70291643410694444a",
+      "timing_nws_daily_forecast": "3064248baf6b1b2a88e8ac624b01102e",
+      "timing_nws_hourly_forecast": "453ea1efb24b326cdda6f55be7cad840",
+      "timing_kalshi_post_forecast_markets": "3716f5cf32bafd429cd4962407c6c8f1"
+    },
+    "source_age_minutes": 464.2214499666667
+  },
+  {
+    "run_id": "da4371491d5275796512dac7ecc535de",
+    "city": "aus",
+    "snapshot": "2026-09-14 02:30:31.498066+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:30:32.474232+00:00",
+      "received": "2026-09-14 02:30:32.492044+00:00",
+      "event": "KXHIGHAUS-26SEP13",
+      "raw_id": "0b0f80384e9784ecbfdd7edb96200ed6",
+      "rows": [
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 125094.02,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73992.13,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 62157.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 10960.39,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 10685.12,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12243.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "9e3b0f85b6274a3f5de7eadddb62b2a1",
+      "timing_nws_daily_forecast": "d74d3db8ce8380cd27aee102602feeb3",
+      "timing_nws_hourly_forecast": "94d6075e300a061bc89f22161a2ef5fb",
+      "timing_kalshi_post_forecast_markets": "0b0f80384e9784ecbfdd7edb96200ed6"
+    },
+    "source_age_minutes": 91.75782695
+  },
+  {
+    "run_id": "da4371491d5275796512dac7ecc535de",
+    "city": "okc",
+    "snapshot": "2026-09-14 02:30:31.498066+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:30:32.597182+00:00",
+      "received": "2026-09-14 02:30:32.616934+00:00",
+      "event": "KXHIGHTOKC-26SEP13",
+      "raw_id": "2cc8ed061adb350c138914ae76609074",
+      "rows": [
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 78369.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73002.23,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 74679.71,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 14282.32,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16031.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12075.95,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "d05dede8d0618da766aa45ff55e6bc3e",
+      "timing_nws_daily_forecast": "449c30b8883528c5ea4c07a42ededaaf",
+      "timing_nws_hourly_forecast": "190e8d0a5e4cb81a3362e5f0869c1299",
+      "timing_kalshi_post_forecast_markets": "2cc8ed061adb350c138914ae76609074"
+    },
+    "source_age_minutes": 453.24320933333337
+  },
+  {
+    "run_id": "2040b123adca65bc3c1b8b4a13ca3091",
+    "city": "nyc",
+    "snapshot": "2026-09-14 02:35:31.421104+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:35:31.542957+00:00",
+      "received": "2026-09-14 02:35:31.618760+00:00",
+      "event": "KXHIGHNY-26SEP13",
+      "raw_id": "18bc9ebabdbdd1eb6faeb8e9e7d8e997",
+      "rows": [
+        {
+          "ticker": "KXHIGHNY-26SEP13-T78",
+          "lower": null,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 289883.87,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 105726.56,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 82788.68,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 51287.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B84.5",
+          "lower": 84,
+          "upper": 85,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 26386.46,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-T85",
+          "lower": 86,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 32720.16,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 1.0441176470588234
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "c3ca9ce4ccd2f6f42c8e4a42bfc95b44",
+      "timing_nws_daily_forecast": "a61089ec4212f5a1a54c012115da8281",
+      "timing_nws_hourly_forecast": "cdf0188359982423957b7117c9d7add9",
+      "timing_kalshi_post_forecast_markets": "18bc9ebabdbdd1eb6faeb8e9e7d8e997"
+    },
+    "source_age_minutes": 116.6589802
+  },
+  {
+    "run_id": "2040b123adca65bc3c1b8b4a13ca3091",
+    "city": "mia",
+    "snapshot": "2026-09-14 02:35:31.421104+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:35:31.700744+00:00",
+      "received": "2026-09-14 02:35:31.711117+00:00",
+      "event": "KXHIGHMIA-26SEP13",
+      "raw_id": "f5bc655b1b78d095f0511fd287ab237a",
+      "rows": [
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T85",
+          "lower": null,
+          "upper": 84,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 116884.76,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B85.5",
+          "lower": 85,
+          "upper": 86,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 87733.52,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B87.5",
+          "lower": 87,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 160353.27,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 183333.02,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.99,
+          "yes_bid_size": 20806.5,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T92",
+          "lower": 93,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16657.86,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 3.9558823529411766
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "f0b5c6e2525049728feec12f56647052",
+      "timing_nws_daily_forecast": "73d4d9cc4292350611630cf2bfcb2cac",
+      "timing_nws_hourly_forecast": "bb38e255c98ac70b98bef15eef74710c",
+      "timing_kalshi_post_forecast_markets": "f5bc655b1b78d095f0511fd287ab237a"
+    },
+    "source_age_minutes": 378.82827945
+  },
+  {
+    "run_id": "2040b123adca65bc3c1b8b4a13ca3091",
+    "city": "la",
+    "snapshot": "2026-09-14 02:35:31.421104+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:35:31.792285+00:00",
+      "received": "2026-09-14 02:35:31.802187+00:00",
+      "event": "KXHIGHLAX-26SEP13",
+      "raw_id": "fb40f2d7df4a2d4406c9f8d82f60f0cd",
+      "rows": [
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T76",
+          "lower": null,
+          "upper": 75,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 181755.45,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B76.5",
+          "lower": 76,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 241875.26,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 218653.79,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 336723.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 481089.68,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T83",
+          "lower": 84,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 630609.37,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.014705882352941
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "8a37da0922c580440d91bec8afafd0a0",
+      "timing_nws_daily_forecast": "10e922314db4c624f9988cfce866df9a",
+      "timing_nws_hourly_forecast": "ac645077c97d9339c49e2f8330caa134",
+      "timing_kalshi_post_forecast_markets": "fb40f2d7df4a2d4406c9f8d82f60f0cd"
+    },
+    "source_age_minutes": 368.7298027833333
+  },
+  {
+    "run_id": "2040b123adca65bc3c1b8b4a13ca3091",
+    "city": "den",
+    "snapshot": "2026-09-14 02:35:31.421104+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:35:31.891890+00:00",
+      "received": "2026-09-14 02:35:31.900586+00:00",
+      "event": "KXHIGHDEN-26SEP13",
+      "raw_id": "8749be30c1bedfe23c921029af1015d0",
+      "rows": [
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T89",
+          "lower": null,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11285.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11273.36,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 9519.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B93.5",
+          "lower": 93,
+          "upper": 94,
+          "yes_bid": 0.99,
+          "yes_bid_size": 4324.08,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B95.5",
+          "lower": 95,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 4838.93,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T96",
+          "lower": 97,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 1776.96,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "0fd33ebd5daad35f30bcd9e93efb2c61",
+      "timing_nws_daily_forecast": "3ce92d486e4d7780d1a0aa62e2af5c68",
+      "timing_nws_hourly_forecast": "6e11ec23df2cf83f84de0e2a2cc4d4a4",
+      "timing_kalshi_post_forecast_markets": "8749be30c1bedfe23c921029af1015d0"
+    },
+    "source_age_minutes": 469.21480030000004
+  },
+  {
+    "run_id": "2040b123adca65bc3c1b8b4a13ca3091",
+    "city": "aus",
+    "snapshot": "2026-09-14 02:35:31.421104+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:35:31.996586+00:00",
+      "received": "2026-09-14 02:35:32.009537+00:00",
+      "event": "KXHIGHAUS-26SEP13",
+      "raw_id": "5842069168470633c67bf143e8aef0d8",
+      "rows": [
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 125099.07,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73997.18,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 62157.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 10960.39,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 10685.12,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12243.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "142bf4f2b30c62cdb654078455904e26",
+      "timing_nws_daily_forecast": "f80b6942f4ecd270016b573b859e0212",
+      "timing_nws_hourly_forecast": "faebf59bb435acfee36ab04487aac860",
+      "timing_kalshi_post_forecast_markets": "5842069168470633c67bf143e8aef0d8"
+    },
+    "source_age_minutes": 96.7498708
+  },
+  {
+    "run_id": "2040b123adca65bc3c1b8b4a13ca3091",
+    "city": "okc",
+    "snapshot": "2026-09-14 02:35:31.421104+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:35:32.111664+00:00",
+      "received": "2026-09-14 02:35:32.122993+00:00",
+      "event": "KXHIGHTOKC-26SEP13",
+      "raw_id": "caefc63f0961c8babc388d73bd3cdff3",
+      "rows": [
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 78369.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73002.23,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 74679.71,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 14282.32,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16031.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12075.95,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "0f31496d7c70ab294dcf29e292b892f7",
+      "timing_nws_daily_forecast": "890bd8fcf9e235f124c167bdbebc5f3e",
+      "timing_nws_hourly_forecast": "1de932191d73a799626137a2058e82db",
+      "timing_kalshi_post_forecast_markets": "caefc63f0961c8babc388d73bd3cdff3"
+    },
+    "source_age_minutes": 458.23510925
+  },
+  {
+    "run_id": "5a99929581b4d62dfb71071e61effd62",
+    "city": "nyc",
+    "snapshot": "2026-09-14 02:40:31.450024+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:40:31.585667+00:00",
+      "received": "2026-09-14 02:40:31.669290+00:00",
+      "event": "KXHIGHNY-26SEP13",
+      "raw_id": "b36a751fcce79827e011d6f890757f18",
+      "rows": [
+        {
+          "ticker": "KXHIGHNY-26SEP13-T78",
+          "lower": null,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 287545.9,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 105633.05,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 82788.68,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 51287.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B84.5",
+          "lower": 84,
+          "upper": 85,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 26386.46,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-T85",
+          "lower": 86,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 32720.16,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 1.0441176470588234
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "52f4f05dd44c4c08cbd78665d9f64f4d",
+      "timing_nws_daily_forecast": "5431b9074164859dbe86f43e8715d8a3",
+      "timing_nws_hourly_forecast": "843c8416eb2e43e73b9c027b4064ab29",
+      "timing_kalshi_post_forecast_markets": "b36a751fcce79827e011d6f890757f18"
+    },
+    "source_age_minutes": 121.65966621666666
+  },
+  {
+    "run_id": "5a99929581b4d62dfb71071e61effd62",
+    "city": "mia",
+    "snapshot": "2026-09-14 02:40:31.450024+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:40:31.757776+00:00",
+      "received": "2026-09-14 02:40:31.774794+00:00",
+      "event": "KXHIGHMIA-26SEP13",
+      "raw_id": "885bab8559d0fdd04031ed24d7ebc727",
+      "rows": [
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T85",
+          "lower": null,
+          "upper": 84,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 116884.76,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B85.5",
+          "lower": 85,
+          "upper": 86,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 86704.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B87.5",
+          "lower": 87,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 160353.27,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 183145.99,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.99,
+          "yes_bid_size": 20338.91,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T92",
+          "lower": 93,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16657.86,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 3.9558823529411766
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "c67534628b83594f1378edc42e272bfc",
+      "timing_nws_daily_forecast": "5e29f214ad4777c946aba8c9bab34a20",
+      "timing_nws_hourly_forecast": "d6a12b7122b18d4bd07f8cef0e18b778",
+      "timing_kalshi_post_forecast_markets": "885bab8559d0fdd04031ed24d7ebc727"
+    },
+    "source_age_minutes": 383.8292247
+  },
+  {
+    "run_id": "5a99929581b4d62dfb71071e61effd62",
+    "city": "la",
+    "snapshot": "2026-09-14 02:40:31.450024+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:40:31.837758+00:00",
+      "received": "2026-09-14 02:40:31.855661+00:00",
+      "event": "KXHIGHLAX-26SEP13",
+      "raw_id": "ec8539b3adca693ebcb62cda85357a2e",
+      "rows": [
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T76",
+          "lower": null,
+          "upper": 75,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 181754.45,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B76.5",
+          "lower": 76,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 240765.22,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 218649.6,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 333447.89,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 481089.68,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T83",
+          "lower": 84,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 630141.78,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.014705882352941
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "15e2aab204af3427195f4e99401b9b6d",
+      "timing_nws_daily_forecast": "4f280a6e49c1dc41e24c8b71d0289171",
+      "timing_nws_hourly_forecast": "f885318980f78f8a45e7471587bd92fa",
+      "timing_kalshi_post_forecast_markets": "ec8539b3adca693ebcb62cda85357a2e"
+    },
+    "source_age_minutes": 373.7305586
+  },
+  {
+    "run_id": "5a99929581b4d62dfb71071e61effd62",
+    "city": "den",
+    "snapshot": "2026-09-14 02:40:31.450024+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:40:31.915711+00:00",
+      "received": "2026-09-14 02:40:31.934778+00:00",
+      "event": "KXHIGHDEN-26SEP13",
+      "raw_id": "4e37430f6e2de5b8f4357090f95759b5",
+      "rows": [
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T89",
+          "lower": null,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11285.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11179.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 9519.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B93.5",
+          "lower": 93,
+          "upper": 94,
+          "yes_bid": 0.99,
+          "yes_bid_size": 4324.08,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B95.5",
+          "lower": 95,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 4838.93,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T96",
+          "lower": 97,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 1776.96,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "40da22691f2b4048fcbca907f3076425",
+      "timing_nws_daily_forecast": "b03b0c777ce304884237a96a29cd2b8e",
+      "timing_nws_hourly_forecast": "5341c1ac504167a77cb17fb79fe48be6",
+      "timing_kalshi_post_forecast_markets": "4e37430f6e2de5b8f4357090f95759b5"
+    },
+    "source_age_minutes": 474.2151949
+  },
+  {
+    "run_id": "5a99929581b4d62dfb71071e61effd62",
+    "city": "aus",
+    "snapshot": "2026-09-14 02:40:31.450024+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:40:32.092428+00:00",
+      "received": "2026-09-14 02:40:32.109061+00:00",
+      "event": "KXHIGHAUS-26SEP13",
+      "raw_id": "a2a1367ff4aec4156874ca626e258279",
+      "rows": [
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 125099.07,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73997.18,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 61757.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 10960.39,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 10685.12,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12243.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "d7afbcc74dd3959a1848dfb7cc3200a1",
+      "timing_nws_daily_forecast": "91810e3d2f2081dc3f65672c1496f11b",
+      "timing_nws_hourly_forecast": "f2554f3bdb68ebb51d9228f82b529871",
+      "timing_kalshi_post_forecast_markets": "a2a1367ff4aec4156874ca626e258279"
+    },
+    "source_age_minutes": 58.134802183333335
+  },
+  {
+    "run_id": "5a99929581b4d62dfb71071e61effd62",
+    "city": "okc",
+    "snapshot": "2026-09-14 02:40:31.450024+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:40:32.206156+00:00",
+      "received": "2026-09-14 02:40:32.240926+00:00",
+      "event": "KXHIGHTOKC-26SEP13",
+      "raw_id": "2a36863ef25a708d1feb821f54564cb9",
+      "rows": [
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 78369.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73002.23,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 74679.71,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 14282.32,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16031.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12075.95,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "1a1120d41e586954eef505b4b536b789",
+      "timing_nws_daily_forecast": "e9227ff98d964c482117093b9fa0880c",
+      "timing_nws_hourly_forecast": "04a72848561d535a129f91ab60d8efe9",
+      "timing_kalshi_post_forecast_markets": "2a36863ef25a708d1feb821f54564cb9"
+    },
+    "source_age_minutes": 463.23669098333335
+  },
+  {
+    "run_id": "d0d6c9eec80365ffda057d5d8e2ceb05",
+    "city": "nyc",
+    "snapshot": "2026-09-14 02:45:31.438316+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:45:31.570154+00:00",
+      "received": "2026-09-14 02:45:31.656031+00:00",
+      "event": "KXHIGHNY-26SEP13",
+      "raw_id": "d9490b92efa05e3f16d357ce420a9a70",
+      "rows": [
+        {
+          "ticker": "KXHIGHNY-26SEP13-T78",
+          "lower": null,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 287182.31,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 105360.05,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 81234.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 51287.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B84.5",
+          "lower": 84,
+          "upper": 85,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 26491.46,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-T85",
+          "lower": 86,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 32825.16,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 1.0441176470588234
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "173f16e81276664238970622afd8bd9d",
+      "timing_nws_daily_forecast": "80f1d428020155c567a5911df4b0f8d9",
+      "timing_nws_hourly_forecast": "22d1b7babd5b2be0904b422e2f565873",
+      "timing_kalshi_post_forecast_markets": "d9490b92efa05e3f16d357ce420a9a70"
+    },
+    "source_age_minutes": 126.65943275
+  },
+  {
+    "run_id": "d0d6c9eec80365ffda057d5d8e2ceb05",
+    "city": "mia",
+    "snapshot": "2026-09-14 02:45:31.438316+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:45:31.708149+00:00",
+      "received": "2026-09-14 02:45:31.724736+00:00",
+      "event": "KXHIGHMIA-26SEP13",
+      "raw_id": "04a79bea7de3a324bf5f8705788e5738",
+      "rows": [
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T85",
+          "lower": null,
+          "upper": 84,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 116884.76,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B85.5",
+          "lower": 85,
+          "upper": 86,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 86704.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B87.5",
+          "lower": 87,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 160353.27,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 183145.99,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.99,
+          "yes_bid_size": 20338.91,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T92",
+          "lower": 93,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16657.86,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 3.9558823529411766
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "e3e05a149cd93248f0cc9d4f0fec9799",
+      "timing_nws_daily_forecast": "4f60b323ede0e1a69664d2b013593a26",
+      "timing_nws_hourly_forecast": "7c7ab2be26a39e19daa17984a35b39bc",
+      "timing_kalshi_post_forecast_markets": "04a79bea7de3a324bf5f8705788e5738"
+    },
+    "source_age_minutes": 388.8284016833333
+  },
+  {
+    "run_id": "d0d6c9eec80365ffda057d5d8e2ceb05",
+    "city": "la",
+    "snapshot": "2026-09-14 02:45:31.438316+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:45:31.777021+00:00",
+      "received": "2026-09-14 02:45:31.794871+00:00",
+      "event": "KXHIGHLAX-26SEP13",
+      "raw_id": "6bfd7732b62f94054a5547af2ce52df9",
+      "rows": [
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T76",
+          "lower": null,
+          "upper": 75,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 181857.45,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B76.5",
+          "lower": 76,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 240681.19,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 218647.33,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 333120.59,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 480949.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T83",
+          "lower": 84,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 630024.75,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.014705882352941
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "3fb52c31a49d4d616c2ca70a65532be0",
+      "timing_nws_daily_forecast": "c6bc0d375d832839fe34185bb680ef21",
+      "timing_nws_hourly_forecast": "49dfdbbf2993f00d4409ce2a79a3c3c8",
+      "timing_kalshi_post_forecast_markets": "6bfd7732b62f94054a5547af2ce52df9"
+    },
+    "source_age_minutes": 378.72954373333334
+  },
+  {
+    "run_id": "d0d6c9eec80365ffda057d5d8e2ceb05",
+    "city": "den",
+    "snapshot": "2026-09-14 02:45:31.438316+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:45:31.846187+00:00",
+      "received": "2026-09-14 02:45:31.863697+00:00",
+      "event": "KXHIGHDEN-26SEP13",
+      "raw_id": "6e6e196ca6a921107fa65fec5c5f024e",
+      "rows": [
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T89",
+          "lower": null,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11285.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11179.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 9519.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B93.5",
+          "lower": 93,
+          "upper": 94,
+          "yes_bid": 0.99,
+          "yes_bid_size": 4324.08,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B95.5",
+          "lower": 95,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 4838.93,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T96",
+          "lower": 97,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 1776.96,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "e24397ff17ad67c52fa01613c766e009",
+      "timing_nws_daily_forecast": "0d66ded578dc47dfb2d8fa27378883c2",
+      "timing_nws_hourly_forecast": "56a4d36b766f4bd2a30a27d0e716e217",
+      "timing_kalshi_post_forecast_markets": "6e6e196ca6a921107fa65fec5c5f024e"
+    },
+    "source_age_minutes": 479.2140325666667
+  },
+  {
+    "run_id": "d0d6c9eec80365ffda057d5d8e2ceb05",
+    "city": "aus",
+    "snapshot": "2026-09-14 02:45:31.438316+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:45:31.918272+00:00",
+      "received": "2026-09-14 02:45:31.935491+00:00",
+      "event": "KXHIGHAUS-26SEP13",
+      "raw_id": "b5f8945f1a67a7bf21d9a72f4290869f",
+      "rows": [
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 125197.02,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73721.13,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 61860.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 10960.39,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 10685.12,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12243.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "071f43745243ded9503e22ce3949faf5",
+      "timing_nws_daily_forecast": "86eab02a0a0fe235f8fda21fed3faef8",
+      "timing_nws_hourly_forecast": "4a7e4a62f52ec4e799c69ae27512fad9",
+      "timing_kalshi_post_forecast_markets": "b5f8945f1a67a7bf21d9a72f4290869f"
+    },
+    "source_age_minutes": 63.1319017
+  },
+  {
+    "run_id": "d0d6c9eec80365ffda057d5d8e2ceb05",
+    "city": "okc",
+    "snapshot": "2026-09-14 02:45:31.438316+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:45:31.988877+00:00",
+      "received": "2026-09-14 02:45:32.006762+00:00",
+      "event": "KXHIGHTOKC-26SEP13",
+      "raw_id": "440adf6a8765027ed88737b5dce301f6",
+      "rows": [
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 78474.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73107.23,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 74782.71,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 14282.32,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16031.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12075.95,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "19f989fc04fc166e2bfb7b8762583803",
+      "timing_nws_daily_forecast": "c06f51546ecf11a300a78144941f9bd1",
+      "timing_nws_hourly_forecast": "a90f23404efce69296364f7f12b33766",
+      "timing_kalshi_post_forecast_markets": "440adf6a8765027ed88737b5dce301f6"
+    },
+    "source_age_minutes": 468.2330650833334
+  },
+  {
+    "run_id": "e6750f18c0eaa4538b1da7bcb65fc92d",
+    "city": "nyc",
+    "snapshot": "2026-09-14 02:50:31.459274+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:50:31.590044+00:00",
+      "received": "2026-09-14 02:50:31.680791+00:00",
+      "event": "KXHIGHNY-26SEP13",
+      "raw_id": "7733ad037131fb4aec2405e89bb5d435",
+      "rows": [
+        {
+          "ticker": "KXHIGHNY-26SEP13-T78",
+          "lower": null,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 287182.31,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 105360.05,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 81047.35,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 51287.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B84.5",
+          "lower": 84,
+          "upper": 85,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 26491.46,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-T85",
+          "lower": 86,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 32825.16,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 1.0441176470588234
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "2a98cfa50cccd82ee89f93208d9146ea",
+      "timing_nws_daily_forecast": "7c09416bb19c3f76a6878bcc3a29b591",
+      "timing_nws_hourly_forecast": "42d58d4a866ccdc8122edc2d47b190c7",
+      "timing_kalshi_post_forecast_markets": "7733ad037131fb4aec2405e89bb5d435"
+    },
+    "source_age_minutes": 131.6597633
+  },
+  {
+    "run_id": "e6750f18c0eaa4538b1da7bcb65fc92d",
+    "city": "mia",
+    "snapshot": "2026-09-14 02:50:31.459274+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:50:31.738508+00:00",
+      "received": "2026-09-14 02:50:31.755351+00:00",
+      "event": "KXHIGHMIA-26SEP13",
+      "raw_id": "5889efdff431f331a39840282ce29bf5",
+      "rows": [
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T85",
+          "lower": null,
+          "upper": 84,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 116884.76,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B85.5",
+          "lower": 85,
+          "upper": 86,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 85582.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B87.5",
+          "lower": 87,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 160353.27,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 183145.99,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.99,
+          "yes_bid_size": 20172.91,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T92",
+          "lower": 93,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16657.86,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 3.9558823529411766
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "123a5f040109d1a4a91526dfa0da7554",
+      "timing_nws_daily_forecast": "a6ff3e81e55c37fde6eb826a4464fabc",
+      "timing_nws_hourly_forecast": "cf8181b57c3189d4122411f299547c1c",
+      "timing_kalshi_post_forecast_markets": "5889efdff431f331a39840282ce29bf5"
+    },
+    "source_age_minutes": 393.82890291666666
+  },
+  {
+    "run_id": "e6750f18c0eaa4538b1da7bcb65fc92d",
+    "city": "la",
+    "snapshot": "2026-09-14 02:50:31.459274+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:50:31.810084+00:00",
+      "received": "2026-09-14 02:50:31.828357+00:00",
+      "event": "KXHIGHLAX-26SEP13",
+      "raw_id": "513dd498441923e0d4cdcbde6a6d97a3",
+      "rows": [
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T76",
+          "lower": null,
+          "upper": 75,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 181859.45,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B76.5",
+          "lower": 76,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 240228.55,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 218597.88,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 331717.81,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 480949.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T83",
+          "lower": 84,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 629185.09,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.014705882352941
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "b0b9fb16329ba5db3b4cd6038e2abb70",
+      "timing_nws_daily_forecast": "5e82d1d1817c8363f37fa7817102aa67",
+      "timing_nws_hourly_forecast": "ec52f4bd2f6eae108fb976c72c32b00c",
+      "timing_kalshi_post_forecast_markets": "513dd498441923e0d4cdcbde6a6d97a3"
+    },
+    "source_age_minutes": 383.73010215
+  },
+  {
+    "run_id": "e6750f18c0eaa4538b1da7bcb65fc92d",
+    "city": "den",
+    "snapshot": "2026-09-14 02:50:31.459274+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:50:31.880808+00:00",
+      "received": "2026-09-14 02:50:31.890009+00:00",
+      "event": "KXHIGHDEN-26SEP13",
+      "raw_id": "7be3fe46f1ab96980e3f2d4fe95a6cb0",
+      "rows": [
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T89",
+          "lower": null,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11285.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11179.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 9519.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B93.5",
+          "lower": 93,
+          "upper": 94,
+          "yes_bid": 0.99,
+          "yes_bid_size": 4293.18,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B95.5",
+          "lower": 95,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 4838.93,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T96",
+          "lower": 97,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 1776.96,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "b7b9f2f532ab8b10438364d2eb0bcc83",
+      "timing_nws_daily_forecast": "261d4ff7508cc2a58f5102c3720dad88",
+      "timing_nws_hourly_forecast": "abb4c4f7f800c31c1e766e8a5149bee6",
+      "timing_kalshi_post_forecast_markets": "7be3fe46f1ab96980e3f2d4fe95a6cb0"
+    },
+    "source_age_minutes": 484.2146105
+  },
+  {
+    "run_id": "e6750f18c0eaa4538b1da7bcb65fc92d",
+    "city": "aus",
+    "snapshot": "2026-09-14 02:50:31.459274+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:50:31.967944+00:00",
+      "received": "2026-09-14 02:50:31.976762+00:00",
+      "event": "KXHIGHAUS-26SEP13",
+      "raw_id": "d30149c6727a8ee064b4cdd62d020c2b",
+      "rows": [
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 125199.02,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73723.13,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 61862.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 10960.39,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 10685.12,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12243.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "8c606339c1eac7adef4bf2c1e0e604fa",
+      "timing_nws_daily_forecast": "d55c681ad630801a5440ef3f2f6a0bbf",
+      "timing_nws_hourly_forecast": "69ac14d86c4a0dd82e3a6dfeccd8de0a",
+      "timing_kalshi_post_forecast_markets": "d30149c6727a8ee064b4cdd62d020c2b"
+    },
+    "source_age_minutes": 68.13273654999999
+  },
+  {
+    "run_id": "e6750f18c0eaa4538b1da7bcb65fc92d",
+    "city": "okc",
+    "snapshot": "2026-09-14 02:50:31.459274+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:50:32.029225+00:00",
+      "received": "2026-09-14 02:50:32.038395+00:00",
+      "event": "KXHIGHTOKC-26SEP13",
+      "raw_id": "ae0c1d018cad9dabab318450e174fc02",
+      "rows": [
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 78474.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73107.23,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 74784.71,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 14282.32,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16031.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12075.95,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "35184b3c4ba58bdf8ead637ab36eb191",
+      "timing_nws_daily_forecast": "9050f03b8780e6852217f2d4e58121f3",
+      "timing_nws_hourly_forecast": "57fcfe1c88f5e546b175895183fc33d8",
+      "timing_kalshi_post_forecast_markets": "ae0c1d018cad9dabab318450e174fc02"
+    },
+    "source_age_minutes": 473.2337255
+  },
+  {
+    "run_id": "752e8fc32b215c0288e44ae6791dee7e",
+    "city": "nyc",
+    "snapshot": "2026-09-14 02:55:31.462417+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:55:31.829261+00:00",
+      "received": "2026-09-14 02:55:31.920292+00:00",
+      "event": "KXHIGHNY-26SEP13",
+      "raw_id": "d276a9414fe49d23b6d99dcc0e30c80d",
+      "rows": [
+        {
+          "ticker": "KXHIGHNY-26SEP13-T78",
+          "lower": null,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 287168.31,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 105309.95,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 80690.42,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 51287.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-B84.5",
+          "lower": 84,
+          "upper": 85,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 26477.46,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHNY-26SEP13-T85",
+          "lower": 86,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 32811.16,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 1.0441176470588234
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "0f50c774c5e93e912bc9f3003fecc116",
+      "timing_nws_daily_forecast": "4e650236b1f2b740caa8573bda4dc9df",
+      "timing_nws_hourly_forecast": "c0972aa264e00dc1b32fd45f10bf0e58",
+      "timing_kalshi_post_forecast_markets": "d276a9414fe49d23b6d99dcc0e30c80d"
+    },
+    "source_age_minutes": 136.66375363333333
+  },
+  {
+    "run_id": "752e8fc32b215c0288e44ae6791dee7e",
+    "city": "mia",
+    "snapshot": "2026-09-14 02:55:31.462417+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:55:32.092040+00:00",
+      "received": "2026-09-14 02:55:32.130026+00:00",
+      "event": "KXHIGHMIA-26SEP13",
+      "raw_id": "3285faa8f7ee1d8923f2ccf245cf9eb3",
+      "rows": [
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T85",
+          "lower": null,
+          "upper": 84,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 116884.76,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B85.5",
+          "lower": 85,
+          "upper": 86,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 85582.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B87.5",
+          "lower": 87,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 160353.27,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 183145.99,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.99,
+          "yes_bid_size": 20172.91,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHMIA-26SEP13-T92",
+          "lower": 93,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16657.86,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 3.9558823529411766
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "68c934a421df746460d7bbe099e436c7",
+      "timing_nws_daily_forecast": "e69146489feb184a30d62cfb1913ed52",
+      "timing_nws_hourly_forecast": "85002d85eb20614f8f345bcdafc029cc",
+      "timing_kalshi_post_forecast_markets": "3285faa8f7ee1d8923f2ccf245cf9eb3"
+    },
+    "source_age_minutes": 398.83480764999996
+  },
+  {
+    "run_id": "752e8fc32b215c0288e44ae6791dee7e",
+    "city": "la",
+    "snapshot": "2026-09-14 02:55:31.462417+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:55:32.329544+00:00",
+      "received": "2026-09-14 02:55:32.349346+00:00",
+      "event": "KXHIGHLAX-26SEP13",
+      "raw_id": "73518425b7ef509b03e787be8c7c92fc",
+      "rows": [
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T76",
+          "lower": null,
+          "upper": 75,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 181845.45,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B76.5",
+          "lower": 76,
+          "upper": 77,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 238811.8,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B78.5",
+          "lower": 78,
+          "upper": 79,
+          "yes_bid": 0.99,
+          "yes_bid_size": 218490.4,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B80.5",
+          "lower": 80,
+          "upper": 81,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 330502.07,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-B82.5",
+          "lower": 82,
+          "upper": 83,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 480949.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHLAX-26SEP13-T83",
+          "lower": 84,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 629171.09,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.014705882352941
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "80ef05ea50cc67806d3f2154ceb6218c",
+      "timing_nws_daily_forecast": "c0c7fd72e26d1776b58f64aafbfac11b",
+      "timing_nws_hourly_forecast": "c1ed37a2cdf44d72510d1ff3796508b5",
+      "timing_kalshi_post_forecast_markets": "73518425b7ef509b03e787be8c7c92fc"
+    },
+    "source_age_minutes": 388.73875373333334
+  },
+  {
+    "run_id": "752e8fc32b215c0288e44ae6791dee7e",
+    "city": "den",
+    "snapshot": "2026-09-14 02:55:31.462417+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:55:32.585253+00:00",
+      "received": "2026-09-14 02:55:32.604009+00:00",
+      "event": "KXHIGHDEN-26SEP13",
+      "raw_id": "321659cb1406ec6cdf3790823b9db231",
+      "rows": [
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T89",
+          "lower": null,
+          "upper": 88,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11285.38,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B89.5",
+          "lower": 89,
+          "upper": 90,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 11179.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B91.5",
+          "lower": 91,
+          "upper": 92,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 9519.85,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B93.5",
+          "lower": 93,
+          "upper": 94,
+          "yes_bid": 0.99,
+          "yes_bid_size": 4293.18,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-B95.5",
+          "lower": 95,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 4838.93,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHDEN-26SEP13-T96",
+          "lower": 97,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 1776.96,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "58df77debcc3844d288c21db0d12b1f3",
+      "timing_nws_daily_forecast": "cd85f99fd711c6e5aa96e4571f24655c",
+      "timing_nws_hourly_forecast": "ad9afb6d81d9c273edb542a104b86857",
+      "timing_kalshi_post_forecast_markets": "321659cb1406ec6cdf3790823b9db231"
+    },
+    "source_age_minutes": 489.22633028333337
+  },
+  {
+    "run_id": "752e8fc32b215c0288e44ae6791dee7e",
+    "city": "aus",
+    "snapshot": "2026-09-14 02:55:31.462417+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:55:32.759947+00:00",
+      "received": "2026-09-14 02:55:32.795651+00:00",
+      "event": "KXHIGHAUS-26SEP13",
+      "raw_id": "c7ac2a7013552e003b91dcf556d33c54",
+      "rows": [
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 125185.02,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73709.13,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 61848.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 10960.39,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 10685.12,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHAUS-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12243.6,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "b0e3dd86a1f0ad29ed50cbf29b5eb027",
+      "timing_nws_daily_forecast": "e22f83f30ad533e3c3d0a7125479f95c",
+      "timing_nws_hourly_forecast": "f3d9974e557bd0adf0b373a6d7c62ede",
+      "timing_kalshi_post_forecast_markets": "c7ac2a7013552e003b91dcf556d33c54"
+    },
+    "source_age_minutes": 73.14593268333333
+  },
+  {
+    "run_id": "752e8fc32b215c0288e44ae6791dee7e",
+    "city": "okc",
+    "snapshot": "2026-09-14 02:55:31.462417+00:00",
+    "quote": {
+      "requested": "2026-09-14 02:55:32.973009+00:00",
+      "received": "2026-09-14 02:55:32.992526+00:00",
+      "event": "KXHIGHTOKC-26SEP13",
+      "raw_id": "ca49d60e4f15511919ebeb9d8ff025f9",
+      "rows": [
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T97",
+          "lower": null,
+          "upper": 96,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 78460.82,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B97.5",
+          "lower": 97,
+          "upper": 98,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 73093.23,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B99.5",
+          "lower": 99,
+          "upper": 100,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 74770.71,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B101.5",
+          "lower": 101,
+          "upper": 102,
+          "yes_bid": 0.99,
+          "yes_bid_size": 14282.32,
+          "yes_ask": 1.0,
+          "yes_ask_size": 0.0,
+          "no_bid": 0.0,
+          "no_bid_size": null,
+          "no_ask": 0.01,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-B103.5",
+          "lower": 103,
+          "upper": 104,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 16031.41,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        },
+        {
+          "ticker": "KXHIGHTOKC-26SEP13-T104",
+          "lower": 105,
+          "upper": null,
+          "yes_bid": 0.0,
+          "yes_bid_size": 0.0,
+          "yes_ask": 0.01,
+          "yes_ask_size": 12075.95,
+          "no_bid": 0.99,
+          "no_bid_size": null,
+          "no_ask": 1.0,
+          "no_ask_size": null
+        }
+      ],
+      "centroid": 2.985294117647059
+    },
+    "signal_valid": false,
+    "capture_valid": true,
+    "issues": [
+      "forecast:missing_target_daytime_high"
+    ],
+    "raw_ids": {
+      "timing_nws_points": "2f21d504cb70453d3157a08d104d5281",
+      "timing_nws_daily_forecast": "2d73c01116d8fe19859bf793d65eeaea",
+      "timing_nws_hourly_forecast": "b13c2f490e058413e43700c44a011b59",
+      "timing_kalshi_post_forecast_markets": "ca49d60e4f15511919ebeb9d8ff025f9"
+    },
+    "source_age_minutes": 478.2494894166667
+  }
+]

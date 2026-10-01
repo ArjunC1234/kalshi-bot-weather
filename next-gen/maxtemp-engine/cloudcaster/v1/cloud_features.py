@@ -147,7 +147,7 @@ def _features_for_market(
     bracket = market.bracket
     source_expected = source_blend_prediction(row)
     family_expected = family_blend_prediction(row)
-    observed = _finite_float(row.features.get("observed_high_so_far_f"))
+    observed = _observed(row)
     lower = _filled_lower(bracket, raycaster_expected)
     upper = _filled_upper(bracket, raycaster_expected)
     center = (lower + upper) / 2.0
@@ -180,6 +180,15 @@ def _features_for_market(
         ),
         "family_forecast_count": _finite_float(row.features.get("family_forecast_count")),
         "observed_high_so_far_f": observed,
+        "settlement_observed_high_so_far_f": _finite_float(
+            row.features.get("settlement_observed_high_so_far_f")
+        ),
+        "settlement_observed_source_count": _finite_float(
+            row.features.get("settlement_observed_source_count")
+        ),
+        "settlement_observed_age_hours": _finite_float(
+            row.features.get("settlement_observed_age_hours")
+        ),
         "hours_elapsed": _finite_float(row.features.get("hours_elapsed")),
         "hours_remaining": _finite_float(row.features.get("hours_remaining")),
         "bracket_index": float(bracket.index),
@@ -246,3 +255,12 @@ def _finite_float(value: Any) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _observed(row: FeatureRow) -> float | None:
+    observed = _finite_float(row.features.get("settlement_observed_high_so_far_f"))
+    return (
+        observed
+        if observed is not None
+        else _finite_float(row.features.get("observed_high_so_far_f"))
+    )

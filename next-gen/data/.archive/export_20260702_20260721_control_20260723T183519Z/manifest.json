@@ -1,0 +1,36 @@
+{
+  "artifact_type": "local_export",
+  "created_utc": "2026-07-23T18:35:19.992863+00:00",
+  "export_name": "export_20260702_20260721_control_20260723T183519Z",
+  "operation": "archive",
+  "params": {
+    "source": "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\export_20260702_20260721_control"
+  },
+  "status": "complete",
+  "tables": {
+    "collector_runs": {
+      "rows": 1431
+    },
+    "events": {
+      "rows": 2856
+    },
+    "final_temperature_labels": {
+      "rows": 120
+    },
+    "market_snapshots": {
+      "rows": 17136
+    },
+    "provider_errors": {
+      "rows": 85
+    },
+    "raw_payloads": {
+      "rows": 25638
+    },
+    "settlements": {
+      "rows": 120
+    },
+    "weather_snapshots": {
+      "rows": 2856
+    }
+  }
+}

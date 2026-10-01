@@ -86,6 +86,11 @@ create table if not exists events (
   hours_since_climate_start double precision,
   hours_until_climate_end double precision,
   checkpoint_label text not null,
+  settlement_sources jsonb not null default '{}'::jsonb,
+  rules_primary text,
+  rules_secondary text,
+  settlement_source_provider text,
+  settlement_station_id text,
   raw_payload_id text references raw_payloads(raw_payload_id),
   metadata jsonb not null default '{}'::jsonb,
   unique(city, event_ticker, snapshot_time_utc)
@@ -141,6 +146,9 @@ create table if not exists market_snapshots (
   market_top_two_gap double precision,
   sum_yes_asks double precision,
   market_overround_ask double precision,
+  settlement_sources jsonb not null default '{}'::jsonb,
+  rules_primary text,
+  rules_secondary text,
   raw_payload_id text references raw_payloads(raw_payload_id),
   metadata jsonb not null default '{}'::jsonb,
   unique(city, event_ticker, snapshot_time_utc, market_ticker)
@@ -173,6 +181,15 @@ create table if not exists weather_snapshots (
   nws_next_8h_max_f double precision,
   nws_remaining_day_max_f double precision,
   observed_high_so_far_f double precision,
+  settlement_observed_high_so_far_f double precision,
+  settlement_observed_latest_time_utc timestamptz,
+  settlement_observed_age_seconds double precision,
+  settlement_observed_age_hours double precision,
+  settlement_observed_source_count integer,
+  settlement_observed_source_range_f double precision,
+  settlement_observed_source_stddev_f double precision,
+  settlement_observed_nws_delta_f double precision,
+  settlement_observed_sources jsonb not null default '{}'::jsonb,
   latest_observation_time_utc timestamptz,
   latest_observation_temp_f double precision,
   observation_age_seconds double precision,
@@ -202,10 +219,58 @@ create table if not exists weather_snapshots (
   nws_hrrr_disagreement_f double precision,
   nws_nbm_disagreement_f double precision,
   hrrr_nbm_disagreement_f double precision,
+  family_baseline_high_f double precision,
+  family_numerical_anchor_high_f double precision,
+  family_nws_minus_nbm_f double precision,
+  family_hrrr_minus_nbm_f double precision,
+  family_ensemble_minus_nbm_f double precision,
+  family_numerical_disagreement_f double precision,
+  family_forecast_count integer,
+  family_independent_ensemble integer,
+  family_disagreement_range_f double precision,
+  family_disagreement_std_f double precision,
   source_payload_ids jsonb not null default '{}'::jsonb,
   features jsonb not null default '{}'::jsonb,
   unique(city, event_ticker, snapshot_time_utc)
 );
+
+alter table if exists weather_snapshots
+  add column if not exists family_baseline_high_f double precision,
+  add column if not exists family_numerical_anchor_high_f double precision,
+  add column if not exists family_nws_minus_nbm_f double precision,
+  add column if not exists family_hrrr_minus_nbm_f double precision,
+  add column if not exists family_ensemble_minus_nbm_f double precision,
+  add column if not exists family_numerical_disagreement_f double precision,
+  add column if not exists family_forecast_count integer,
+  add column if not exists family_independent_ensemble integer,
+  add column if not exists family_disagreement_range_f double precision,
+  add column if not exists family_disagreement_std_f double precision,
+  add column if not exists settlement_observed_high_so_far_f double precision,
+  add column if not exists settlement_observed_latest_time_utc timestamptz,
+  add column if not exists settlement_observed_age_seconds double precision,
+  add column if not exists settlement_observed_age_hours double precision,
+  add column if not exists settlement_observed_source_count integer,
+  add column if not exists settlement_observed_source_range_f double precision,
+  add column if not exists settlement_observed_source_stddev_f double precision,
+  add column if not exists settlement_observed_nws_delta_f double precision,
+  add column if not exists settlement_observed_sources jsonb not null default '{}'::jsonb;
+
+alter table if exists events
+  add column if not exists settlement_sources jsonb not null default '{}'::jsonb,
+  add column if not exists rules_primary text,
+  add column if not exists rules_secondary text,
+  add column if not exists settlement_source_provider text,
+  add column if not exists settlement_station_id text;
+
+alter table if exists market_snapshots
+  add column if not exists settlement_sources jsonb not null default '{}'::jsonb,
+  add column if not exists rules_primary text,
+  add column if not exists rules_secondary text;
+
+alter table if exists settlements
+  add column if not exists market_settlement_source text,
+  add column if not exists rules_primary text,
+  add column if not exists rules_secondary text;
 
 create table if not exists settlements (
   settlement_id text primary key,
@@ -217,6 +282,9 @@ create table if not exists settlements (
   winner_label text,
   settlement_temperature_f double precision,
   settlement_bracket_index integer,
+  market_settlement_source text,
+  rules_primary text,
+  rules_secondary text,
   source_provider text not null,
   raw_payload_id text references raw_payloads(raw_payload_id),
   validation_status text not null,
@@ -267,6 +335,7 @@ drop view if exists v_backtest_export;
 drop view if exists v_collector_health;
 drop view if exists v_latest_city_snapshots;
 drop view if exists v_snapshots_with_settlements;
+drop view if exists v_events_missing_weather_company_final_high;
 drop view if exists v_events_missing_final_high;
 drop view if exists v_unsettled_events;
 
@@ -277,7 +346,9 @@ select distinct on (e.city, e.event_ticker)
   e.target_date,
   e.city_timezone,
   e.climate_day_end_utc,
-  e.market_close_time_utc
+  e.market_close_time_utc,
+  e.settlement_source_provider,
+  e.settlement_station_id
 from events e
 left join settlements s on s.city = e.city and s.event_ticker = e.event_ticker
 where s.settlement_id is null
@@ -307,6 +378,29 @@ where f.final_temperature_label_id is null
   and e.climate_day_end_utc <= now()
 order by e.city, e.event_ticker, e.snapshot_time_utc desc;
 
+create or replace view v_events_missing_weather_company_final_high as
+select distinct on (e.city, e.event_ticker)
+  e.city,
+  e.event_ticker,
+  e.target_date,
+  e.station_id,
+  e.city_timezone,
+  e.climate_day_end_utc,
+  e.market_close_time_utc,
+  e.metadata as event_metadata,
+  s.winner_ticker,
+  s.settlement_temperature_f as kalshi_settlement_temperature_f,
+  s.settlement_bracket_index
+from events e
+left join final_temperature_labels f
+  on f.city = e.city
+  and f.event_ticker = e.event_ticker
+  and f.source_provider = 'weather_company_daily'
+left join settlements s on s.city = e.city and s.event_ticker = e.event_ticker
+where f.final_temperature_label_id is null
+  and e.climate_day_end_utc <= now()
+order by e.city, e.event_ticker, e.snapshot_time_utc desc;
+
 create or replace view v_snapshots_with_settlements as
 select
   e.*,
@@ -316,19 +410,31 @@ select
   s.settlement_temperature_f,
   s.settlement_temperature_f as kalshi_settlement_temperature_f,
   s.settlement_bracket_index,
+  s.market_settlement_source,
+  s.rules_primary as settlement_rules_primary,
+  s.rules_secondary as settlement_rules_secondary,
   s.validation_status as settlement_validation_status,
   s.warnings as settlement_warnings,
   f.final_high_f as final_nws_high_f,
   f.product_id as final_high_product_id,
   f.issued_at_utc as final_high_issued_at_utc,
   f.validation_status as final_high_validation_status,
-  f.warnings as final_high_warnings
+  f.warnings as final_high_warnings,
+  twc.final_high_f as final_weather_company_high_f,
+  twc.product_id as final_weather_company_product_id,
+  twc.issued_at_utc as final_weather_company_issued_at_utc,
+  twc.validation_status as final_weather_company_validation_status,
+  twc.warnings as final_weather_company_warnings
 from events e
 left join settlements s on s.city = e.city and s.event_ticker = e.event_ticker
 left join final_temperature_labels f
   on f.city = e.city
   and f.event_ticker = e.event_ticker
-  and f.source_provider = 'nws_cli';
+  and f.source_provider = 'nws_cli'
+left join final_temperature_labels twc
+  on twc.city = e.city
+  and twc.event_ticker = e.event_ticker
+  and twc.source_provider = 'weather_company_daily';
 
 create or replace view v_latest_city_snapshots as
 select distinct on (city, event_ticker)
@@ -341,6 +447,8 @@ select
   (select max(snapshot_time_utc) from collector_runs) as latest_run_utc,
   (select count(*) from v_unsettled_events) as unsettled_events,
   (select count(*) from v_events_missing_final_high) as pending_final_highs,
+  (select count(*) from v_events_missing_weather_company_final_high)
+    as pending_weather_company_final_highs,
   (
     select count(*)
     from provider_errors
@@ -360,8 +468,22 @@ select
   e.snapshot_time_utc,
   e.snapshot_time_local,
   e.checkpoint_label,
+  e.settlement_sources,
+  e.rules_primary,
+  e.rules_secondary,
+  e.settlement_source_provider,
+  e.settlement_station_id,
   w.nws_anchor_high_f,
   w.observed_high_so_far_f,
+  w.settlement_observed_high_so_far_f,
+  w.settlement_observed_latest_time_utc,
+  w.settlement_observed_age_seconds,
+  w.settlement_observed_age_hours,
+  w.settlement_observed_source_count,
+  w.settlement_observed_source_range_f,
+  w.settlement_observed_source_stddev_f,
+  w.settlement_observed_nws_delta_f,
+  w.settlement_observed_sources,
   w.hrrr_projected_high_f,
   w.nbm_projected_high_f,
   w.ensemble_raw_median_high_f,
@@ -369,9 +491,15 @@ select
   s.settlement_temperature_f,
   s.settlement_temperature_f as kalshi_settlement_temperature_f,
   s.settlement_bracket_index,
+  s.market_settlement_source,
+  s.rules_primary as settlement_rules_primary,
+  s.rules_secondary as settlement_rules_secondary,
   f.final_high_f as final_nws_high_f,
   f.source_provider as final_high_source_provider,
-  f.validation_status as final_high_validation_status
+  f.validation_status as final_high_validation_status,
+  twc.final_high_f as final_weather_company_high_f,
+  twc.source_provider as final_weather_company_source_provider,
+  twc.validation_status as final_weather_company_validation_status
 from events e
 left join weather_snapshots w
   on w.city = e.city
@@ -381,5 +509,9 @@ left join settlements s on s.city = e.city and s.event_ticker = e.event_ticker
 left join final_temperature_labels f
   on f.city = e.city
   and f.event_ticker = e.event_ticker
-  and f.source_provider = 'nws_cli';
+  and f.source_provider = 'nws_cli'
+left join final_temperature_labels twc
+  on twc.city = e.city
+  and twc.event_ticker = e.event_ticker
+  and twc.source_provider = 'weather_company_daily';
 """

@@ -64,10 +64,14 @@ def discover_sources(roots: SourceRoots) -> dict[str, Any]:
     exports = _discover(normalized.data_root, "export")
     reports = _discover(normalized.report_root, "report")
     quality_reports = _discover(normalized.quality_root, "quality")
-    strategy_reports = _discover(normalized.strategy_root, "strategy")
+    strategy_reports = _merge_sources(
+        _discover(normalized.strategy_root, "strategy"),
+        _discover(normalized.report_root, "strategy", required_artifact_type="strategy_report"),
+    )
     _link_to_exports(reports, exports)
     _link_to_exports(quality_reports, exports)
     _link_to_exports(strategy_reports, exports)
+    _link_to_model_reports(strategy_reports, reports)
     return {
         "roots": {
             "data": str(normalized.data_root),
@@ -85,11 +89,16 @@ def discover_sources(roots: SourceRoots) -> dict[str, Any]:
 def resolve_source(roots: SourceRoots, kind: str, source_id: str | None) -> Path | None:
     if not source_id:
         return None
-    root = _root_for_kind(roots.normalized(), kind)
-    candidate = (root / source_id).resolve()
-    if not _is_relative_to(candidate, root):
-        raise ValueError(f"{kind} source is outside configured root")
-    if not candidate.is_dir():
+    roots_to_search = _roots_for_kind(roots.normalized(), kind)
+    candidate = None
+    for root in roots_to_search:
+        current = (root / source_id).resolve()
+        if not _is_relative_to(current, root):
+            continue
+        if current.is_dir():
+            candidate = current
+            break
+    if candidate is None:
         raise ValueError(f"{kind} source does not exist: {source_id}")
     if kind == "export" and not _is_export(candidate):
         raise ValueError(f"folder is not a valid export: {source_id}")
@@ -102,7 +111,9 @@ def resolve_source(roots: SourceRoots, kind: str, source_id: str | None) -> Path
     return candidate
 
 
-def _discover(root: Path, kind: str) -> list[dict[str, Any]]:
+def _discover(
+    root: Path, kind: str, required_artifact_type: str | None = None
+) -> list[dict[str, Any]]:
     root = root.resolve()
     if not root.exists():
         return []
@@ -111,9 +122,13 @@ def _discover(root: Path, kind: str) -> list[dict[str, Any]]:
     for path in candidates:
         if _skip_dir(path):
             continue
+        if required_artifact_type and _manifest_artifact_type(path) != required_artifact_type:
+            continue
         if kind == "export" and not _is_export(path):
             continue
         if kind == "report" and not _is_report(path):
+            continue
+        if kind == "report" and _manifest_artifact_type(path) == "strategy_report":
             continue
         if kind == "quality" and not _is_quality(path):
             continue
@@ -121,6 +136,16 @@ def _discover(root: Path, kind: str) -> list[dict[str, Any]]:
             continue
         sources.append(_source_info(root, path, kind))
     return sorted(sources, key=lambda item: (item["modified_utc"], item["id"]), reverse=True)
+
+
+def _merge_sources(*groups: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_path: dict[str, dict[str, Any]] = {}
+    for group in groups:
+        for item in group:
+            by_path[str(item.get("path", item["id"]))] = item
+    return sorted(
+        by_path.values(), key=lambda item: (item["modified_utc"], item["id"]), reverse=True
+    )
 
 
 def _source_info(root: Path, path: Path, kind: str) -> dict[str, Any]:
@@ -158,22 +183,88 @@ def _enrich_report_info(info: dict[str, Any], path: Path) -> None:
     summary = _read_json_safe(path / "summary.json")
     config = _read_json_safe(path / "config.json")
     manifest = _read_json_safe(path / "model_manifest.json")
+    run_manifest = _read_json_safe(path / "run_manifest.json")
     info["model_name"] = summary.get("model_name") or config.get("model_name")
     info["mode"] = summary.get("mode")
+    info["neural_mode"] = summary.get("neural_mode") or config.get("neural_mode")
+    info["model_family"] = summary.get("model_family") or config.get("model_family")
+    info["registry_id"] = run_manifest.get("registry_id")
+    info["entrypoint"] = run_manifest.get("entrypoint")
+    info["contract"] = run_manifest.get("contract")
     source_export_id = (
-        summary.get("source_export_id")
+        run_manifest.get("source_export_id")
+        or summary.get("source_export_id")
         or config.get("source_export_id")
         or manifest.get("source_export_id")
     )
     if source_export_id:
         info["source_export_id"] = source_export_id
     info["created_utc"] = (
-        summary.get("generated_at_utc")
+        run_manifest.get("created_utc")
+        or summary.get("generated_at_utc")
         or config.get("generated_at_utc")
         or manifest.get("generated_at_utc")
     )
+    info["generated_at_utc"] = summary.get("generated_at_utc")
+    for key in (
+        "train_days",
+        "test_days",
+        "train_start_date",
+        "train_end_date",
+        "test_start_date",
+        "test_end_date",
+        "temperature_prediction_count",
+        "bracket_prediction_count",
+        "independent_city_days",
+        "snapshot_rows_with_labels",
+        "market_probability_blend",
+        "epochs",
+        "seed",
+    ):
+        if key in summary:
+            info[key] = summary[key]
+    fold_range = _fold_date_ranges(summary.get("folds"))
+    for key, value in fold_range.items():
+        info.setdefault(key, value)
+    for metric in summary.get("temperature_metrics", []):
+        if isinstance(metric, dict) and metric.get("metric") in {
+            "mae",
+            "rmse",
+            "bias",
+            "within_1f",
+            "within_2f",
+        }:
+            info[str(metric["metric"])] = metric.get("value")
+    for metric in summary.get("bracket_metrics", []):
+        if isinstance(metric, dict) and metric.get("metric") in {
+            "log_loss",
+            "brier",
+            "top_one_accuracy",
+            "winner_probability",
+        }:
+            info[str(metric["metric"])] = metric.get("value")
     info["temperature_metrics"] = summary.get("temperature_metrics", [])
     info["bracket_metrics"] = summary.get("bracket_metrics", [])
+
+
+def _fold_date_ranges(value: Any) -> dict[str, str]:
+    if not isinstance(value, list):
+        return {}
+    output: dict[str, str] = {}
+    for output_key, fold_key, reducer in (
+        ("train_start_date", "train_start_date", min),
+        ("train_end_date", "train_end_date", max),
+        ("test_start_date", "test_start_date", min),
+        ("test_end_date", "test_end_date", max),
+    ):
+        dates = [
+            str(fold.get(fold_key))
+            for fold in value
+            if isinstance(fold, dict) and fold.get(fold_key)
+        ]
+        if dates:
+            output[output_key] = reducer(dates)
+    return output
 
 
 def _enrich_quality_info(info: dict[str, Any], path: Path) -> None:
@@ -188,19 +279,27 @@ def _enrich_quality_info(info: dict[str, Any], path: Path) -> None:
 
 
 def _enrich_strategy_info(info: dict[str, Any], path: Path) -> None:
+    manifest = _read_json_safe(path / "run_manifest.json")
     summary = _read_json_safe(path / "summary.json")
     config = summary.get("config", {})
     if not isinstance(config, dict):
         config = {}
     info["mode"] = summary.get("mode") or summary.get("experiment")
     source_export_id = (
-        summary.get("source_export_id")
+        manifest.get("source_export_id")
+        or summary.get("source_export_id")
         or _source_export_id_from_path(summary.get("data_path"))
         or _source_export_id_from_path(config.get("data_path"))
     )
     if source_export_id:
         info["source_export_id"] = source_export_id
-    info["created_utc"] = summary.get("generated_at_utc")
+    model_report = summary.get("model_report") or config.get("model_report")
+    if isinstance(model_report, str) and model_report:
+        info["model_report_path"] = model_report
+        model_report_id = _report_id_from_path(model_report)
+        if model_report_id:
+            info["model_report_id"] = model_report_id
+    info["created_utc"] = manifest.get("created_utc") or summary.get("generated_at_utc")
     for key in (
         "trades",
         "total_pnl",
@@ -217,9 +316,20 @@ def _source_export_id_from_path(value: Any) -> str | None:
     if not isinstance(value, str) or not value:
         return None
     for part in Path(value).parts:
-        if part.startswith("export_"):
+        if (
+            part.startswith("export_")
+            or part.startswith("codex_export_")
+            or part.startswith("codex_latest_")
+        ):
             return part
     return None
+
+
+def _report_id_from_path(value: Any) -> str | None:
+    if not isinstance(value, str) or not value:
+        return None
+    normalized = value.replace("\\", "/").rstrip("/")
+    return normalized.rsplit("/", 1)[-1] or None
 
 
 def _read_json_safe(path: Path) -> dict[str, Any]:
@@ -250,6 +360,77 @@ def _link_to_exports(items: list[dict[str, Any]], exports: list[dict[str, Any]])
             item["source_export_inferred"] = True
 
 
+def _link_to_model_reports(
+    strategy_reports: list[dict[str, Any]],
+    model_reports: list[dict[str, Any]],
+) -> None:
+    reports_by_id = {str(report.get("id")): report for report in model_reports}
+    reports_by_path = {
+        _normalize_path(str(report.get("path", ""))): report
+        for report in model_reports
+        if report.get("path")
+    }
+    for strategy in strategy_reports:
+        model_report_id = strategy.get("model_report_id")
+        model_report_path = strategy.get("model_report_path")
+        report = reports_by_id.get(str(model_report_id)) if model_report_id else None
+        if report is None and model_report_path:
+            report = reports_by_path.get(_normalize_path(str(model_report_path)))
+        if report is None:
+            report = _infer_model_report_from_strategy(strategy, model_reports)
+        if report is None:
+            continue
+        strategy["model_report_id"] = report["id"]
+        strategy["model_report_name"] = report.get("name") or report["id"]
+        strategy["model_report_path"] = report.get("path") or model_report_path
+
+
+def _normalize_path(value: str) -> str:
+    return value.replace("\\", "/").rstrip("/").lower()
+
+
+def _infer_model_report_from_strategy(
+    strategy: dict[str, Any],
+    model_reports: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    prefix = _inferred_model_prefix(str(strategy.get("id") or ""))
+    if not prefix:
+        return None
+    source_export_id = strategy.get("source_export_id")
+    candidates = [
+        report
+        for report in model_reports
+        if (
+            not source_export_id
+            or not report.get("source_export_id")
+            or report.get("source_export_id") == source_export_id
+        )
+    ]
+    return next(
+        (
+            report
+            for report in candidates
+            if str(report.get("id") or "").startswith(f"{prefix}_")
+            or str(report.get("id") or "") == prefix
+        ),
+        None,
+    )
+
+
+def _inferred_model_prefix(strategy_id: str) -> str:
+    lowered = strategy_id.lower()
+    for marker in (
+        "_ev_validation_train_",
+        "_ev_train_",
+        "_fixed_train_",
+        "_validation_train_",
+    ):
+        index = lowered.find(marker)
+        if index > 0:
+            return strategy_id[:index]
+    return ""
+
+
 def _is_export(path: Path) -> bool:
     return all(_has_table(path, marker) for marker in EXPORT_MARKERS) and any(
         _has_table(path, marker) for marker in EXPORT_COMPANIONS
@@ -265,10 +446,16 @@ def _is_quality(path: Path) -> bool:
 
 
 def _is_strategy(path: Path) -> bool:
+    if _manifest_artifact_type(path) == "strategy_report":
+        return True
     return any(_has_table(path, marker) for marker in STRATEGY_MARKERS) or (
         (path / "summary.json").exists()
         and any(_has_table(path, marker) for marker in ("predictions", "candidates"))
     )
+
+
+def _manifest_artifact_type(path: Path) -> str:
+    return str(_read_json_safe(path / "run_manifest.json").get("artifact_type") or "")
 
 
 def _has_table(path: Path, name: str) -> bool:
@@ -302,15 +489,15 @@ def _modified_utc(path: Path) -> str:
     return datetime.fromtimestamp(newest, tz=UTC).isoformat()
 
 
-def _root_for_kind(roots: SourceRoots, kind: str) -> Path:
+def _roots_for_kind(roots: SourceRoots, kind: str) -> list[Path]:
     if kind == "export":
-        return roots.data_root
+        return [roots.data_root]
     if kind == "report":
-        return roots.report_root
+        return [roots.report_root]
     if kind == "quality":
-        return roots.quality_root
+        return [roots.quality_root]
     if kind == "strategy":
-        return roots.strategy_root
+        return [roots.strategy_root, roots.report_root]
     raise ValueError(f"unknown source kind: {kind}")
 
 

@@ -1,0 +1,206 @@
+{
+  "model_name": "raycaster_cloudcaster",
+  "mode": "cloudcaster_expanding_window",
+  "source_export_id": "codex_latest_20260702_20260730_settled_for_v2ev_v3_20260731",
+  "generated_at_utc": "2026-07-31T20:42:14.148254+00:00",
+  "temperature_prediction_count": 4135,
+  "bracket_prediction_count": 4135,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 1.113883866328497,
+      "count": 4135
+    },
+    {
+      "metric": "rmse",
+      "value": 1.6024534093871166,
+      "count": 4135
+    },
+    {
+      "metric": "bias",
+      "value": 0.006811271838196494,
+      "count": 4135
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.6154776299879081,
+      "count": 4135
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.8328899637243047,
+      "count": 4135
+    }
+  ],
+  "bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 0.7882536558381852,
+      "count": 4135
+    },
+    {
+      "metric": "brier",
+      "value": 0.42783109912628603,
+      "count": 4135
+    },
+    {
+      "metric": "rps",
+      "value": 0.055252961511181746,
+      "count": 4135
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.6662636033857315,
+      "count": 4135
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.5769695725289639,
+      "count": 4135
+    }
+  ],
+  "market_bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 0.6065725813105515,
+      "count": 4135
+    },
+    {
+      "metric": "brier",
+      "value": 0.34235255803487696,
+      "count": 4135
+    },
+    {
+      "metric": "rps",
+      "value": 0.04045852547947802,
+      "count": 4135
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.7192261185006046,
+      "count": 4135
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.6390954131937939,
+      "count": 4135
+    }
+  ],
+  "market_relative_metrics": [
+    {
+      "group": "overall",
+      "count": 4135,
+      "model_log_loss": 0.7882536558381852,
+      "market_log_loss": 0.6065725813105515,
+      "log_loss_delta": 0.1816810745276338,
+      "model_brier": 0.42783109912628603,
+      "market_brier": 0.34235255803487696,
+      "brier_delta": 0.08547854109140908,
+      "model_winner_probability": 0.5769695725289639,
+      "market_winner_probability": 0.6390954131937939,
+      "winner_probability_delta": -0.06212584066483015,
+      "model_top_one_accuracy": 0.6662636033857315,
+      "market_top_one_accuracy": 0.7192261185006046,
+      "top_one_accuracy_delta": -0.052962515114873036,
+      "cloudcaster_beats_market_log_loss": false
+    }
+  ],
+  "latest_diagnostics": [
+    {
+      "target_date": "2026-07-30",
+      "city": "okc",
+      "event_ticker": "KXHIGHTOKC-26JUL30",
+      "snapshot_hour_utc": "2026-07-30T18:00:00+00:00",
+      "raycaster_mode": "trained_hist_gradient_boosting",
+      "raycaster_training_rows": 4028,
+      "raycaster_feature_profile": "city_residual",
+      "cloudcaster_mode": "trained_hist_gradient_boosting_classifier",
+      "cloudcaster_training_rows": 24168,
+      "cloudcaster_feature_profile": "legacy",
+      "cloudcaster_temperature": 0.5,
+      "temperature_calibration_rows": 2592.0,
+      "temperature_calibration_log_loss": 0.5635640034085339,
+      "temperature_uncalibrated_log_loss": 0.7381714635738376
+    },
+    {
+      "target_date": "2026-07-30",
+      "city": "okc",
+      "event_ticker": "KXHIGHTOKC-26JUL30",
+      "snapshot_hour_utc": "2026-07-30T19:00:00+00:00",
+      "raycaster_mode": "trained_hist_gradient_boosting",
+      "raycaster_training_rows": 4028,
+      "raycaster_feature_profile": "city_residual",
+      "cloudcaster_mode": "trained_hist_gradient_boosting_classifier",
+      "cloudcaster_training_rows": 24168,
+      "cloudcaster_feature_profile": "legacy",
+      "cloudcaster_temperature": 0.5,
+      "temperature_calibration_rows": 2592.0,
+      "temperature_calibration_log_loss": 0.5635640034085339,
+      "temperature_uncalibrated_log_loss": 0.7381714635738376
+    },
+    {
+      "target_date": "2026-07-30",
+      "city": "okc",
+      "event_ticker": "KXHIGHTOKC-26JUL30",
+      "snapshot_hour_utc": "2026-07-30T20:00:00+00:00",
+      "raycaster_mode": "trained_hist_gradient_boosting",
+      "raycaster_training_rows": 4028,
+      "raycaster_feature_profile": "city_residual",
+      "cloudcaster_mode": "trained_hist_gradient_boosting_classifier",
+      "cloudcaster_training_rows": 24168,
+      "cloudcaster_feature_profile": "legacy",
+      "cloudcaster_temperature": 0.5,
+      "temperature_calibration_rows": 2592.0,
+      "temperature_calibration_log_loss": 0.5635640034085339,
+      "temperature_uncalibrated_log_loss": 0.7381714635738376
+    },
+    {
+      "target_date": "2026-07-30",
+      "city": "okc",
+      "event_ticker": "KXHIGHTOKC-26JUL30",
+      "snapshot_hour_utc": "2026-07-30T21:00:00+00:00",
+      "raycaster_mode": "trained_hist_gradient_boosting",
+      "raycaster_training_rows": 4028,
+      "raycaster_feature_profile": "city_residual",
+      "cloudcaster_mode": "trained_hist_gradient_boosting_classifier",
+      "cloudcaster_training_rows": 24168,
+      "cloudcaster_feature_profile": "legacy",
+      "cloudcaster_temperature": 0.5,
+      "temperature_calibration_rows": 2592.0,
+      "temperature_calibration_log_loss": 0.5635640034085339,
+      "temperature_uncalibrated_log_loss": 0.7381714635738376
+    },
+    {
+      "target_date": "2026-07-30",
+      "city": "okc",
+      "event_ticker": "KXHIGHTOKC-26JUL30",
+      "snapshot_hour_utc": "2026-07-30T22:00:00+00:00",
+      "raycaster_mode": "trained_hist_gradient_boosting",
+      "raycaster_training_rows": 4028,
+      "raycaster_feature_profile": "city_residual",
+      "cloudcaster_mode": "trained_hist_gradient_boosting_classifier",
+      "cloudcaster_training_rows": 24168,
+      "cloudcaster_feature_profile": "legacy",
+      "cloudcaster_temperature": 0.5,
+      "temperature_calibration_rows": 2592.0,
+      "temperature_calibration_log_loss": 0.5635640034085339,
+      "temperature_uncalibrated_log_loss": 0.7381714635738376
+    },
+    {
+      "target_date": "2026-07-30",
+      "city": "okc",
+      "event_ticker": "KXHIGHTOKC-26JUL30",
+      "snapshot_hour_utc": "2026-07-30T23:00:00+00:00",
+      "raycaster_mode": "trained_hist_gradient_boosting",
+      "raycaster_training_rows": 4028,
+      "raycaster_feature_profile": "city_residual",
+      "cloudcaster_mode": "trained_hist_gradient_boosting_classifier",
+      "cloudcaster_training_rows": 24168,
+      "cloudcaster_feature_profile": "legacy",
+      "cloudcaster_temperature": 0.5,
+      "temperature_calibration_rows": 2592.0,
+      "temperature_calibration_log_loss": 0.5635640034085339,
+      "temperature_uncalibrated_log_loss": 0.7381714635738376
+    }
+  ]
+}

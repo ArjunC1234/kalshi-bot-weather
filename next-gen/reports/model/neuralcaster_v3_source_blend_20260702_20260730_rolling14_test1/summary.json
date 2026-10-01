@@ -1,0 +1,346 @@
+{
+  "model_name": "neuralcaster_v3",
+  "mode": "nws_residual_source_blend_rolling_window_14d_train_1d_test",
+  "source_export_id": "codex_latest_20260702_20260730_settled_for_v2ev_v3_20260731",
+  "generated_at_utc": "2026-07-31T17:34:33.019764+00:00",
+  "temperature_prediction_count": 2118,
+  "bracket_prediction_count": 2118,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 1.212625118035883,
+      "count": 2118
+    },
+    {
+      "metric": "rmse",
+      "value": 1.7306482162321426,
+      "count": 2118
+    },
+    {
+      "metric": "bias",
+      "value": -0.20020774315391882,
+      "count": 2118
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.5552407932011332,
+      "count": 2118
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.817752596789424,
+      "count": 2118
+    }
+  ],
+  "bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 1.0555397063816196,
+      "count": 2118
+    },
+    {
+      "metric": "brier",
+      "value": 0.5904321567949188,
+      "count": 2118
+    },
+    {
+      "metric": "rps",
+      "value": 0.07495672987087008,
+      "count": 2118
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.5264400377714825,
+      "count": 2118
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.4145250256646652,
+      "count": 2118
+    }
+  ],
+  "model_family": "nws_residual_distribution",
+  "model_kind": "source_blend",
+  "train_days": 14,
+  "test_days": 1,
+  "min_training_rows": 60,
+  "probability_floor": 0.001,
+  "seed": 31,
+  "labeled_target_dates": [
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14",
+    "2026-07-15",
+    "2026-07-16",
+    "2026-07-17",
+    "2026-07-18",
+    "2026-07-19",
+    "2026-07-20",
+    "2026-07-21",
+    "2026-07-22",
+    "2026-07-23",
+    "2026-07-24",
+    "2026-07-25",
+    "2026-07-26",
+    "2026-07-27",
+    "2026-07-28",
+    "2026-07-29",
+    "2026-07-30"
+  ],
+  "independent_city_days": 174,
+  "snapshot_rows_with_labels": 4134,
+  "residual_metrics": [
+    {
+      "metric": "offset_mae",
+      "value": 1.212625118035883,
+      "count": 2118
+    },
+    {
+      "metric": "offset_rmse",
+      "value": 1.7306482162321426,
+      "count": 2118
+    },
+    {
+      "metric": "offset_bias",
+      "value": -0.20020774315391882,
+      "count": 2118
+    },
+    {
+      "metric": "nws_baseline_mae",
+      "value": 3.0925401322001886,
+      "count": 2118
+    },
+    {
+      "metric": "model_temperature_mae",
+      "value": 1.212625118035883,
+      "count": 2118
+    },
+    {
+      "metric": "mae_improvement_vs_nws",
+      "value": 1.8799150141643057,
+      "count": 2118
+    }
+  ],
+  "folds": [
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-02",
+      "train_end_date": "2026-07-15",
+      "test_start_date": "2026-07-16",
+      "test_end_date": "2026-07-16",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.7660431289561804,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 15,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-03",
+      "train_end_date": "2026-07-16",
+      "test_start_date": "2026-07-17",
+      "test_end_date": "2026-07-17",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 3.0037019982755346,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 20,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-04",
+      "train_end_date": "2026-07-17",
+      "test_start_date": "2026-07-18",
+      "test_end_date": "2026-07-18",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 2.40150329076509,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 17,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-05",
+      "train_end_date": "2026-07-18",
+      "test_start_date": "2026-07-19",
+      "test_end_date": "2026-07-19",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.8745747665952286,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 19,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-06",
+      "train_end_date": "2026-07-19",
+      "test_start_date": "2026-07-20",
+      "test_end_date": "2026-07-20",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 0.9506938255821368,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 14,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-07",
+      "train_end_date": "2026-07-20",
+      "test_start_date": "2026-07-21",
+      "test_end_date": "2026-07-21",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.4111807998977313,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 18,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-08",
+      "train_end_date": "2026-07-21",
+      "test_start_date": "2026-07-22",
+      "test_end_date": "2026-07-22",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.33748442358531,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 16,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-09",
+      "train_end_date": "2026-07-22",
+      "test_start_date": "2026-07-23",
+      "test_end_date": "2026-07-23",
+      "training_rows": 2015,
+      "fit_rows": 1872,
+      "validation_rows": 143,
+      "global_sigma": 1.4392103992907277,
+      "city_checkpoint_sigma_count": 143,
+      "bucket_sigma_count": 18,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-10",
+      "train_end_date": "2026-07-23",
+      "test_start_date": "2026-07-24",
+      "test_end_date": "2026-07-24",
+      "training_rows": 2012,
+      "fit_rows": 1871,
+      "validation_rows": 141,
+      "global_sigma": 1.8256837832975745,
+      "city_checkpoint_sigma_count": 141,
+      "bucket_sigma_count": 16,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-11",
+      "train_end_date": "2026-07-24",
+      "test_start_date": "2026-07-25",
+      "test_end_date": "2026-07-25",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 2.2822681517881866,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 16,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-12",
+      "train_end_date": "2026-07-25",
+      "test_start_date": "2026-07-26",
+      "test_end_date": "2026-07-26",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.473904725173541,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 16,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-13",
+      "train_end_date": "2026-07-26",
+      "test_start_date": "2026-07-27",
+      "test_end_date": "2026-07-27",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.4765234599483261,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 17,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-14",
+      "train_end_date": "2026-07-27",
+      "test_start_date": "2026-07-28",
+      "test_end_date": "2026-07-28",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.3795895625551495,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 17,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-15",
+      "train_end_date": "2026-07-28",
+      "test_start_date": "2026-07-29",
+      "test_end_date": "2026-07-29",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 0.8171694880636595,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 14,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "source_blend",
+      "train_start_date": "2026-07-16",
+      "train_end_date": "2026-07-29",
+      "test_start_date": "2026-07-30",
+      "test_end_date": "2026-07-30",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 0.9194692007409011,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 16,
+      "independent_train_city_days": 84
+    }
+  ]
+}

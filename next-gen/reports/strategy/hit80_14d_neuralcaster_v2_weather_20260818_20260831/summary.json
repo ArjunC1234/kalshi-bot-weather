@@ -1,0 +1,154 @@
+{
+  "mode": "hit80_14d_research",
+  "data_path": "data/current_20260701_20260831_lightweight",
+  "model_report": "reports/model/neuralcaster_v2_weather_current_20260701_20260831_rolling14",
+  "validation_start": "2026-07-15",
+  "validation_end": "2026-08-17",
+  "test_start": "2026-08-18",
+  "test_end": "2026-08-31",
+  "target_hit_rate": 0.8,
+  "min_validation_trades": 20,
+  "selection_status": "selected_policy_met_validation_hit_target",
+  "selected_policy": {
+    "side_mode": "all",
+    "min_ev": 0.05,
+    "max_ev": null,
+    "max_spread": 0.05,
+    "min_entry_price": 0.65,
+    "max_entry_price": 0.9,
+    "min_model_probability": 0.85,
+    "min_hours_elapsed": null,
+    "entry_policy": "best-ev"
+  },
+  "selected_validation": {
+    "side_mode": "all",
+    "min_ev": 0.05,
+    "max_ev": null,
+    "max_spread": 0.05,
+    "min_entry_price": 0.65,
+    "max_entry_price": 0.9,
+    "min_model_probability": 0.85,
+    "min_hours_elapsed": null,
+    "entry_policy": "best-ev",
+    "validation_trades": 132,
+    "validation_total_contracts": 459.0,
+    "validation_total_risk": 346.66,
+    "validation_total_pnl": 14.339999999999998,
+    "validation_roi": 0.041366180118848433,
+    "validation_hit_rate": 0.803030303030303,
+    "validation_average_entry_price": 0.7641666666666667,
+    "validation_average_model_probability": 0.9363669417737038,
+    "validation_average_edge": 0.17220027510703714,
+    "validation_max_drawdown": -15.360000000000001,
+    "validation_mean_clv": 0.03708333333333333,
+    "validation_median_clv": 0.19499999999999995,
+    "validation_positive_clv_rate": 0.803030303030303,
+    "validation_hit_lcb80": 0.7551225123321532
+  },
+  "candidate_counts": {
+    "all": 90804,
+    "validation": 67008,
+    "test": 23796
+  },
+  "trades": 64,
+  "total_contracts": 227.0,
+  "total_risk": 169.85999999999999,
+  "total_pnl": 15.14,
+  "roi": 0.08913222653950313,
+  "hit_rate": 0.828125,
+  "average_entry_price": 0.75765625,
+  "average_model_probability": 0.9359453640914495,
+  "average_edge": 0.17828911409144946,
+  "max_drawdown": -8.84,
+  "mean_clv": 0.06742187499999999,
+  "median_clv": 0.20999999999999996,
+  "positive_clv_rate": 0.828125,
+  "test_hit_lcb80": 0.759769235229467,
+  "fee_stress": [
+    {
+      "fee_per_contract": 0.0,
+      "total_fee": 0.0,
+      "net_pnl": 15.14,
+      "net_roi": 0.08913222653950313
+    },
+    {
+      "fee_per_contract": 0.005,
+      "total_fee": 1.135,
+      "net_pnl": 14.005,
+      "net_roi": 0.08245025314965267
+    },
+    {
+      "fee_per_contract": 0.01,
+      "total_fee": 2.27,
+      "net_pnl": 12.870000000000001,
+      "net_roi": 0.0757682797598022
+    },
+    {
+      "fee_per_contract": 0.015,
+      "total_fee": 3.405,
+      "net_pnl": 11.735000000000001,
+      "net_roi": 0.06908630636995174
+    },
+    {
+      "fee_per_contract": 0.02,
+      "total_fee": 4.54,
+      "net_pnl": 10.600000000000001,
+      "net_roi": 0.06240433298010127
+    }
+  ],
+  "data_audit": {
+    "source_export_id": "current_20260701_20260831_lightweight",
+    "export_start": "2026-07-01",
+    "export_end": "2026-08-31",
+    "target_dates": [
+      "2026-08-18",
+      "2026-08-19",
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-22",
+      "2026-08-23",
+      "2026-08-24",
+      "2026-08-25",
+      "2026-08-26",
+      "2026-08-27",
+      "2026-08-28",
+      "2026-08-29",
+      "2026-08-30",
+      "2026-08-31"
+    ],
+    "target_date_count": 14,
+    "cities": [
+      "aus",
+      "den",
+      "la",
+      "mia",
+      "nyc",
+      "okc"
+    ],
+    "city_count": 6,
+    "event_rows": 661,
+    "market_rows": 11874,
+    "settlement_rows": 84,
+    "final_temperature_rows": 168,
+    "settled_city_days": 84,
+    "settlement_sources": {
+      "compatible": false,
+      "label_source": "nws_cli_daily",
+      "label_sources": {
+        "nws_cli_daily": 348,
+        "weather_company_daily": 348
+      },
+      "market_settlement_source": "unknown",
+      "market_settlement_sources": {
+        "unknown": 612
+      },
+      "settlement_row_sources": {
+        "unknown": 348
+      },
+      "settlement_source": "unknown",
+      "warnings": [
+        "Market rule settlement source is unknown; verify Kalshi rules before trading."
+      ]
+    }
+  }
+}

@@ -71,6 +71,11 @@ def _event(row: dict[str, Any]) -> EventSnapshot:
             str(_first(row, "climate_window_end_utc", "climate_day_end_utc"))
         ),
         station_id=str(row["station_id"]),
+        settlement_sources=_json_dict(row.get("settlement_sources")),
+        rules_primary=_optional_text(row.get("rules_primary")),
+        rules_secondary=_optional_text(row.get("rules_secondary")),
+        settlement_source_provider=_optional_text(row.get("settlement_source_provider")),
+        settlement_station_id=_optional_text(row.get("settlement_station_id")),
     )
 
 
@@ -103,16 +108,48 @@ def _market(row: dict[str, Any]) -> MarketSnapshot:
         normalized_market_midpoint_probability=_optional_float(
             row.get("normalized_market_midpoint_probability")
         ),
+        rules_primary=_optional_text(row.get("rules_primary")),
+        rules_secondary=_optional_text(row.get("rules_secondary")),
+        settlement_sources=_json_dict(row.get("settlement_sources")),
     )
 
 
 def _weather(row: dict[str, Any]) -> WeatherSnapshot:
-    features = row.get("features")
-    if isinstance(features, str) and features:
-        try:
-            features = json.loads(features)
-        except json.JSONDecodeError:
-            features = {}
+    features = _json_dict(row.get("features"))
+    for key in (
+        "nws_daily_daytime_high_f",
+        "nws_hourly_window_max_f",
+        "nws_next_3h_max_f",
+        "nws_next_6h_max_f",
+        "nws_next_8h_max_f",
+        "nws_remaining_day_max_f",
+        "latest_observation_temp_f",
+        "warming_rate_last_1h_f_per_hour",
+        "warming_rate_last_3h_f_per_hour",
+        "settlement_observed_high_so_far_f",
+        "settlement_observed_source_count",
+        "settlement_observed_age_seconds",
+        "settlement_observed_age_hours",
+        "settlement_observed_source_range_f",
+        "settlement_observed_source_stddev_f",
+        "settlement_observed_nws_delta_f",
+    ):
+        if key in row and row.get(key) not in (None, ""):
+            features.setdefault(key, _optional_float(row.get(key)))
+    if row.get("observation_age_seconds") not in (None, ""):
+        age_seconds = _optional_float(row.get("observation_age_seconds"))
+        features.setdefault("observation_age_seconds", age_seconds)
+        if age_seconds is not None:
+            features.setdefault("observation_age_hours", age_seconds / 3600.0)
+    if row.get("settlement_observed_age_seconds") not in (None, ""):
+        age_seconds = _optional_float(row.get("settlement_observed_age_seconds"))
+        if age_seconds is not None:
+            features.setdefault("settlement_observed_age_hours", age_seconds / 3600.0)
+    if row.get("settlement_observed_sources") not in (None, ""):
+        features.setdefault(
+            "settlement_observed_sources",
+            _json_dict(row.get("settlement_observed_sources")),
+        )
     return WeatherSnapshot(
         city=str(row["city"]),
         event_ticker=str(row["event_ticker"]),
@@ -125,7 +162,7 @@ def _weather(row: dict[str, Any]) -> WeatherSnapshot:
         hrrr_projected_high_f=_optional_float(row.get("hrrr_projected_high_f")),
         nbm_projected_high_f=_optional_float(row.get("nbm_projected_high_f")),
         ensemble_raw_median_high_f=_optional_float(row.get("ensemble_raw_median_high_f")),
-        features=features if isinstance(features, dict) else {},
+        features=features,
     )
 
 
@@ -138,6 +175,9 @@ def _settlement(row: dict[str, Any]) -> Settlement:
         winner_ticker=str(row["winner_ticker"]),
         settlement_temperature_f=_optional_float(row.get("settlement_temperature_f")),
         settlement_bracket_index=_optional_int(row.get("settlement_bracket_index")),
+        market_settlement_source=_optional_text(row.get("market_settlement_source")),
+        rules_primary=_optional_text(row.get("rules_primary")),
+        rules_secondary=_optional_text(row.get("rules_secondary")),
         validation_status=str(row.get("validation_status") or "valid"),
     )
 
@@ -189,6 +229,27 @@ def _optional_int(value: Any) -> int | None:
     if value in (None, ""):
         return None
     return int(float(value))
+
+
+def _optional_text(value: Any) -> str | None:
+    if value in (None, ""):
+        return None
+    return str(value)
+
+
+def _json_dict(value: Any) -> dict[str, Any]:
+    if value in (None, ""):
+        return {}
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError:
+            return {}
+        if isinstance(parsed, dict):
+            return parsed
+    return {}
 
 
 def _json_list(value: Any) -> list[str]:

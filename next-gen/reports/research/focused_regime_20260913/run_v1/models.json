@@ -1,0 +1,138 @@
+{
+  "mixed_market": {
+    "a": 0.09175382442175839,
+    "b": 0.0,
+    "weather": null,
+    "calibration_scale": 1.2019802180549704,
+    "fit_asof": "2026-08-24T18:00:00+00:00",
+    "training": {
+      "events": 80,
+      "rows": 480,
+      "first_target": "2026-08-06",
+      "last_target": "2026-08-23",
+      "latest_label_receipt": "2026-08-24T14:01:25.001607+00:00",
+      "rule_sources": {
+        "weather_company": 42,
+        "nws": 38
+      }
+    },
+    "ready_at": "2026-08-28T18:00:00+00:00",
+    "calibration": {
+      "events": 18,
+      "rows": 108,
+      "first_target": "2026-08-24",
+      "last_target": "2026-08-27",
+      "latest_label_receipt": "2026-08-28T15:00:39.039348+00:00",
+      "rule_sources": {
+        "weather_company": 18
+      }
+    }
+  },
+  "mixed_weather": {
+    "a": 0.09175382442175839,
+    "b": 0.0,
+    "weather": {
+      "pooled_bias": 0.5593749999999986,
+      "city_bias": {
+        "aus": 1.0370394736842097,
+        "den": 0.9180405405405383,
+        "la": 0.32949999999999763,
+        "mia": 0.5776612903225793,
+        "nyc": -0.3053906250000016,
+        "okc": 0.5980405405405401
+      },
+      "sigma": 1.5011899752036915
+    },
+    "calibration_scale": 1.2019802180549704,
+    "fit_asof": "2026-08-24T18:00:00+00:00",
+    "training": {
+      "events": 80,
+      "rows": 480,
+      "first_target": "2026-08-06",
+      "last_target": "2026-08-23",
+      "latest_label_receipt": "2026-08-24T14:01:25.001607+00:00",
+      "rule_sources": {
+        "weather_company": 42,
+        "nws": 38
+      }
+    },
+    "ready_at": "2026-08-28T18:00:00+00:00",
+    "calibration": {
+      "events": 18,
+      "rows": 108,
+      "first_target": "2026-08-24",
+      "last_target": "2026-08-27",
+      "latest_label_receipt": "2026-08-28T15:00:39.039348+00:00",
+      "rule_sources": {
+        "weather_company": 18
+      }
+    }
+  },
+  "post_market": {
+    "a": 0.09771622528613463,
+    "b": 0.0,
+    "weather": null,
+    "calibration_scale": 1.2011088688126665,
+    "fit_asof": "2026-08-24T18:00:00+00:00",
+    "training": {
+      "events": 42,
+      "rows": 252,
+      "first_target": "2026-08-14",
+      "last_target": "2026-08-23",
+      "latest_label_receipt": "2026-08-24T14:01:25.001607+00:00",
+      "rule_sources": {
+        "weather_company": 42
+      }
+    },
+    "ready_at": "2026-08-28T18:00:00+00:00",
+    "calibration": {
+      "events": 18,
+      "rows": 108,
+      "first_target": "2026-08-24",
+      "last_target": "2026-08-27",
+      "latest_label_receipt": "2026-08-28T15:00:39.039348+00:00",
+      "rule_sources": {
+        "weather_company": 18
+      }
+    }
+  },
+  "post_weather": {
+    "a": 0.09771622528613465,
+    "b": 0.0,
+    "weather": {
+      "pooled_bias": 0.6427380952380943,
+      "city_bias": {
+        "aus": 0.8733253968253961,
+        "den": 0.9479920634920622,
+        "la": 0.4558982683982668,
+        "mia": 0.6031904761904758,
+        "nyc": 0.3997985347985332,
+        "okc": 0.4820607553366173
+      },
+      "sigma": 1.5
+    },
+    "calibration_scale": 1.2011088688126665,
+    "fit_asof": "2026-08-24T18:00:00+00:00",
+    "training": {
+      "events": 42,
+      "rows": 252,
+      "first_target": "2026-08-14",
+      "last_target": "2026-08-23",
+      "latest_label_receipt": "2026-08-24T14:01:25.001607+00:00",
+      "rule_sources": {
+        "weather_company": 42
+      }
+    },
+    "ready_at": "2026-08-28T18:00:00+00:00",
+    "calibration": {
+      "events": 18,
+      "rows": 108,
+      "first_target": "2026-08-24",
+      "last_target": "2026-08-27",
+      "latest_label_receipt": "2026-08-28T15:00:39.039348+00:00",
+      "rule_sources": {
+        "weather_company": 18
+      }
+    }
+  }
+}

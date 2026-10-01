@@ -1,0 +1,27 @@
+{
+  "status": "inactive_no_qualified_candidate",
+  "running": false,
+  "live_trading_enabled": false,
+  "duration_calendar_days": 14,
+  "candidate": null,
+  "models_sha256": "e7d29cfc2e747e81c77e23fe9e2f4963aca4584ba377677accc6985ddcaceb36",
+  "policy": {
+    "side": "no",
+    "min_price": 0.5,
+    "max_price": 0.85,
+    "min_hours": 14,
+    "min_net_edge": 0.05,
+    "bounded_only": false,
+    "min_probability": 0.85,
+    "max_spread": 0.05
+  },
+  "starts_at": null,
+  "ends_at": null,
+  "requirements": [
+    "Activate actual forward decision logging before assigning start/end dates.",
+    "Freeze model, policy and data schema; never backfill predictions as if logged live.",
+    "Record every eligible event, abstention, contemporaneous quote and receipt time.",
+    "Settle outcomes after prediction; report 14 daily rows including zero-trade days.",
+    "At least 20 trades, observed hit >=80%, net profit positive; report uncertainty, not guarantees."
+  ]
+}

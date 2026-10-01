@@ -9,6 +9,7 @@ from typing import Any
 from control.registry.loader import RegistryEntry
 from libs.io_utils import write_json_gz
 from libs.json_utils import write_json
+from libs.settlement_sources import annotate_table_rows, settlement_source_summary
 from libs.supabase_client import SupabaseClient
 
 
@@ -33,6 +34,7 @@ def export_with_profile(
         "tables": {},
         "excluded_columns": {},
     }
+    exported_tables: dict[str, list[dict[str, Any]]] = {}
     for table_name, table_spec in _included_tables(profile).items():
         source_table = str(table_spec.get("source_table") or table_name)
         params = _date_params(source_table, start, end)
@@ -41,11 +43,14 @@ def export_with_profile(
             params["select"] = select
         rows = active_client.select(source_table, params)
         rows = [_filter_row(row, table_spec) for row in rows]
+        rows = annotate_table_rows(table_name, rows)
+        exported_tables[table_name] = rows
         write_json_gz(output / f"{table_name}.json.gz", rows)
         manifest["tables"][table_name] = {"rows": len(rows), "source_table": source_table}
         excluded = table_spec.get("exclude_columns")
         if isinstance(excluded, list) and excluded:
             manifest["excluded_columns"][table_name] = excluded
+    manifest["settlement_sources"] = settlement_source_summary(exported_tables)
     write_json(output / "manifest.json", manifest)
     write_json(output / "export_profile.json", profile.spec)
     return output

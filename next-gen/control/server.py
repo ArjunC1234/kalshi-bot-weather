@@ -71,8 +71,10 @@ def serve_control(
                     )
                     return
                 if parsed.path == "/control/api/artifacts":
-                    records = _records(active_root, include_counts=True, include_schemas=True)
-                    artifact_index.replace_all(records)
+                    query = parse_qs(parsed.query)
+                    if query.get("refresh", ["false"])[0].lower() in {"1", "true", "yes"}:
+                        records = _records(active_root, include_counts=True, include_schemas=True)
+                        artifact_index.replace_all(records)
                     self._send_json({"artifacts": artifact_index.list()})
                     return
                 if parsed.path == "/control/api/exports":
@@ -87,13 +89,9 @@ def serve_control(
                     self._send_json(
                         {
                             "reports": [
-                                record.metadata
-                                for record in _records(
-                                    active_root,
-                                    include_counts=True,
-                                    include_schemas=True,
-                                )
-                                if record.artifact_type
+                                record
+                                for record in artifact_index.list()
+                                if record.get("artifact_type")
                                 in {"model_report", "strategy_report", "quality_report"}
                             ]
                         }
@@ -388,7 +386,10 @@ def serve_control(
         allow_reuse_address = True
 
     with ReusableTCPServer((host, port), ControlHandler) as server:
-        print(f"Kalshi Weather Workbench API: http://{host}:{server.server_address[1]}/control/api")
+        print(
+            f"Kalshi Weather Workbench API: http://{host}:{server.server_address[1]}/control/api",
+            flush=True,
+        )
         server.serve_forever()
     return 0
 

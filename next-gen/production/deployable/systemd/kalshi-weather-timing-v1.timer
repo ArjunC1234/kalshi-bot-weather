@@ -1,0 +1,12 @@
+[Unit]
+Description=Capture NWS forecasts and subsequent Kalshi quotes every five minutes
+
+[Timer]
+OnCalendar=*-*-* *:00/5:30 UTC
+AccuracySec=1s
+RandomizedDelaySec=0
+Persistent=false
+Unit=kalshi-weather-timing-v1.service
+
+[Install]
+WantedBy=timers.target

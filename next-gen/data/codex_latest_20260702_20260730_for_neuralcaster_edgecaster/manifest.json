@@ -1,0 +1,16 @@
+{
+  "end": "2026-07-30",
+  "export_name": "codex_latest_20260702_20260730_for_neuralcaster_edgecaster",
+  "exported_at_utc": "2026-07-31T02:06:57.751295+00:00",
+  "start": "2026-07-02",
+  "tables": {
+    "collector_runs": 2079,
+    "events": 4148,
+    "final_temperature_labels": 168,
+    "market_snapshots": 24888,
+    "provider_errors": 103,
+    "raw_payloads": 36974,
+    "settlements": 168,
+    "weather_snapshots": 4148
+  }
+}

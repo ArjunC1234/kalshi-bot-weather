@@ -10,7 +10,8 @@ import math
 import random
 import sys
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from datetime import UTC, date, datetime
 from pathlib import Path
 from statistics import mean
 from typing import Any
@@ -32,13 +33,25 @@ from distribution import bracket_distribution, monotonic_quantiles
 from features import FeatureRow, baseline_prediction, build_feature_rows, rows_with_temperature
 
 from libs.models import BacktestDataset, Bracket, BracketDistribution, TemperaturePrediction
+from libs.settlement_policy import (
+    POST_SETTLEMENT_SYSTEM_START,
+    POST_SETTLEMENT_SYSTEM_START_DATE,
+    post_settlement_target_dates,
+)
 
 MODEL_NAME = "neuralcaster_v2"
+CITY_VALUES = ["aus", "den", "la", "mia", "nyc", "okc"]
 WEATHER_SEQUENCE_FEATURES = [
     "hours_elapsed",
     "hours_remaining",
     "nws_anchor_high_f",
     "observed_high_so_far_f",
+    "settlement_observed_high_so_far_f",
+    "settlement_observed_source_count",
+    "settlement_observed_age_hours",
+    "settlement_observed_source_range_f",
+    "settlement_observed_source_stddev_f",
+    "settlement_observed_nws_delta_f",
     "hrrr_projected_high_f",
     "nbm_projected_high_f",
     "ensemble_raw_median_high_f",
@@ -90,6 +103,15 @@ QUANTILE_Z = {
     0.90: 1.282,
     0.95: 1.645,
 }
+
+
+def _resolve_torch_device(requested: str) -> torch.device:
+    if requested == "auto":
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device(requested)
+    if device.type == "cuda" and not torch.cuda.is_available():
+        raise ValueError("CUDA device requested, but this PyTorch install cannot see CUDA")
+    return device
 
 
 @dataclass(frozen=True)
@@ -193,23 +215,37 @@ class TemporalDistributionNet(nn.Module):
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="PyTorch temporal Neuralcaster v2")
     subparsers = parser.add_subparsers(dest="command", required=True)
+    _add_fixed_window(subparsers)
     _add_rolling_eval(subparsers)
+    _add_train_artifact(subparsers)
+    _add_score_artifact(subparsers)
     _add_report(subparsers)
     args = parser.parse_args(argv)
+    if args.command == "fixed-window":
+        return _fixed_window(args)
     if args.command == "rolling-eval":
         return _rolling_eval(args)
+    if args.command == "train-artifact":
+        return _train_artifact(args)
+    if args.command == "score-artifact":
+        return _score_artifact(args)
     if args.command == "report":
         return _report(args)
     parser.error(f"unknown command {args.command}")
     return 2
 
 
-def _add_rolling_eval(subparsers) -> None:
-    parser = subparsers.add_parser("rolling-eval", help="run date-rolling PyTorch evaluation")
+def _add_fixed_window(subparsers) -> None:
+    parser = subparsers.add_parser(
+        "fixed-window", help="train on fixed dates and score later dates"
+    )
     parser.add_argument("--data", required=True)
     parser.add_argument("--output", required=True)
-    parser.add_argument("--train-days", type=int, default=5)
-    parser.add_argument("--test-days", type=int, default=1)
+    parser.add_argument("--train-start", required=True)
+    parser.add_argument("--train-end", required=True)
+    parser.add_argument("--test-start", required=True)
+    parser.add_argument("--test-end", required=True)
+    parser.add_argument("--min-target-date", default=POST_SETTLEMENT_SYSTEM_START)
     parser.add_argument("--mode", choices=["weather", "market"], default="weather")
     parser.add_argument("--max-seq-len", type=int, default=24)
     parser.add_argument("--hidden-size", type=int, default=48)
@@ -228,6 +264,86 @@ def _add_rolling_eval(subparsers) -> None:
         help="blend market-implied bracket probabilities into market-mode output",
     )
     parser.add_argument("--seed", type=int, default=17)
+    parser.add_argument("--device", default="auto", help="torch device: auto, cpu, cuda, or cuda:0")
+
+
+def _add_rolling_eval(subparsers) -> None:
+    parser = subparsers.add_parser("rolling-eval", help="run date-rolling PyTorch evaluation")
+    parser.add_argument("--data", required=True)
+    parser.add_argument("--output", required=True)
+    parser.add_argument(
+        "--training-policy",
+        choices=["expanding", "rolling"],
+        default="expanding",
+        help="expanding uses all prior dates after the warmup; rolling uses only train-days",
+    )
+    parser.add_argument("--train-days", type=int, default=14)
+    parser.add_argument("--test-days", type=int, default=1)
+    parser.add_argument("--min-target-date", default=POST_SETTLEMENT_SYSTEM_START)
+    parser.add_argument("--mode", choices=["weather", "market"], default="weather")
+    parser.add_argument("--max-seq-len", type=int, default=24)
+    parser.add_argument("--hidden-size", type=int, default=48)
+    parser.add_argument("--layers", type=int, default=1)
+    parser.add_argument("--dropout", type=float, default=0.10)
+    parser.add_argument("--epochs", type=int, default=350)
+    parser.add_argument("--patience", type=int, default=45)
+    parser.add_argument("--learning-rate", type=float, default=0.003)
+    parser.add_argument("--weight-decay", type=float, default=0.01)
+    parser.add_argument("--min-training-examples", type=int, default=60)
+    parser.add_argument("--probability-floor", type=float, default=0.001)
+    parser.add_argument(
+        "--market-probability-blend",
+        type=float,
+        default=0.0,
+        help="blend market-implied bracket probabilities into market-mode output",
+    )
+    parser.add_argument("--seed", type=int, default=17)
+    parser.add_argument("--device", default="auto", help="torch device: auto, cpu, cuda, or cuda:0")
+
+
+def _add_train_artifact(subparsers) -> None:
+    parser = subparsers.add_parser(
+        "train-artifact",
+        help="train once on a fixed window and save a reusable frozen model artifact",
+    )
+    parser.add_argument("--data", required=True)
+    parser.add_argument("--artifact", required=True)
+    parser.add_argument("--train-start", required=True)
+    parser.add_argument("--train-end", required=True)
+    parser.add_argument("--min-target-date", default=POST_SETTLEMENT_SYSTEM_START)
+    parser.add_argument("--mode", choices=["weather", "market"], default="weather")
+    parser.add_argument("--max-seq-len", type=int, default=24)
+    parser.add_argument("--hidden-size", type=int, default=48)
+    parser.add_argument("--layers", type=int, default=1)
+    parser.add_argument("--dropout", type=float, default=0.10)
+    parser.add_argument("--epochs", type=int, default=350)
+    parser.add_argument("--patience", type=int, default=45)
+    parser.add_argument("--learning-rate", type=float, default=0.003)
+    parser.add_argument("--weight-decay", type=float, default=0.01)
+    parser.add_argument("--min-training-examples", type=int, default=60)
+    parser.add_argument("--seed", type=int, default=17)
+    parser.add_argument("--device", default="auto", help="torch device: auto, cpu, cuda, or cuda:0")
+
+
+def _add_score_artifact(subparsers) -> None:
+    parser = subparsers.add_parser(
+        "score-artifact",
+        help="load a frozen model artifact and score a date range without training",
+    )
+    parser.add_argument("--data", required=True)
+    parser.add_argument("--artifact", required=True)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--start-date", required=True)
+    parser.add_argument("--end-date", required=True)
+    parser.add_argument("--min-target-date", default=POST_SETTLEMENT_SYSTEM_START)
+    parser.add_argument("--probability-floor", type=float, default=0.001)
+    parser.add_argument(
+        "--market-probability-blend",
+        type=float,
+        default=None,
+        help="override artifact blend only when intentionally scoring market-mode output",
+    )
+    parser.add_argument("--device", default="auto", help="torch device: auto, cpu, cuda, or cuda:0")
 
 
 def _add_report(subparsers) -> None:
@@ -235,14 +351,17 @@ def _add_report(subparsers) -> None:
     parser.add_argument("--run", required=True)
 
 
-def _rolling_eval(args) -> int:
+def _fixed_window(args) -> int:
     _seed_everything(args.seed)
     dataset = load_local_dataset(args.data)
-    summary = evaluate_rolling_window(
+    summary = evaluate_fixed_window(
         dataset=dataset,
         output_dir=args.output,
-        train_days=args.train_days,
-        test_days=args.test_days,
+        train_start=_parse_iso_date(args.train_start, "train-start"),
+        train_end=_parse_iso_date(args.train_end, "train-end"),
+        test_start=_parse_iso_date(args.test_start, "test-start"),
+        test_end=_parse_iso_date(args.test_end, "test-end"),
+        min_target_date=_parse_iso_date(args.min_target_date, "min-target-date"),
         mode=args.mode,
         max_seq_len=args.max_seq_len,
         hidden_size=args.hidden_size,
@@ -256,6 +375,7 @@ def _rolling_eval(args) -> int:
         probability_floor=args.probability_floor,
         market_probability_blend=args.market_probability_blend,
         seed=args.seed,
+        device=args.device,
         source_export_id=Path(args.data).name,
     )
     print(
@@ -266,11 +386,108 @@ def _rolling_eval(args) -> int:
     return 0
 
 
-def evaluate_rolling_window(
+def _rolling_eval(args) -> int:
+    _seed_everything(args.seed)
+    dataset = load_local_dataset(args.data)
+    summary = evaluate_rolling_window(
+        dataset=dataset,
+        output_dir=args.output,
+        train_days=args.train_days,
+        test_days=args.test_days,
+        training_policy=args.training_policy,
+        min_target_date=_parse_iso_date(args.min_target_date, "min-target-date"),
+        mode=args.mode,
+        max_seq_len=args.max_seq_len,
+        hidden_size=args.hidden_size,
+        layers=args.layers,
+        dropout=args.dropout,
+        epochs=args.epochs,
+        patience=args.patience,
+        learning_rate=args.learning_rate,
+        weight_decay=args.weight_decay,
+        min_training_examples=args.min_training_examples,
+        probability_floor=args.probability_floor,
+        market_probability_blend=args.market_probability_blend,
+        seed=args.seed,
+        device=args.device,
+        source_export_id=Path(args.data).name,
+    )
+    print(
+        f"evaluated {MODEL_NAME}: mode={summary['mode']} "
+        f"temperature_rows={summary['temperature_rows']} "
+        f"bracket_rows={summary['bracket_rows']} output={summary['output_dir']}"
+    )
+    return 0
+
+
+def _train_artifact(args) -> int:
+    _seed_everything(args.seed)
+    dataset = load_local_dataset(args.data)
+    summary = train_artifact(
+        dataset=dataset,
+        artifact_dir=args.artifact,
+        train_start=_parse_iso_date(args.train_start, "train-start"),
+        train_end=_parse_iso_date(args.train_end, "train-end"),
+        min_target_date=_parse_iso_date(args.min_target_date, "min-target-date"),
+        mode=args.mode,
+        max_seq_len=args.max_seq_len,
+        hidden_size=args.hidden_size,
+        layers=args.layers,
+        dropout=args.dropout,
+        epochs=args.epochs,
+        patience=args.patience,
+        learning_rate=args.learning_rate,
+        weight_decay=args.weight_decay,
+        min_training_examples=args.min_training_examples,
+        seed=args.seed,
+        device=args.device,
+        source_export_id=Path(args.data).name,
+    )
+    print(
+        f"trained {MODEL_NAME} artifact: mode={summary['neural_mode']} "
+        f"train={summary['train_start_date']}..{summary['train_end_date']} "
+        f"model_mode={summary['fold']['model_mode']} artifact={summary['artifact_dir']}"
+    )
+    return 0
+
+
+def _score_artifact(args) -> int:
+    dataset = load_local_dataset(args.data)
+    summary = score_artifact(
+        dataset=dataset,
+        artifact_dir=args.artifact,
+        output_dir=args.output,
+        start_date=_parse_iso_date(args.start_date, "start-date"),
+        end_date=_parse_iso_date(args.end_date, "end-date"),
+        min_target_date=_parse_iso_date(args.min_target_date, "min-target-date"),
+        probability_floor=args.probability_floor,
+        market_probability_blend=args.market_probability_blend,
+        device=args.device,
+        source_export_id=Path(args.data).name,
+    )
+    print(
+        f"scored {MODEL_NAME} artifact without training: "
+        f"temperature_rows={summary['temperature_rows']} "
+        f"bracket_rows={summary['bracket_rows']} output={summary['output_dir']}"
+    )
+    return 0
+
+
+def _parse_iso_date(value: str, label: str) -> date:
+    try:
+        return date.fromisoformat(value)
+    except ValueError as exc:
+        raise ValueError(f"{label} must use YYYY-MM-DD format") from exc
+
+
+def evaluate_fixed_window(
     dataset: BacktestDataset,
     output_dir: str | Path,
-    train_days: int,
-    test_days: int,
+    train_start: date,
+    train_end: date,
+    test_start: date,
+    test_end: date,
+    min_target_date: date | None,
     mode: str,
     max_seq_len: int,
     hidden_size: int,
@@ -284,14 +501,172 @@ def evaluate_rolling_window(
     probability_floor: float,
     market_probability_blend: float,
     seed: int,
+    device: str = "auto",
     source_export_id: str | None = None,
 ) -> dict[str, Any]:
+    torch_device = _resolve_torch_device(device)
+    if train_start > train_end:
+        raise ValueError("train-start must be on or before train-end")
+    if test_start > test_end:
+        raise ValueError("test-start must be on or before test-end")
     rows = build_feature_rows(dataset)
     rows_by_event = _rows_by_event(rows)
     market_lookup = _market_lookup(dataset)
     markets_grouped = markets_by_snapshot(dataset)
     examples = _examples(rows, rows_by_event, market_lookup, mode, max_seq_len)
-    target_dates = sorted({example.row.target_date for example in examples})
+    target_dates = post_settlement_target_dates(
+        (example.row.target_date for example in examples),
+        min_target_date or POST_SETTLEMENT_SYSTEM_START_DATE,
+    )
+    train_set = {value for value in target_dates if train_start <= value <= train_end}
+    test_set = {value for value in target_dates if test_start <= value <= test_end}
+    if not train_set:
+        raise ValueError("fixed window contains no labeled training target dates")
+    if not test_set:
+        raise ValueError("fixed window contains no labeled test target dates")
+
+    train_examples = [example for example in examples if example.row.target_date in train_set]
+    test_examples = [example for example in examples if example.row.target_date in test_set]
+    _seed_everything(seed)
+    model, normalizer, fold_summary = _fit_fold(
+        train_examples,
+        market_lookup,
+        mode,
+        max_seq_len,
+        hidden_size,
+        layers,
+        dropout,
+        epochs,
+        patience,
+        learning_rate,
+        weight_decay,
+        min_training_examples,
+        seed,
+        torch_device,
+    )
+    predictions, distributions = _predict_examples(
+        test_examples,
+        model,
+        normalizer,
+        market_lookup,
+        markets_grouped,
+        mode,
+        max_seq_len,
+        probability_floor,
+        market_probability_blend,
+        torch_device,
+    )
+
+    train_dates = sorted(train_set)
+    test_dates = sorted(test_set)
+    fold_summary.update(
+        {
+            "train_start_date": train_dates[0].isoformat(),
+            "train_end_date": train_dates[-1].isoformat(),
+            "test_start_date": test_dates[0].isoformat(),
+            "test_end_date": test_dates[-1].isoformat(),
+        }
+    )
+    diagnostics = [
+        {
+            "target_date": example.row.target_date.isoformat(),
+            "city": example.row.city,
+            "event_ticker": example.row.event_ticker,
+            "snapshot_hour_utc": example.row.snapshot_hour_utc.isoformat(),
+            "mode": fold_summary["model_mode"],
+            "training_rows": fold_summary["training_examples"],
+            "train_days": len(train_set),
+            "test_days": len(test_set),
+            "train_start_date": train_dates[0].isoformat(),
+            "train_end_date": train_dates[-1].isoformat(),
+            "test_start_date": test_dates[0].isoformat(),
+            "test_end_date": test_dates[-1].isoformat(),
+            "neural_mode": mode,
+            "epochs_run": fold_summary["epochs_run"],
+            "best_validation_loss": fold_summary["best_validation_loss"],
+        }
+        for example in test_examples
+    ]
+    raycaster_evaluate.MODEL_NAME = MODEL_NAME
+    result = raycaster_evaluate.write_evaluation_outputs(
+        dataset,
+        output_dir,
+        predictions,
+        distributions,
+        diagnostics,
+        mode=(
+            f"{mode}_fixed_window_train_{train_dates[0].isoformat()}_{train_dates[-1].isoformat()}"
+            f"_test_{test_dates[0].isoformat()}_{test_dates[-1].isoformat()}"
+        ),
+        source_export_id=source_export_id,
+    )
+    _update_summary(
+        Path(output_dir),
+        {
+            "model_name": MODEL_NAME,
+            "model_family": "pytorch_gru_gaussian_residual",
+            "neural_mode": mode,
+            "train_start_date": train_dates[0].isoformat(),
+            "train_end_date": train_dates[-1].isoformat(),
+            "test_start_date": test_dates[0].isoformat(),
+            "test_end_date": test_dates[-1].isoformat(),
+            "min_target_date": (min_target_date or POST_SETTLEMENT_SYSTEM_START_DATE).isoformat(),
+            "max_seq_len": max_seq_len,
+            "hidden_size": hidden_size,
+            "layers": layers,
+            "dropout": dropout,
+            "epochs": epochs,
+            "patience": patience,
+            "learning_rate": learning_rate,
+            "weight_decay": weight_decay,
+            "market_probability_blend": market_probability_blend,
+            "seed": seed,
+            "device": str(torch_device),
+            "labeled_target_dates": [value.isoformat() for value in target_dates],
+            "independent_city_days": len({(ex.row.city, ex.row.target_date) for ex in examples}),
+            "snapshot_rows_with_labels": len(examples),
+            "folds": [fold_summary],
+        },
+    )
+    _write_loss_history(Path(output_dir), [fold_summary])
+    return result
+
+
+def evaluate_rolling_window(
+    dataset: BacktestDataset,
+    output_dir: str | Path,
+    train_days: int,
+    test_days: int,
+    training_policy: str,
+    min_target_date: date | None,
+    mode: str,
+    max_seq_len: int,
+    hidden_size: int,
+    layers: int,
+    dropout: float,
+    epochs: int,
+    patience: int,
+    learning_rate: float,
+    weight_decay: float,
+    min_training_examples: int,
+    probability_floor: float,
+    market_probability_blend: float,
+    seed: int,
+    device: str = "auto",
+    source_export_id: str | None = None,
+) -> dict[str, Any]:
+    torch_device = _resolve_torch_device(device)
+    if training_policy not in {"expanding", "rolling"}:
+        raise ValueError("training_policy must be 'expanding' or 'rolling'")
+    rows = build_feature_rows(dataset)
+    rows_by_event = _rows_by_event(rows)
+    market_lookup = _market_lookup(dataset)
+    markets_grouped = markets_by_snapshot(dataset)
+    examples = _examples(rows, rows_by_event, market_lookup, mode, max_seq_len)
+    target_dates = post_settlement_target_dates(
+        (example.row.target_date for example in examples),
+        min_target_date or POST_SETTLEMENT_SYSTEM_START_DATE,
+    )
     predictions: list[TemperaturePrediction] = []
     distributions: list[BracketDistribution] = []
     diagnostics: list[dict[str, Any]] = []
@@ -299,7 +674,11 @@ def evaluate_rolling_window(
     start_index = train_days
     while start_index < len(target_dates):
         _seed_everything(seed + start_index)
-        train_dates = target_dates[start_index - train_days : start_index]
+        train_dates = (
+            target_dates[:start_index]
+            if training_policy == "expanding"
+            else target_dates[start_index - train_days : start_index]
+        )
         test_dates = target_dates[start_index : start_index + test_days]
         train_set = set(train_dates)
         test_set = set(test_dates)
@@ -319,6 +698,7 @@ def evaluate_rolling_window(
             weight_decay,
             min_training_examples,
             seed + start_index,
+            torch_device,
         )
         batch_predictions, batch_distributions = _predict_examples(
             test_examples,
@@ -330,6 +710,7 @@ def evaluate_rolling_window(
             max_seq_len,
             probability_floor,
             market_probability_blend,
+            torch_device,
         )
         predictions.extend(batch_predictions)
         distributions.extend(batch_distributions)
@@ -350,7 +731,9 @@ def evaluate_rolling_window(
                 "snapshot_hour_utc": example.row.snapshot_hour_utc.isoformat(),
                 "mode": fold_summary["model_mode"],
                 "training_rows": fold_summary["training_examples"],
-                "train_days": train_days,
+                "train_days": len(train_dates),
+                "min_train_days": train_days,
+                "training_policy": training_policy,
                 "test_days": test_days,
                 "train_start_date": train_dates[0].isoformat(),
                 "train_end_date": train_dates[-1].isoformat(),
@@ -370,7 +753,10 @@ def evaluate_rolling_window(
         predictions,
         distributions,
         diagnostics,
-        mode=f"{mode}_rolling_window_{train_days}d_train_{test_days}d_test",
+        mode=(
+            f"{mode}_{training_policy}_walkforward_"
+            f"{train_days}d_min_train_{test_days}d_test"
+        ),
         source_export_id=source_export_id,
     )
     _update_summary(
@@ -379,8 +765,10 @@ def evaluate_rolling_window(
             "model_name": MODEL_NAME,
             "model_family": "pytorch_gru_gaussian_residual",
             "neural_mode": mode,
+            "training_policy": training_policy,
             "train_days": train_days,
             "test_days": test_days,
+            "min_target_date": (min_target_date or POST_SETTLEMENT_SYSTEM_START_DATE).isoformat(),
             "max_seq_len": max_seq_len,
             "hidden_size": hidden_size,
             "layers": layers,
@@ -391,6 +779,7 @@ def evaluate_rolling_window(
             "weight_decay": weight_decay,
             "market_probability_blend": market_probability_blend,
             "seed": seed,
+            "device": str(torch_device),
             "labeled_target_dates": [value.isoformat() for value in target_dates],
             "independent_city_days": len({(ex.row.city, ex.row.target_date) for ex in examples}),
             "snapshot_rows_with_labels": len(examples),
@@ -399,6 +788,262 @@ def evaluate_rolling_window(
     )
     _write_loss_history(Path(output_dir), fold_summaries)
     return result
+
+
+def train_artifact(
+    dataset: BacktestDataset,
+    artifact_dir: str | Path,
+    train_start: date,
+    train_end: date,
+    min_target_date: date | None,
+    mode: str,
+    max_seq_len: int,
+    hidden_size: int,
+    layers: int,
+    dropout: float,
+    epochs: int,
+    patience: int,
+    learning_rate: float,
+    weight_decay: float,
+    min_training_examples: int,
+    seed: int,
+    device: str = "auto",
+    source_export_id: str | None = None,
+) -> dict[str, Any]:
+    torch_device = _resolve_torch_device(device)
+    if train_start > train_end:
+        raise ValueError("train-start must be on or before train-end")
+    rows = build_feature_rows(dataset)
+    rows_by_event = _rows_by_event(rows)
+    market_lookup = _market_lookup(dataset)
+    examples = _examples(rows, rows_by_event, market_lookup, mode, max_seq_len)
+    target_dates = post_settlement_target_dates(
+        (example.row.target_date for example in examples),
+        min_target_date or POST_SETTLEMENT_SYSTEM_START_DATE,
+    )
+    train_set = {value for value in target_dates if train_start <= value <= train_end}
+    if not train_set:
+        raise ValueError("artifact train window contains no labeled target dates")
+    train_examples = [example for example in examples if example.row.target_date in train_set]
+    _seed_everything(seed)
+    model, normalizer, fold_summary = _fit_fold(
+        train_examples,
+        market_lookup,
+        mode,
+        max_seq_len,
+        hidden_size,
+        layers,
+        dropout,
+        epochs,
+        patience,
+        learning_rate,
+        weight_decay,
+        min_training_examples,
+        seed,
+        torch_device,
+    )
+    train_dates = sorted(train_set)
+    fold_summary.update(
+        {
+            "train_start_date": train_dates[0].isoformat(),
+            "train_end_date": train_dates[-1].isoformat(),
+        }
+    )
+    artifact = Path(artifact_dir)
+    artifact.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "artifact_type": "model_artifact",
+        "model_artifact_type": "neuralcaster_v2_frozen_model",
+        "contract": "neuralcaster_v2_frozen_model.v1",
+        "model_name": MODEL_NAME,
+        "model_family": "pytorch_gru_gaussian_residual",
+        "neural_mode": mode,
+        "source_export_id": source_export_id,
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        "train_start_date": train_dates[0].isoformat(),
+        "train_end_date": train_dates[-1].isoformat(),
+        "min_target_date": (min_target_date or POST_SETTLEMENT_SYSTEM_START_DATE).isoformat(),
+        "labeled_target_dates": [value.isoformat() for value in target_dates],
+        "independent_city_days": len({(ex.row.city, ex.row.target_date) for ex in examples}),
+        "snapshot_rows_with_labels": len(examples),
+        "config": {
+            "mode": mode,
+            "max_seq_len": max_seq_len,
+            "hidden_size": hidden_size,
+            "layers": layers,
+            "dropout": dropout,
+            "epochs": epochs,
+            "patience": patience,
+            "learning_rate": learning_rate,
+            "weight_decay": weight_decay,
+            "min_training_examples": min_training_examples,
+            "seed": seed,
+        },
+        "feature_names": _feature_names(mode),
+        "city_values": CITY_VALUES,
+        "normalizer": asdict(normalizer),
+        "fold": _summary_without_loss_history(fold_summary),
+        "model_state": (
+            {key: value.detach().cpu() for key, value in model.state_dict().items()}
+            if model is not None
+            else None
+        ),
+    }
+    torch.save(payload, artifact / "model.pt")
+    manifest = {key: value for key, value in payload.items() if key != "model_state"}
+    (artifact / "artifact.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    _write_loss_history(artifact, [fold_summary])
+    return {**manifest, "artifact_dir": str(artifact)}
+
+
+def score_artifact(
+    dataset: BacktestDataset,
+    artifact_dir: str | Path,
+    output_dir: str | Path,
+    start_date: date,
+    end_date: date,
+    min_target_date: date | None,
+    probability_floor: float,
+    market_probability_blend: float | None = None,
+    device: str = "auto",
+    source_export_id: str | None = None,
+) -> dict[str, Any]:
+    if start_date > end_date:
+        raise ValueError("start-date must be on or before end-date")
+    if min_target_date is not None:
+        start_date = max(start_date, min_target_date)
+    if start_date > end_date:
+        raise ValueError("score window contains no post-settlement-system target dates")
+    artifact = _load_artifact(Path(artifact_dir))
+    artifact_kind = artifact.get("model_artifact_type") or artifact.get("artifact_type")
+    if artifact_kind != "neuralcaster_v2_frozen_model":
+        raise ValueError("artifact is not a neuralcaster_v2 frozen model")
+    config = artifact["config"]
+    mode = str(artifact["neural_mode"])
+    torch_device = _resolve_torch_device(device)
+    normalizer = Normalizer(**artifact["normalizer"])
+    model = _model_from_artifact(artifact, torch_device)
+    rows = build_feature_rows(dataset)
+    rows_by_event = _rows_by_event(rows)
+    market_lookup = _market_lookup(dataset)
+    markets_grouped = markets_by_snapshot(dataset)
+    examples = _scoring_examples(
+        rows,
+        rows_by_event,
+        market_lookup,
+        mode,
+        int(config["max_seq_len"]),
+        start_date,
+        end_date,
+    )
+    blend = (
+        float(market_probability_blend)
+        if market_probability_blend is not None
+        else 0.0
+    )
+    predictions, distributions = _predict_examples(
+        examples,
+        model,
+        normalizer,
+        market_lookup,
+        markets_grouped,
+        mode,
+        int(config["max_seq_len"]),
+        probability_floor,
+        blend,
+        torch_device,
+    )
+    diagnostics = [
+        {
+            "target_date": example.row.target_date.isoformat(),
+            "city": example.row.city,
+            "event_ticker": example.row.event_ticker,
+            "snapshot_hour_utc": example.row.snapshot_hour_utc.isoformat(),
+            "mode": "frozen_artifact_score",
+            "artifact_dir": str(artifact_dir),
+            "artifact_train_start_date": artifact["train_start_date"],
+            "artifact_train_end_date": artifact["train_end_date"],
+            "neural_mode": mode,
+            "has_label": example.row.settlement_temperature_f is not None,
+        }
+        for example in examples
+    ]
+    raycaster_evaluate.MODEL_NAME = MODEL_NAME
+    result = raycaster_evaluate.write_evaluation_outputs(
+        dataset,
+        output_dir,
+        predictions,
+        distributions,
+        diagnostics,
+        mode=(
+            f"{mode}_frozen_artifact_train_{artifact['train_start_date']}_"
+            f"{artifact['train_end_date']}_score_{start_date.isoformat()}_{end_date.isoformat()}"
+        ),
+        source_export_id=source_export_id,
+    )
+    _update_summary(
+        Path(output_dir),
+        {
+            "model_name": MODEL_NAME,
+            "model_family": "pytorch_gru_gaussian_residual",
+            "neural_mode": mode,
+            "scoring_mode": "frozen_artifact_no_training",
+            "artifact_dir": str(artifact_dir),
+            "artifact_train_start_date": artifact["train_start_date"],
+            "artifact_train_end_date": artifact["train_end_date"],
+            "score_start_date": start_date.isoformat(),
+            "score_end_date": end_date.isoformat(),
+            "min_target_date": (min_target_date or POST_SETTLEMENT_SYSTEM_START_DATE).isoformat(),
+            "max_seq_len": config["max_seq_len"],
+            "hidden_size": config["hidden_size"],
+            "layers": config["layers"],
+            "dropout": config["dropout"],
+            "market_probability_blend": blend,
+            "seed": config["seed"],
+            "device": str(torch_device),
+            "scored_snapshot_rows": len(examples),
+            "scored_labeled_snapshot_rows": sum(
+                example.row.settlement_temperature_f is not None for example in examples
+            ),
+        },
+    )
+    return result
+
+
+def _load_artifact(artifact_dir: Path) -> dict[str, Any]:
+    path = artifact_dir / "model.pt"
+    if not path.exists():
+        raise FileNotFoundError(f"missing neuralcaster artifact model file: {path}")
+    try:
+        return torch.load(path, map_location="cpu", weights_only=False)
+    except TypeError:
+        return torch.load(path, map_location="cpu")
+
+
+def _model_from_artifact(
+    artifact: dict[str, Any],
+    device: torch.device,
+) -> TemporalDistributionNet | None:
+    state = artifact.get("model_state")
+    if state is None:
+        return None
+    config = artifact["config"]
+    mode = str(artifact["neural_mode"])
+    model = TemporalDistributionNet(
+        sequence_dim=len(_feature_names(mode)) * 2,
+        static_dim=len(CITY_VALUES) + 3,
+        hidden_size=int(config["hidden_size"]),
+        layers=int(config["layers"]),
+        dropout=float(config["dropout"]),
+    )
+    model.load_state_dict(state)
+    model.to(device)
+    model.eval()
+    return model
+
+
+def _summary_without_loss_history(summary: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in summary.items() if key != "loss_history"}
 
 
 def _fit_fold(
@@ -415,16 +1060,21 @@ def _fit_fold(
     weight_decay: float,
     min_training_examples: int,
     seed: int,
+    device: torch.device,
 ) -> tuple[TemporalDistributionNet | None, Normalizer, dict[str, Any]]:
     feature_names = _feature_names(mode)
     normalizer = Normalizer.fit(train_examples, feature_names, market_lookup)
     if len(train_examples) < min_training_examples:
-        return None, normalizer, {
-            "model_mode": "fallback_baseline",
-            "training_examples": len(train_examples),
-            "epochs_run": 0,
-            "best_validation_loss": "",
-        }
+        return (
+            None,
+            normalizer,
+            {
+                "model_mode": "fallback_baseline",
+                "training_examples": len(train_examples),
+                "epochs_run": 0,
+                "best_validation_loss": "",
+            },
+        )
     train_dates = sorted({example.row.target_date for example in train_examples})
     validation_date = train_dates[-1] if len(train_dates) >= 3 else None
     fit_examples = (
@@ -443,6 +1093,7 @@ def _fit_fold(
         market_lookup,
         mode,
         max_seq_len=max_seq_len,
+        device=device,
     )
     validation_tensors = _to_tensors(
         validation_examples,
@@ -450,6 +1101,7 @@ def _fit_fold(
         market_lookup,
         mode,
         max_seq_len=max_seq_len,
+        device=device,
     )
     model = TemporalDistributionNet(
         sequence_dim=fit_tensors.sequence.shape[-1],
@@ -457,7 +1109,7 @@ def _fit_fold(
         hidden_size=hidden_size,
         layers=layers,
         dropout=dropout,
-    )
+    ).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     best_state = None
     best_loss = float("inf")
@@ -506,7 +1158,9 @@ def _fit_fold(
         )
         if validation_loss + 1e-5 < best_loss:
             best_loss = validation_loss
-            best_state = {key: value.detach().clone() for key, value in model.state_dict().items()}
+            best_state = {
+                key: value.detach().cpu().clone() for key, value in model.state_dict().items()
+            }
             epochs_without_improvement = 0
         else:
             epochs_without_improvement += 1
@@ -514,16 +1168,21 @@ def _fit_fold(
             break
     if best_state is not None:
         model.load_state_dict(best_state)
-    return model, normalizer, {
-        "model_mode": "trained_gru_gaussian_residual",
-        "training_examples": len(train_examples),
-        "fit_examples": len(fit_examples),
-        "validation_examples": len(validation_examples),
-        "epochs_run": epochs_run,
-        "best_validation_loss": best_loss,
-        "seed": seed,
-        "loss_history": loss_history,
-    }
+    return (
+        model,
+        normalizer,
+        {
+            "model_mode": "trained_gru_gaussian_residual",
+            "training_examples": len(train_examples),
+            "fit_examples": len(fit_examples),
+            "validation_examples": len(validation_examples),
+            "epochs_run": epochs_run,
+            "best_validation_loss": best_loss,
+            "seed": seed,
+            "device": str(device),
+            "loss_history": loss_history,
+        },
+    )
 
 
 def _write_loss_history(output_dir: Path, fold_summaries: list[dict[str, Any]]) -> None:
@@ -586,17 +1245,26 @@ def _predict_examples(
     max_seq_len: int,
     probability_floor: float,
     market_probability_blend: float,
+    device: torch.device,
 ) -> tuple[list[TemperaturePrediction], list[BracketDistribution]]:
-    tensors = _to_tensors(examples, normalizer, market_lookup, mode, max_seq_len=max_seq_len)
+    tensors = _to_tensors(
+        examples,
+        normalizer,
+        market_lookup,
+        mode,
+        max_seq_len=max_seq_len,
+        device=device,
+    )
     if model is None:
-        expected = tensors.baseline.numpy()
+        expected = tensors.baseline.cpu().numpy()
         sigma = np.full(len(examples), 3.0)
     else:
+        model.to(device)
         model.eval()
         with torch.no_grad():
             residual, sigma_tensor = model(tensors.sequence, tensors.lengths, tensors.static)
-        expected = (tensors.baseline + residual).numpy()
-        sigma = sigma_tensor.numpy()
+        expected = (tensors.baseline + residual).cpu().numpy()
+        sigma = sigma_tensor.cpu().numpy()
     predictions: list[TemperaturePrediction] = []
     distributions: list[BracketDistribution] = []
     for example, expected_high, sigma_value in zip(examples, expected, sigma, strict=True):
@@ -652,12 +1320,13 @@ def _to_tensors(
     market_lookup,
     mode: str,
     max_seq_len: int,
+    device: torch.device | None = None,
 ) -> FoldTensors:
+    active_device = device or torch.device("cpu")
     feature_names = _feature_names(mode)
-    city_values = ["aus", "den", "la", "mia", "nyc", "okc"]
-    city_index = {value: index for index, value in enumerate(city_values)}
+    city_index = {value: index for index, value in enumerate(CITY_VALUES)}
     sequence_dim = len(feature_names) * 2
-    static_dim = len(city_values) + 3
+    static_dim = len(CITY_VALUES) + 3
     sequence = np.zeros((len(examples), max_seq_len, sequence_dim), dtype=np.float32)
     static = np.zeros((len(examples), static_dim), dtype=np.float32)
     lengths = np.ones(len(examples), dtype=np.int64)
@@ -675,7 +1344,7 @@ def _to_tensors(
                 sequence[row_index, seq_index, feature_index + len(feature_names)] = present
         offset = 0
         static[row_index, offset + city_index.get(example.row.city, 0)] = 1.0
-        offset += len(city_values)
+        offset += len(CITY_VALUES)
         static[row_index, offset] = float(example.row.target_date.timetuple().tm_yday) / 366.0
         static[row_index, offset + 1] = float(example.row.snapshot_hour_utc.hour) / 23.0
         static[row_index, offset + 2] = 1.0 if mode == "market" else 0.0
@@ -683,12 +1352,12 @@ def _to_tensors(
         target_residual[row_index] = example.target_high_f - example.baseline_high_f
         weights[row_index] = example.weight
     return FoldTensors(
-        sequence=torch.tensor(sequence),
-        lengths=torch.tensor(lengths),
-        static=torch.tensor(static),
-        baseline=torch.tensor(baseline),
-        target_residual=torch.tensor(target_residual),
-        weights=torch.tensor(weights),
+        sequence=torch.tensor(sequence, device=active_device),
+        lengths=torch.tensor(lengths, device=active_device),
+        static=torch.tensor(static, device=active_device),
+        baseline=torch.tensor(baseline, device=active_device),
+        target_residual=torch.tensor(target_residual, device=active_device),
+        weights=torch.tensor(weights, device=active_device),
     )
 
 
@@ -718,6 +1387,44 @@ def _examples(
                 winner_ticker=row.winner_ticker,
                 baseline_high_f=_baseline(row, market_lookup, mode),
                 weight=1.0 / city_day_counts[(row.city, row.target_date)],
+            )
+        )
+    return examples
+
+
+def _scoring_examples(
+    rows: list[FeatureRow],
+    rows_by_event: dict[tuple[str, str], list[FeatureRow]],
+    market_lookup,
+    mode: str,
+    max_seq_len: int,
+    start_date: date,
+    end_date: date,
+) -> list[Example]:
+    examples = []
+    for row in rows:
+        if row.target_date < start_date or row.target_date > end_date:
+            continue
+        history = [
+            item
+            for item in rows_by_event.get((row.city, row.event_ticker), [])
+            if item.snapshot_hour_utc <= row.snapshot_hour_utc
+        ][-max_seq_len:]
+        if not history:
+            continue
+        baseline_high_f = _baseline(row, market_lookup, mode)
+        examples.append(
+            Example(
+                row=row,
+                sequence_rows=history,
+                target_high_f=(
+                    float(row.settlement_temperature_f)
+                    if row.settlement_temperature_f is not None
+                    else baseline_high_f
+                ),
+                winner_ticker=row.winner_ticker,
+                baseline_high_f=baseline_high_f,
+                weight=1.0,
             )
         )
     return examples
@@ -760,8 +1467,7 @@ def _market_features(markets) -> dict[str, float]:
         return {}
     probs = {ticker: probability / total for ticker, probability in raw_probs.items()}
     representatives = {
-        market.bracket.ticker: _bracket_representative(market.bracket)
-        for market in markets
+        market.bracket.ticker: _bracket_representative(market.bracket) for market in markets
     }
     expected = sum(probs[ticker] * representatives[ticker] for ticker in probs)
     entropy = -sum(prob * math.log(max(prob, 1e-9)) for prob in probs.values())
@@ -884,7 +1590,7 @@ def _quantiles(expected_high_f: float, sigma: float, row: FeatureRow) -> dict[fl
     raw = {level: expected_high_f + z_score * sigma for level, z_score in QUANTILE_Z.items()}
     observed = _observed(row)
     if observed is not None:
-        raw = {level: max(value, observed - 0.75) for level, value in raw.items()}
+        raw = {level: max(value, observed) for level, value in raw.items()}
     return monotonic_quantiles(raw)
 
 
@@ -894,7 +1600,12 @@ def _respect_observed_floor(value: float, row: FeatureRow) -> float:
 
 
 def _observed(row: FeatureRow) -> float | None:
-    return _finite_float(row.features.get("observed_high_so_far_f"))
+    observed = _finite_float(row.features.get("settlement_observed_high_so_far_f"))
+    return (
+        observed
+        if observed is not None
+        else _finite_float(row.features.get("observed_high_so_far_f"))
+    )
 
 
 def _finite_float(value: Any) -> float | None:

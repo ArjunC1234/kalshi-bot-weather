@@ -1,0 +1,78 @@
+{
+  "id": "cloudcaster_v1",
+  "kind": "model",
+  "version": 1,
+  "label": "Cloudcaster v1",
+  "description": "Leakage-safe expanding-window Raycaster to Cloudcaster bracket probability model.",
+  "code": {
+    "working_directory": "."
+  },
+  "entrypoints": {
+    "evaluate": {
+      "label": "Evaluate",
+      "command": [
+        "python",
+        "maxtemp-engine/cloudcaster/v1/cli.py",
+        "evaluate",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "properties": {
+          "raycaster_feature_profile": {
+            "type": "string",
+            "enum": ["weather_only", "city", "city_checkpoint", "city_residual", "family_v2"],
+            "default": "city_residual"
+          },
+          "cloudcaster_feature_profile": {
+            "type": "string",
+            "enum": ["legacy", "family_v2"],
+            "default": "legacy"
+          },
+          "min_raycaster_training_events": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 6
+          },
+          "min_cloudcaster_training_rows": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 120
+          },
+          "probability_floor": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.001
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "model_report",
+        "contract": "weather_model_report.v1"
+      }
+    }
+  },
+  "inputs": {
+    "dataset": {
+      "type": "local_export",
+      "required_tables": ["events", "weather_snapshots", "market_snapshots"],
+      "optional_tables": ["settlements", "final_temperature_labels"]
+    }
+  },
+  "artifact_contract": {
+    "required_files": ["summary.json", "predictions.csv", "bracket_distributions.csv"],
+    "optional_files": ["errors.csv", "market_bracket_metrics.csv", "market_relative_metrics.csv", "calibration_bins.csv", "calibration_summary.csv", "training_diagnostics.csv"]
+  },
+  "semantic_outputs": {
+    "prediction_time": "snapshot_time_utc",
+    "target_date": "target_date",
+    "city": "city",
+    "event": "event_ticker",
+    "point_prediction": "expected_high_f",
+    "probability_distribution": "probabilities"
+  }
+}

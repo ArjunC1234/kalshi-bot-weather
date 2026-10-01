@@ -3,6 +3,7 @@ from __future__ import annotations
 # ruff: noqa: E402, I001
 
 import csv
+import json
 import sys
 import tempfile
 import unittest
@@ -225,6 +226,67 @@ class QualityArtifactTrendTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 resolve_source(roots, "export", "../reports/raycaster_run")
 
+    def test_strategy_source_discovery_links_control_job_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            data_root = root / "data"
+            report_root = root / "reports" / "model"
+            quality_root = root / "reports" / "quality"
+            strategy_root = root / "reports" / "strategy"
+            export = data_root / "export_20260702_20260721_control"
+            strategy = strategy_root / "edgecaster_v2_export_20260702_20260721_control_20260723T010000Z"
+            _write_csv(export / "events.csv", [{"city": "nyc"}])
+            _write_csv(export / "market_snapshots.csv", [{"city": "nyc"}])
+            _write_json(
+                strategy / "run_manifest.json",
+                {
+                    "artifact_type": "strategy_report",
+                    "source_export_id": "export_20260702_20260721_control",
+                    "created_utc": "2026-07-23T01:00:00+00:00",
+                },
+            )
+            roots = SourceRoots(data_root, report_root, quality_root, strategy_root)
+
+            sources = discover_sources(roots)
+
+            self.assertEqual(sources["strategy_reports"][0]["id"], strategy.name)
+            self.assertEqual(
+                sources["strategy_reports"][0]["source_export_id"],
+                "export_20260702_20260721_control",
+            )
+
+    def test_strategy_source_discovery_finds_misplaced_model_root_strategy_report(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            data_root = root / "data"
+            report_root = root / "reports" / "model"
+            quality_root = root / "reports" / "quality"
+            strategy_root = root / "reports" / "strategy"
+            export = data_root / "export_20260702_20260722T143730"
+            misplaced = report_root / "edgecaster_v2_fixed_window_weather_20260723Z20260702_20260722T"
+            _write_csv(export / "events.csv", [{"city": "nyc"}])
+            _write_csv(export / "market_snapshots.csv", [{"city": "nyc"}])
+            _write_csv(misplaced / "predictions.csv", [{"city": "nyc"}])
+            _write_json(
+                misplaced / "run_manifest.json",
+                {
+                    "artifact_type": "strategy_report",
+                    "source_export_id": "export_20260702_20260722T143730",
+                    "created_utc": "2026-07-23T19:00:00+00:00",
+                },
+            )
+            roots = SourceRoots(data_root, report_root, quality_root, strategy_root)
+
+            sources = discover_sources(roots)
+
+            self.assertFalse(sources["reports"])
+            self.assertEqual(sources["strategy_reports"][0]["id"], misplaced.name)
+            self.assertEqual(
+                sources["strategy_reports"][0]["source_export_id"],
+                "export_20260702_20260722T143730",
+            )
+            self.assertEqual(resolve_source(roots, "strategy", misplaced.name), misplaced.resolve())
+
     def test_workbench_joins_reports_and_export_tables(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -376,6 +438,11 @@ def _write_csv(path: Path, rows: list[dict[str, str]]) -> None:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
+
+
+def _write_json(path: Path, value: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value), encoding="utf-8")
 
 
 if __name__ == "__main__":

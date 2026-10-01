@@ -1,0 +1,346 @@
+{
+  "model_name": "neuralcaster_v3",
+  "mode": "nws_residual_tree_residual_rolling_window_14d_train_1d_test",
+  "source_export_id": "codex_latest_20260702_20260730_settled_for_v2ev_v3_20260731",
+  "generated_at_utc": "2026-07-31T17:37:42.452976+00:00",
+  "temperature_prediction_count": 2118,
+  "bracket_prediction_count": 2118,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 0.9134464612132581,
+      "count": 2118
+    },
+    {
+      "metric": "rmse",
+      "value": 1.3329744122523315,
+      "count": 2118
+    },
+    {
+      "metric": "bias",
+      "value": 0.0007638984613843287,
+      "count": 2118
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.6751652502360718,
+      "count": 2118
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.896600566572238,
+      "count": 2118
+    }
+  ],
+  "bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 0.8244351945426954,
+      "count": 2118
+    },
+    {
+      "metric": "brier",
+      "value": 0.4683161738101905,
+      "count": 2118
+    },
+    {
+      "metric": "rps",
+      "value": 0.05373906607123223,
+      "count": 2118
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.6605288007554296,
+      "count": 2118
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.511762118338984,
+      "count": 2118
+    }
+  ],
+  "model_family": "nws_residual_distribution",
+  "model_kind": "tree_residual",
+  "train_days": 14,
+  "test_days": 1,
+  "min_training_rows": 60,
+  "probability_floor": 0.001,
+  "seed": 31,
+  "labeled_target_dates": [
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14",
+    "2026-07-15",
+    "2026-07-16",
+    "2026-07-17",
+    "2026-07-18",
+    "2026-07-19",
+    "2026-07-20",
+    "2026-07-21",
+    "2026-07-22",
+    "2026-07-23",
+    "2026-07-24",
+    "2026-07-25",
+    "2026-07-26",
+    "2026-07-27",
+    "2026-07-28",
+    "2026-07-29",
+    "2026-07-30"
+  ],
+  "independent_city_days": 174,
+  "snapshot_rows_with_labels": 4134,
+  "residual_metrics": [
+    {
+      "metric": "offset_mae",
+      "value": 0.9290412906512159,
+      "count": 2118
+    },
+    {
+      "metric": "offset_rmse",
+      "value": 1.3477011916563695,
+      "count": 2118
+    },
+    {
+      "metric": "offset_bias",
+      "value": -0.07122233507260596,
+      "count": 2118
+    },
+    {
+      "metric": "nws_baseline_mae",
+      "value": 3.0925401322001886,
+      "count": 2118
+    },
+    {
+      "metric": "model_temperature_mae",
+      "value": 0.9134464612132581,
+      "count": 2118
+    },
+    {
+      "metric": "mae_improvement_vs_nws",
+      "value": 2.1790936709869304,
+      "count": 2118
+    }
+  ],
+  "folds": [
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-02",
+      "train_end_date": "2026-07-15",
+      "test_start_date": "2026-07-16",
+      "test_end_date": "2026-07-16",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.023872866113874,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 15,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-03",
+      "train_end_date": "2026-07-16",
+      "test_start_date": "2026-07-17",
+      "test_end_date": "2026-07-17",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.4506462293376383,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 20,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-04",
+      "train_end_date": "2026-07-17",
+      "test_start_date": "2026-07-18",
+      "test_end_date": "2026-07-18",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 2.183595376788778,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 17,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-05",
+      "train_end_date": "2026-07-18",
+      "test_start_date": "2026-07-19",
+      "test_end_date": "2026-07-19",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.6780478754489918,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 19,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-06",
+      "train_end_date": "2026-07-19",
+      "test_start_date": "2026-07-20",
+      "test_end_date": "2026-07-20",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 0.8803366915461457,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 14,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-07",
+      "train_end_date": "2026-07-20",
+      "test_start_date": "2026-07-21",
+      "test_end_date": "2026-07-21",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.0186564552732007,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 18,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-08",
+      "train_end_date": "2026-07-21",
+      "test_start_date": "2026-07-22",
+      "test_end_date": "2026-07-22",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.054871455326435,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 16,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-09",
+      "train_end_date": "2026-07-22",
+      "test_start_date": "2026-07-23",
+      "test_end_date": "2026-07-23",
+      "training_rows": 2015,
+      "fit_rows": 1872,
+      "validation_rows": 143,
+      "global_sigma": 1.3242865432049535,
+      "city_checkpoint_sigma_count": 143,
+      "bucket_sigma_count": 18,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-10",
+      "train_end_date": "2026-07-23",
+      "test_start_date": "2026-07-24",
+      "test_end_date": "2026-07-24",
+      "training_rows": 2012,
+      "fit_rows": 1871,
+      "validation_rows": 141,
+      "global_sigma": 1.01714413723439,
+      "city_checkpoint_sigma_count": 141,
+      "bucket_sigma_count": 16,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-11",
+      "train_end_date": "2026-07-24",
+      "test_start_date": "2026-07-25",
+      "test_end_date": "2026-07-25",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.6875209998032124,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 16,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-12",
+      "train_end_date": "2026-07-25",
+      "test_start_date": "2026-07-26",
+      "test_end_date": "2026-07-26",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.1786784501692058,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 16,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-13",
+      "train_end_date": "2026-07-26",
+      "test_start_date": "2026-07-27",
+      "test_end_date": "2026-07-27",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.230380761203517,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 17,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-14",
+      "train_end_date": "2026-07-27",
+      "test_start_date": "2026-07-28",
+      "test_end_date": "2026-07-28",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.0284187234306397,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 17,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-15",
+      "train_end_date": "2026-07-28",
+      "test_start_date": "2026-07-29",
+      "test_end_date": "2026-07-29",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 0.8015534418395465,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 14,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "tree_residual",
+      "train_start_date": "2026-07-16",
+      "train_end_date": "2026-07-29",
+      "test_start_date": "2026-07-30",
+      "test_end_date": "2026-07-30",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.0483432773472363,
+      "city_checkpoint_sigma_count": 144,
+      "bucket_sigma_count": 16,
+      "independent_train_city_days": 84
+    }
+  ]
+}

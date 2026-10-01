@@ -1,0 +1,2 @@
+rule_source,trades,settled_trades,wins,unsettled_trades,hit_rate,net_pnl,fees,gross_pnl,cash_debit,roi,contracts,breakeven_contract_hit_rate,contract_hit_rate,max_daily_drawdown,mean_probability
+weather_company,22,22,10,0,0.45454545454545453,-20.029999999999998,1.09,-18.94,53.03,-0.37771072977559866,73.0,0.7264383561643836,0.4520547945205479,-20.029999999999998,0.9319177352796757

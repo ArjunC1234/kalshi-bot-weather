@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import csv
+import gzip
 import json
 import os
+import re
 import subprocess
 import sys
 import threading
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +19,7 @@ from control.registry.loader import Registry, RegistryEntry
 
 CONTROL_PARAM_KEYS = {
     "dataset_path",
+    "model_artifact_path",
     "model_report_path",
     "output_path",
     "timeout_seconds",
@@ -92,7 +96,9 @@ class JobRunner:
         output_path = self._output_path(entry, entrypoint, params)
         context = {
             "inputs.dataset.path": str(params.get("dataset_path", "")),
+            "inputs.model_artifact.path": str(params.get("model_artifact_path", "")),
             "inputs.model_report.path": str(params.get("model_report_path", "")),
+            "outputs.artifact_dir": str(output_path) if output_path else "",
             "outputs.report_dir": str(output_path) if output_path else "",
         }
         command = [_replace_tokens(part, context) for part in command_template]
@@ -105,8 +111,8 @@ class JobRunner:
             if key not in allowed_params:
                 raise ValueError(f"unregistered entrypoint parameter: {key}")
             if isinstance(value, bool):
-                if value:
-                    command.append(f"--{key.replace('_', '-')}")
+                prefix = "--" if value else "--no-"
+                command.append(f"{prefix}{key.replace('_', '-')}")
             else:
                 command.extend([f"--{key.replace('_', '-')}", str(value)])
         return command, cwd, output_path
@@ -126,21 +132,30 @@ class JobRunner:
         entrypoint: str,
         params: dict[str, Any],
     ) -> Path | None:
+        config = entry.spec.get("entrypoints", {}).get(entrypoint, {})
+        artifact_type = config.get("produces", {}).get("artifact_type")
         if params.get("output_path"):
             candidate = (self.repo_root / str(params["output_path"])).resolve()
         else:
-            artifact_type = (
-                entry.spec.get("entrypoints", {})
-                .get(entrypoint, {})
-                .get("produces", {})
-                .get("artifact_type")
-            )
-            root = "reports/strategy" if artifact_type == "strategy_report" else "reports/model"
+            root = _default_output_root(artifact_type)
             stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-            source = Path(str(params.get("dataset_path", "dataset"))).name
-            candidate = (self.repo_root / root / f"{entry.id}_{source}_{stamp}").resolve()
+            name = _generated_output_name(
+                entry,
+                entrypoint,
+                config,
+                params,
+                stamp,
+                self.repo_root,
+            )
+            candidate = (self.repo_root / root / name).resolve()
         if not _is_relative_to(candidate, self.repo_root):
             raise ValueError("job output_path escapes repository root")
+        if artifact_type == "strategy_report" and _is_relative_to(candidate, self.repo_root / "reports" / "model"):
+            raise ValueError("strategy report output_path must be under reports/strategy, not reports/model")
+        if artifact_type == "model_report" and _is_relative_to(candidate, self.repo_root / "reports" / "strategy"):
+            raise ValueError("model report output_path must be under reports/model, not reports/strategy")
+        if artifact_type == "model_artifact" and _is_relative_to(candidate, self.repo_root / "reports"):
+            raise ValueError("model artifact output_path must be under models, not reports")
         return candidate
 
     def _run_manifest(
@@ -166,6 +181,7 @@ class JobRunner:
             "registry_kind": entry.kind,
             "entrypoint": entrypoint,
             "source_export_id": Path(str(params.get("dataset_path", ""))).name or None,
+            "settlement_sources": _dataset_settlement_sources(params.get("dataset_path"), self.repo_root),
             "created_utc": datetime.now(UTC).isoformat(),
         }
 
@@ -272,6 +288,166 @@ def _entrypoint_param_names(config: dict[str, Any]) -> set[str]:
     if not isinstance(properties, dict):
         return set()
     return {str(key) for key in properties}
+
+
+def _default_output_root(artifact_type: str | None) -> str:
+    if artifact_type == "strategy_report":
+        return "reports/strategy"
+    if artifact_type == "quality_report":
+        return "reports/quality"
+    if artifact_type == "model_artifact":
+        return "models"
+    return "reports/model"
+
+
+def _generated_output_name(
+    entry: RegistryEntry,
+    entrypoint: str,
+    config: dict[str, Any],
+    params: dict[str, Any],
+    stamp: str,
+    repo_root: Path,
+) -> str:
+    parts = [_path_token(entry.id), _path_token(entrypoint)]
+    mode = _param_with_default(params, config, "mode")
+    if mode not in (None, ""):
+        parts.append(_path_token(mode))
+    train_days = _param_with_default(params, config, "train_days")
+    test_days = _param_with_default(params, config, "test_days")
+    if train_days not in (None, ""):
+        parts.append(f"{_path_token(train_days)}DTRAIN")
+    if test_days not in (None, ""):
+        parts.append(f"{_path_token(test_days)}DTEST")
+    test_range = _test_date_range(entrypoint, config, params, repo_root)
+    if test_range is not None:
+        parts.extend(["TEST", test_range[0].strftime("%Y%m%d"), test_range[1].strftime("%Y%m%d")])
+    else:
+        source = Path(str(params.get("dataset_path", "dataset"))).name
+        parts.append(_path_token(source))
+    parts.extend(["CREATED", stamp])
+    return "_".join(part for part in parts if part)
+
+
+def _test_date_range(
+    entrypoint: str,
+    config: dict[str, Any],
+    params: dict[str, Any],
+    repo_root: Path,
+) -> tuple[date, date] | None:
+    fixed_start = _parse_date_param(params.get("test_start"))
+    fixed_end = _parse_date_param(params.get("test_end"))
+    if fixed_start and fixed_end:
+        return fixed_start, fixed_end
+    if entrypoint not in {"rolling_eval", "rolling"}:
+        return None
+    train_days = _positive_int(_param_with_default(params, config, "train_days"))
+    if train_days is None:
+        return None
+    target_dates = _dataset_target_dates(params.get("dataset_path"), repo_root)
+    if len(target_dates) <= train_days:
+        return None
+    return target_dates[train_days], target_dates[-1]
+
+
+def _param_with_default(params: dict[str, Any], config: dict[str, Any], key: str) -> Any:
+    if key in params and params[key] not in (None, ""):
+        return params[key]
+    properties = config.get("params_schema", {}).get("properties", {})
+    if isinstance(properties, dict):
+        spec = properties.get(key, {})
+        if isinstance(spec, dict) and "default" in spec:
+            return spec["default"]
+    return None
+
+
+def _dataset_target_dates(dataset_path: Any, repo_root: Path) -> list[date]:
+    if not dataset_path:
+        return []
+    root = Path(str(dataset_path))
+    if not root.is_absolute():
+        root = repo_root / root
+    candidates = [
+        root / "events.csv",
+        root / "events.json",
+        root / "events.json.gz",
+        root / "market_snapshots.csv",
+        root / "market_snapshots.json",
+        root / "market_snapshots.json.gz",
+        root / "weather_snapshots.csv",
+        root / "weather_snapshots.json",
+        root / "weather_snapshots.json.gz",
+        root / "final_temperature_labels.csv",
+        root / "final_temperature_labels.json",
+        root / "final_temperature_labels.json.gz",
+    ]
+    values: set[date] = set()
+    for path in candidates:
+        if not path.exists():
+            continue
+        for row in _read_export_rows(path):
+            value = _parse_date_param(row.get("target_date") or row.get("snapshot_local_date"))
+            if value is not None:
+                values.add(value)
+        if values:
+            break
+    return sorted(values)
+
+
+def _dataset_settlement_sources(dataset_path: Any, repo_root: Path) -> dict[str, Any]:
+    if not dataset_path:
+        return {}
+    root = Path(str(dataset_path))
+    if not root.is_absolute():
+        root = repo_root / root
+    manifest = root / "manifest.json"
+    if not manifest.exists():
+        return {}
+    try:
+        value = json.loads(manifest.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    metadata = value.get("settlement_sources") if isinstance(value, dict) else None
+    return metadata if isinstance(metadata, dict) else {}
+
+
+def _read_export_rows(path: Path) -> list[dict[str, Any]]:
+    try:
+        if path.suffix == ".csv":
+            with path.open("r", encoding="utf-8", newline="") as handle:
+                return list(csv.DictReader(handle))
+        if path.name.endswith(".json.gz"):
+            with gzip.open(path, "rt", encoding="utf-8") as handle:
+                value = json.load(handle)
+        else:
+            value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    return value if isinstance(value, list) else []
+
+
+def _parse_date_param(value: Any) -> date | None:
+    if value in (None, ""):
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        return date.fromisoformat(text[:10])
+    except ValueError:
+        return None
+
+
+def _positive_int(value: Any) -> int | None:
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        return None
+    return parsed if parsed > 0 else None
+
+
+def _path_token(value: Any) -> str:
+    token = re.sub(r"[^A-Za-z0-9]+", "_", str(value).strip()).strip("_")
+    return token.upper()
 
 
 def _is_relative_to(path: Path, root: Path) -> bool:

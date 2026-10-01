@@ -10,9 +10,8 @@ from typing import Any
 
 from config import City
 from ids import deterministic_id
+from source_families import source_family_features
 from time_utils import SnapshotClock, parse_datetime
-
-from libs.source_families import source_family_features
 
 MONTHS = {
     "JAN": 1,
@@ -160,6 +159,9 @@ def event_row(
     brackets: tuple[Bracket, ...],
 ) -> dict[str, Any]:
     close_time = _common_close_time(markets)
+    settlement_sources = _settlement_sources(markets)
+    rules_primary = _common_text(markets, "rules_primary")
+    rules_secondary = _common_text(markets, "rules_secondary")
     return {
         "event_id": deterministic_id(
             "event", city.key, event_ticker, clock.snapshot_time_utc.isoformat()
@@ -180,9 +182,21 @@ def event_row(
         "is_active_climate_window": (
             clock.climate_day_start_utc <= clock.snapshot_time_utc < clock.climate_day_end_utc
         ),
+        "settlement_sources": settlement_sources,
+        "rules_primary": rules_primary,
+        "rules_secondary": rules_secondary,
+        "settlement_source_provider": _infer_market_settlement_source(
+            settlement_sources,
+            rules_primary,
+            rules_secondary,
+        ),
+        "settlement_station_id": city.station_id,
         "raw_payload_id": raw_payload_id,
         "metadata": {
             "settlement_aliases": city.settlement_aliases,
+            "settlement_sources": settlement_sources,
+            "rules_primary": rules_primary,
+            "rules_secondary": rules_secondary,
             "brackets": [asdict(bracket) for bracket in brackets],
         },
     }
@@ -282,6 +296,9 @@ def market_rows(
                 "market_top_two_gap": top_gap,
                 "sum_yes_asks": sum_asks,
                 "market_overround_ask": sum_asks - 1.0,
+                "settlement_sources": _settlement_sources([market]),
+                "rules_primary": market.get("rules_primary"),
+                "rules_secondary": market.get("rules_secondary"),
                 "raw_payload_id": raw_payload_id,
                 "metadata": {
                     "status": market.get("status"),
@@ -290,6 +307,8 @@ def market_rows(
                     "expiration_time": market.get("expiration_time"),
                     "expected_expiration_time": market.get("expected_expiration_time"),
                     "rules_primary": market.get("rules_primary"),
+                    "rules_secondary": market.get("rules_secondary"),
+                    "settlement_sources": _settlement_sources([market]),
                 },
             }
         )
@@ -309,6 +328,7 @@ def weather_row(
     hrrr: dict[str, Any] | None,
     nbm: dict[str, Any] | None,
     source_payload_ids: dict[str, str],
+    settlement_observation_payloads: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     daily_high = daily_high_from_payload(daily or {}, clock)
     hourly_values = hourly_rows_from_payload(hourly or {}, clock)
@@ -319,15 +339,24 @@ def weather_row(
     observation_values = observations_from_payload(observations or {}, clock)
     observed_high = max((value for _, value in observation_values), default=None)
     latest_obs = observation_values[-1] if observation_values else None
+    settlement_observed = settlement_observation_features(
+        {"nws_observations": observation_values},
+        clock,
+        settlement_observation_payloads,
+    )
+    settlement_observed_high = settlement_observed.get("settlement_observed_high_so_far_f")
+    observed_floor = (
+        settlement_observed_high if settlement_observed_high is not None else observed_high
+    )
     ensemble_features = ensemble_summary(
         ensemble or {}, clock, latest_obs[0] if latest_obs else None
     )
     hrrr_values = open_meteo_rows(hrrr or {}, clock)
     nbm_values = open_meteo_rows(nbm or {}, clock)
     hrrr_features = time_series_features(
-        "hrrr", hrrr_values, clock.snapshot_time_utc, observed_high
+        "hrrr", hrrr_values, clock.snapshot_time_utc, observed_floor
     )
-    nbm_features = time_series_features("nbm", nbm_values, clock.snapshot_time_utc, observed_high)
+    nbm_features = time_series_features("nbm", nbm_values, clock.snapshot_time_utc, observed_floor)
     source_highs = [
         value
         for value in (
@@ -344,6 +373,7 @@ def weather_row(
             "nws_daily_daytime_high_f": daily_high,
             "nws_hourly_window_max_f": hourly_high,
             "observed_high_so_far_f": observed_high,
+            "settlement_observed_high_so_far_f": settlement_observed_high,
             "hrrr_projected_high_f": hrrr_features.get("hrrr_projected_high_f"),
             "nbm_projected_high_f": nbm_features.get("nbm_projected_high_f"),
             "ensemble_raw_median_high_f": ensemble_features.get("ensemble_raw_median_high_f"),
@@ -371,6 +401,7 @@ def weather_row(
             (value for ts, value in hourly_values if ts >= clock.snapshot_time_utc), default=None
         ),
         "observed_high_so_far_f": observed_high,
+        **settlement_observed,
         "latest_observation_time_utc": latest_obs[0].isoformat() if latest_obs else None,
         "latest_observation_temp_f": latest_obs[1] if latest_obs else None,
         "observation_age_seconds": (clock.snapshot_time_utc - latest_obs[0]).total_seconds()
@@ -430,6 +461,7 @@ def weather_row(
             "nbm_remaining_forecast_high_f": nbm_features.get("nbm_remaining_forecast_high_f"),
             "ensemble_model_counts": ensemble_features.get("ensemble_model_counts"),
             "ensemble_error": ensemble_features.get("ensemble_error"),
+            **settlement_observed,
         },
     }
 
@@ -456,6 +488,14 @@ def settlement_row(
     )
     if index is None:
         raise ValueError("winner ticker is not in event brackets")
+    settlement_sources = _settlement_sources(markets)
+    rules_primary = _common_text(markets, "rules_primary")
+    rules_secondary = _common_text(markets, "rules_secondary")
+    market_settlement_source = _infer_market_settlement_source(
+        settlement_sources,
+        rules_primary,
+        rules_secondary,
+    )
     return {
         "settlement_id": deterministic_id("settlement", city.key, event_ticker),
         "city": city.key,
@@ -466,6 +506,9 @@ def settlement_row(
         "winner_label": winner.get("yes_sub_title") or winner.get("subtitle"),
         "settlement_temperature_f": parse_float(winner.get("expiration_value")),
         "settlement_bracket_index": index,
+        "market_settlement_source": market_settlement_source,
+        "rules_primary": rules_primary,
+        "rules_secondary": rules_secondary,
         "source_provider": "kalshi",
         "raw_payload_id": raw_payload_id,
         "validation_status": "valid",
@@ -483,20 +526,35 @@ def final_temperature_label_row(
     raw_payload_id: str | None,
     created_at_utc: datetime,
     warnings: list[str] | None = None,
+    source_provider: str = "nws_cli",
 ) -> dict[str, Any]:
-    product_id = str(product.get("id") or "")
-    issued_at = product.get("issuanceTime")
+    metadata = product.get("metadata")
+    metadata = metadata if isinstance(metadata, dict) else {}
+    product_id = str(
+        product.get("id")
+        or product.get("product_id")
+        or product.get("observationId")
+        or metadata.get("id")
+        or ""
+    )
+    issued_at = (
+        product.get("issuanceTime")
+        or product.get("issued_at_utc")
+        or product.get("validTimeLocal")
+        or product.get("validTimeUtc")
+        or product.get("obsTimeUtc")
+    )
     status = "valid_with_warnings" if warnings else "valid"
     return {
         "final_temperature_label_id": deterministic_id(
-            "final_temperature_label", city.key, event_ticker, "nws_cli"
+            "final_temperature_label", city.key, event_ticker, source_provider
         ),
         "city": city.key,
         "target_date": target_date.isoformat(),
         "event_ticker": event_ticker,
         "station_id": station_id,
         "final_high_f": final_high_f,
-        "source_provider": "nws_cli",
+        "source_provider": source_provider,
         "product_id": product_id or None,
         "issued_at_utc": str(issued_at) if issued_at else None,
         "raw_payload_id": raw_payload_id,
@@ -555,6 +613,42 @@ def select_nws_cli_final_high_product(
     return product, final_high
 
 
+def parse_weather_company_final_high(payload: dict[str, Any], target_date: date) -> float | None:
+    """Parse daily final high from a Weather Company label payload.
+
+    This accepts a deliberately small set of explicit field names rather than
+    guessing from arbitrary temperatures. If the official payload shape changes,
+    the collector should fail closed and record a provider error.
+    """
+
+    candidates = _weather_company_candidate_rows(payload)
+    for row in candidates:
+        if _payload_date(row) not in (None, target_date):
+            continue
+        value = _first_numeric(
+            row,
+            (
+                "final_high_f",
+                "finalHighF",
+                "daily_high_f",
+                "dailyHighF",
+                "temperatureMaxF",
+                "temperature_max_f",
+                "maxTemperatureF",
+                "max_temperature_f",
+            ),
+        )
+        if value is not None:
+            return value
+        nested = row.get("temperatureMax") or row.get("temperature") or row.get("highTemperature")
+        if isinstance(nested, dict):
+            value = _first_numeric(nested, ("fahrenheit", "f", "value"))
+            if value is not None:
+                unit = str(nested.get("unit") or nested.get("units") or "F").upper()
+                return value * 9.0 / 5.0 + 32.0 if unit == "C" else value
+    return None
+
+
 def final_high_validation_warnings(
     final_high_f: float,
     event_metadata: Any,
@@ -587,7 +681,7 @@ def final_high_validation_warnings(
         if bracket_contains_temperature(bracket, final_high_f)
         else [
             (
-                f"final NWS high {final_high_f:g}F does not fall inside "
+                f"final high {final_high_f:g}F does not fall inside "
                 f"Kalshi winner bracket {winner_ticker}"
             )
         ]
@@ -599,6 +693,61 @@ def bracket_contains_temperature(bracket: Bracket, temperature_f: float) -> bool
     if bracket.lower_f is not None and rounded < bracket.lower_f:
         return False
     return not (bracket.upper_f is not None and rounded > bracket.upper_f)
+
+
+def settlement_observation_features(
+    source_rows: dict[str, list[tuple[datetime, float]]],
+    clock: SnapshotClock,
+    extra_payloads: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    rows_by_source = {
+        source: rows
+        for source, rows in source_rows.items()
+        if rows
+    }
+    for source, payload in (extra_payloads or {}).items():
+        if source in rows_by_source or not isinstance(payload, dict):
+            continue
+        rows = observations_from_payload(payload, clock)
+        if rows:
+            rows_by_source[source] = rows
+
+    source_summaries: dict[str, dict[str, Any]] = {}
+    highs: list[float] = []
+    latest_times: list[datetime] = []
+    for source, rows in sorted(rows_by_source.items()):
+        high = max((value for _, value in rows), default=None)
+        latest = rows[-1][0] if rows else None
+        if high is None or latest is None:
+            continue
+        highs.append(high)
+        latest_times.append(latest)
+        source_summaries[source] = {
+            "high_f": high,
+            "latest_time_utc": latest.isoformat(),
+            "age_seconds": (clock.snapshot_time_utc - latest).total_seconds(),
+            "sample_count": len(rows),
+        }
+
+    consensus_high = max(highs) if highs else None
+    latest_time = max(latest_times) if latest_times else None
+    nws_high = source_summaries.get("nws_observations", {}).get("high_f")
+    age_seconds = (
+        (clock.snapshot_time_utc - latest_time).total_seconds() if latest_time is not None else None
+    )
+    source_range = max(highs) - min(highs) if len(highs) >= 2 else 0.0 if highs else None
+    source_stddev = stddev(highs) if len(highs) >= 2 else 0.0 if highs else None
+    return {
+        "settlement_observed_high_so_far_f": consensus_high,
+        "settlement_observed_latest_time_utc": latest_time.isoformat() if latest_time else None,
+        "settlement_observed_age_seconds": age_seconds,
+        "settlement_observed_age_hours": age_seconds / 3600.0 if age_seconds is not None else None,
+        "settlement_observed_source_count": len(source_summaries),
+        "settlement_observed_source_range_f": source_range,
+        "settlement_observed_source_stddev_f": source_stddev,
+        "settlement_observed_nws_delta_f": diff(consensus_high, nws_high),
+        "settlement_observed_sources": source_summaries,
+    }
 
 
 def clock_fields(clock: SnapshotClock) -> dict[str, Any]:
@@ -625,6 +774,45 @@ def parse_float(value: Any) -> float | None:
     except (TypeError, ValueError):
         return None
     return parsed if math.isfinite(parsed) else None
+
+
+def _weather_company_candidate_rows(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = [payload]
+    for key in ("labels", "daily", "days", "observations", "data", "results"):
+        value = payload.get(key)
+        if isinstance(value, dict):
+            rows.append(value)
+        elif isinstance(value, list):
+            rows.extend(item for item in value if isinstance(item, dict))
+    return rows
+
+
+def _payload_date(row: dict[str, Any]) -> date | None:
+    for key in (
+        "target_date",
+        "targetDate",
+        "validDate",
+        "valid_date",
+        "date",
+        "obsDate",
+        "observationDate",
+    ):
+        value = row.get(key)
+        if value in (None, ""):
+            continue
+        try:
+            return date.fromisoformat(str(value)[:10])
+        except ValueError:
+            continue
+    return None
+
+
+def _first_numeric(row: dict[str, Any], keys: tuple[str, ...]) -> float | None:
+    for key in keys:
+        value = parse_float(row.get(key))
+        if value is not None:
+            return value
+    return None
 
 
 def _optional_int(value: Any) -> int | None:
@@ -664,10 +852,15 @@ def _nws_cli_report_date(text: str) -> date | None:
 
 
 def market_float(market: dict[str, Any], *keys: str) -> float | None:
+    cent_price_fields = {
+        "yes_bid", "yes_ask", "no_bid", "no_ask", "last_price",
+        "previous_yes_bid", "previous_yes_ask", "previous_price",
+    }
     for key in keys:
         value = parse_float(market.get(key))
         if value is not None:
-            return value / 100.0 if value > 1.0 and "dollars" not in key else value
+            # Contract quantities, including *_fp strings, are already in contracts.
+            return value / 100.0 if key in cent_price_fields else value
     return None
 
 
@@ -712,18 +905,19 @@ def hourly_rows_from_payload(
 def observations_from_payload(
     payload: dict[str, Any], clock: SnapshotClock
 ) -> list[tuple[datetime, float]]:
-    features = payload.get("features", [])
     rows: list[tuple[datetime, float]] = []
-    for feature in features if isinstance(features, list) else []:
+    for item in _observation_candidate_rows(payload):
         try:
-            props = feature["properties"]
-            timestamp = parse_datetime(str(props["timestamp"]))
+            props = item.get("properties") if isinstance(item.get("properties"), dict) else item
+            timestamp = _observation_timestamp(props)
+            if timestamp is None:
+                continue
             if not (clock.climate_day_start_utc <= timestamp <= clock.snapshot_time_utc):
                 continue
-            value = props.get("temperature", {}).get("value")
+            value = _observation_temperature_f(props)
             if value is not None:
-                rows.append((timestamp, float(value) * 9.0 / 5.0 + 32.0))
-        except (KeyError, TypeError, ValueError):
+                rows.append((timestamp, value))
+        except (TypeError, ValueError):
             continue
     return sorted(rows)
 
@@ -923,6 +1117,112 @@ def diff(left: Any, right: Any) -> float | None:
     if isinstance(left, (int, float)) and isinstance(right, (int, float)):
         return float(left) - float(right)
     return None
+
+
+def _observation_candidate_rows(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for key in ("features", "observations", "data", "results", "hours", "hourly"):
+        value = payload.get(key)
+        if isinstance(value, list):
+            rows.extend(item for item in value if isinstance(item, dict))
+        elif isinstance(value, dict):
+            nested = value.get("observations") or value.get("data") or value.get("results")
+            if isinstance(nested, list):
+                rows.extend(item for item in nested if isinstance(item, dict))
+            else:
+                rows.append(value)
+    if not rows:
+        rows.append(payload)
+    return rows
+
+
+def _observation_timestamp(row: dict[str, Any]) -> datetime | None:
+    for key in (
+        "timestamp",
+        "valid",
+        "validTimeUtc",
+        "valid_time_utc",
+        "validTimeLocal",
+        "obsTimeUtc",
+        "observation_time_utc",
+        "time",
+        "dateTime",
+    ):
+        value = row.get(key)
+        if value in (None, ""):
+            continue
+        if isinstance(value, (int, float)):
+            return datetime.fromtimestamp(float(value), UTC)
+        try:
+            return parse_datetime(str(value)).astimezone(UTC)
+        except ValueError:
+            continue
+    return None
+
+
+def _observation_temperature_f(row: dict[str, Any]) -> float | None:
+    nested = row.get("temperature")
+    if isinstance(nested, dict):
+        value = parse_float(nested.get("value"))
+        if value is not None:
+            unit = str(nested.get("unitCode") or nested.get("unit") or "C").upper()
+            return value if unit.endswith(":DEGF") or unit == "F" else value * 9.0 / 5.0 + 32.0
+    for key in (
+        "temp_f",
+        "temperature_f",
+        "temperatureF",
+        "temperature",
+        "temp",
+        "tmpf",
+        "airTemperatureF",
+    ):
+        value = parse_float(row.get(key))
+        if value is not None:
+            return value
+    value = parse_float(row.get("airTemperatureC") or row.get("temperature_c") or row.get("temp_c"))
+    return value * 9.0 / 5.0 + 32.0 if value is not None else None
+
+
+def _settlement_sources(markets: list[dict[str, Any]]) -> dict[str, Any]:
+    raw: list[Any] = []
+    for market in markets:
+        for key in (
+            "settlement_sources",
+            "settlement_source",
+            "settlementSource",
+            "settlement_source_id",
+            "outcome_source",
+        ):
+            value = market.get(key)
+            if value not in (None, "", [], {}):
+                raw.append(value)
+    return {"raw": raw} if raw else {}
+
+
+def _common_text(markets: list[dict[str, Any]], key: str) -> str | None:
+    values = sorted({str(market.get(key)).strip() for market in markets if market.get(key)})
+    if not values:
+        return None
+    return values[0] if len(values) == 1 else "\n---\n".join(values)
+
+
+def _infer_market_settlement_source(
+    settlement_sources: dict[str, Any],
+    rules_primary: str | None,
+    rules_secondary: str | None,
+) -> str:
+    text = " ".join(
+        (
+            str(settlement_sources),
+            str(rules_primary or ""),
+            str(rules_secondary or ""),
+        )
+    ).lower()
+    if "weather company" in text or "weather.com" in text or "weather_company" in text:
+        return "weather_company_daily"
+    if "daily climate" in text or "nws" in text or "noaa" in text or "cli" in text:
+        return "nws_cli_daily"
+    return "unknown"
 
 
 def _common_close_time(markets: list[dict[str, Any]]) -> datetime | None:

@@ -503,7 +503,9 @@ def _respect_observed_floor(value: float, row: FeatureRow) -> float:
 
 
 def _observed(row: FeatureRow) -> float | None:
-    value = row.features.get("observed_high_so_far_f")
+    value = row.features.get("settlement_observed_high_so_far_f")
+    if value is None:
+        value = row.features.get("observed_high_so_far_f")
     return float(value) if value is not None else None
 
 

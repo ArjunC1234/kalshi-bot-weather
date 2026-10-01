@@ -1,0 +1,110 @@
+{
+  "actual_city_hours": 113,
+  "cities_seen": [
+    "aus",
+    "den",
+    "la",
+    "mia",
+    "nyc",
+    "okc"
+  ],
+  "city_coverage": [
+    {
+      "city": "nyc",
+      "coverage_ratio": 1.0,
+      "expected_hours": 20,
+      "snapshot_hours": 20
+    },
+    {
+      "city": "mia",
+      "coverage_ratio": 1.0,
+      "expected_hours": 20,
+      "snapshot_hours": 20
+    },
+    {
+      "city": "la",
+      "coverage_ratio": 0.85,
+      "expected_hours": 20,
+      "snapshot_hours": 17
+    },
+    {
+      "city": "den",
+      "coverage_ratio": 0.9,
+      "expected_hours": 20,
+      "snapshot_hours": 18
+    },
+    {
+      "city": "aus",
+      "coverage_ratio": 0.95,
+      "expected_hours": 20,
+      "snapshot_hours": 19
+    },
+    {
+      "city": "okc",
+      "coverage_ratio": 0.95,
+      "expected_hours": 20,
+      "snapshot_hours": 19
+    }
+  ],
+  "event_count": 6,
+  "expected_cities": [
+    "nyc",
+    "mia",
+    "la",
+    "den",
+    "aus",
+    "okc"
+  ],
+  "expected_city_hours": 120,
+  "generated_at_utc": "2026-07-23T14:02:29.748196+00:00",
+  "latest_snapshot_utc": "2026-07-22T23:00:00+00:00",
+  "market_snapshot_rows": 678,
+  "missing_city_hours": [
+    {
+      "city": "la",
+      "snapshot_local_date": "2026-07-22",
+      "snapshot_local_hour": 17
+    },
+    {
+      "city": "la",
+      "snapshot_local_date": "2026-07-22",
+      "snapshot_local_hour": 18
+    },
+    {
+      "city": "la",
+      "snapshot_local_date": "2026-07-22",
+      "snapshot_local_hour": 19
+    },
+    {
+      "city": "den",
+      "snapshot_local_date": "2026-07-22",
+      "snapshot_local_hour": 18
+    },
+    {
+      "city": "den",
+      "snapshot_local_date": "2026-07-22",
+      "snapshot_local_hour": 19
+    },
+    {
+      "city": "aus",
+      "snapshot_local_date": "2026-07-22",
+      "snapshot_local_hour": 19
+    },
+    {
+      "city": "okc",
+      "snapshot_local_date": "2026-07-22",
+      "snapshot_local_hour": 19
+    }
+  ],
+  "pending_final_highs": 0,
+  "pending_settlements": 0,
+  "provider_errors": {},
+  "raw_payload_rows": 1257,
+  "source_export_id": "export_20260622_20260722_20260723T140150Z",
+  "status": "warning",
+  "target_date": "2026-07-22",
+  "warnings": [
+    "missing city-hours: 7"
+  ],
+  "weather_snapshot_rows": 113
+}

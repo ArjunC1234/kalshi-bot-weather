@@ -1,0 +1,2 @@
+bracket_type,checkpoint,city,closing_mid,clv,contracts,edge,entry_price,entry_time_utc,event_ticker,hit,market_ticker,model_probability,order_id,pnl,roi,settlement_value,side,target_date,winner_ticker
+upper_tail,utc_13,den,0.995,0.6950000000000001,10.0,0.06431897584591467,0.3,2026-07-24 13:00:00+00:00,KXHIGHDEN-26JUL24,1.0,KXHIGHDEN-26JUL24-T96,0.36431897584591466,neural-ev-000001,7.0,2.3333333333333335,1.0,no,2026-07-24,KXHIGHDEN-26JUL24-B95.5

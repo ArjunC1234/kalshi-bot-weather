@@ -1,0 +1,2 @@
+city,contracts,edge,entry_price,event_ticker,market_ticker,model_probability,order_id,side,snapshot_hour_utc,target_date
+den,10.0,0.06431897584591467,0.3,KXHIGHDEN-26JUL24,KXHIGHDEN-26JUL24-T96,0.36431897584591466,neural-ev-000001,buy_no,2026-07-24 13:00:00+00:00,2026-07-24

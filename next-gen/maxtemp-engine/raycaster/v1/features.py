@@ -28,6 +28,12 @@ NUMERIC_FEATURES = [
     "hours_remaining",
     "nws_anchor_high_f",
     "observed_high_so_far_f",
+    "settlement_observed_high_so_far_f",
+    "settlement_observed_source_count",
+    "settlement_observed_age_hours",
+    "settlement_observed_source_range_f",
+    "settlement_observed_source_stddev_f",
+    "settlement_observed_nws_delta_f",
     "hrrr_projected_high_f",
     "nbm_projected_high_f",
     "ensemble_raw_median_high_f",
@@ -140,6 +146,12 @@ def feature_profile(name: str = DEFAULT_FEATURE_PROFILE) -> FeatureProfile:
                 "hours_elapsed",
                 "hours_remaining",
                 "observed_high_so_far_f",
+                "settlement_observed_high_so_far_f",
+                "settlement_observed_source_count",
+                "settlement_observed_age_hours",
+                "settlement_observed_source_range_f",
+                "settlement_observed_source_stddev_f",
+                "settlement_observed_nws_delta_f",
                 "observation_age_hours",
                 "family_baseline_high_f",
                 "family_numerical_anchor_high_f",
@@ -208,6 +220,30 @@ def feature_row_from_snapshot(
         "hours_remaining": _hours_remaining(weather, event),
         "nws_anchor_high_f": weather.nws_anchor_high_f,
         "observed_high_so_far_f": weather.observed_high_so_far_f,
+        "settlement_observed_high_so_far_f": _first_number(
+            raw_features,
+            "settlement_observed_high_so_far_f",
+        ),
+        "settlement_observed_source_count": _first_number(
+            raw_features,
+            "settlement_observed_source_count",
+        ),
+        "settlement_observed_age_hours": _first_number(
+            raw_features,
+            "settlement_observed_age_hours",
+        ),
+        "settlement_observed_source_range_f": _first_number(
+            raw_features,
+            "settlement_observed_source_range_f",
+        ),
+        "settlement_observed_source_stddev_f": _first_number(
+            raw_features,
+            "settlement_observed_source_stddev_f",
+        ),
+        "settlement_observed_nws_delta_f": _first_number(
+            raw_features,
+            "settlement_observed_nws_delta_f",
+        ),
         "hrrr_projected_high_f": weather.hrrr_projected_high_f,
         "nbm_projected_high_f": weather.nbm_projected_high_f,
         "ensemble_raw_median_high_f": weather.ensemble_raw_median_high_f,
@@ -281,7 +317,7 @@ def source_blend_prediction(row: FeatureRow) -> float:
         _as_float(row.features.get("ensemble_raw_median_high_f")),
     ]
     sources = sorted(value for value in values if value is not None)
-    observed = _as_float(row.features.get("observed_high_so_far_f"))
+    observed = _observed_high(row)
     if sources:
         midpoint = len(sources) // 2
         if len(sources) % 2:
@@ -390,7 +426,11 @@ def _add_source_disagreement(features: dict[str, float | str | None]) -> None:
     hrrr = _as_float(features.get("hrrr_projected_high_f"))
     nbm = _as_float(features.get("nbm_projected_high_f"))
     ensemble = _as_float(features.get("ensemble_raw_median_high_f"))
-    observed = _as_float(features.get("observed_high_so_far_f"))
+    observed = _as_float(
+        features.get("settlement_observed_high_so_far_f")
+        if features.get("settlement_observed_high_so_far_f") is not None
+        else features.get("observed_high_so_far_f")
+    )
     features["hrrr_minus_nws"] = _difference(hrrr, nws)
     features["nbm_minus_nws"] = _difference(nbm, nws)
     features["ensemble_minus_nws"] = _difference(ensemble, nws)
@@ -406,6 +446,15 @@ def _add_source_disagreement(features: dict[str, float | str | None]) -> None:
     else:
         features["source_std_f"] = None
         features["source_range_f"] = None
+
+
+def _observed_high(row: FeatureRow) -> float | None:
+    observed = _as_float(row.features.get("settlement_observed_high_so_far_f"))
+    return (
+        observed
+        if observed is not None
+        else _as_float(row.features.get("observed_high_so_far_f"))
+    )
 
 
 def _difference(left: float | None, right: float | None) -> float | None:

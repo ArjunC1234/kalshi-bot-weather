@@ -1,0 +1,26 @@
+{
+  "created_at_utc": "2026-09-18T18:38:05.915215+00:00",
+  "as_of": "2026-09-18",
+  "requirements_sha256": "e29478c6e10bdbe4e51a69a4f3ac3401568d4089a3c83126601f0e9ef157829b",
+  "model_sha256": "0bbab4f01b439f2adc743ad5837f0387fcbd58a9f82e977f788fe7cbf1fd00e5",
+  "inputs": {
+    "raw": {
+      "path": "data\\hourly_snapshot_20260918\\model_20260918\\raw_payloads.csv",
+      "sha256": "4340e8105c260a1c591c98b8039c57e2f986ef31596fbf47c335e07ec23bc786"
+    },
+    "weather": {
+      "path": "data\\hourly_snapshot_20260918\\model_20260918\\weather_snapshots.csv",
+      "sha256": "8e6991f3bb855c981d15228e4db28a80c810a33d9ccb69f82d4575931e2944f6"
+    },
+    "market": {
+      "path": "data\\hourly_snapshot_20260918\\model_20260918\\market_snapshots.csv",
+      "sha256": "358bb35fd813d4d868d7568030249d330ec8224d5a83530952c1036b743b5cf9"
+    },
+    "settlements": {
+      "path": "data\\hourly_snapshot_20260918\\model_20260918\\settlements.csv",
+      "sha256": "e8084b9fb9a63d7e7a84158267ab500423da8f8a96b67cb67ca585d900fa3cd7"
+    }
+  },
+  "policy_selected_before_prospective_scoring": true,
+  "live_trading": false
+}

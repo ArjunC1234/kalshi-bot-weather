@@ -1,0 +1,34 @@
+{
+  "locked_at": "2026-09-13T14:48:41.938881+00:00",
+  "models_sha256": "f71c6b67ad3efe5deff94a78b5a761ff4c7611d259cc8f22493f03045561c0b2",
+  "script_sha256": "2ce41b1eb1a9f309dec9312fc1095c0fa7caa9150f96253defb5aae2a8ee44da",
+  "replay_sha256": "ec325fcad46e248f30231a490280b3c66fd20124f5e3f213d08fb2aa6696ec7b",
+  "input_sha256": {
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_history_verified_20260701_20260901\\market_snapshots.json.gz": "7239928e58f7c356159c73cfb375571cb763410a7fd5a5c59bd704e8d299c4e6",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_history_verified_20260701_20260901\\weather_snapshots.json.gz": "42318aad70bbd08a9aa4c9098f529aa46cbb2717496df1fd63116f70561e1f88",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_history_verified_20260701_20260901\\events.json.gz": "caceb1779406afecaca0b04e5a0629028ebcba44ad44c5e2575c0c1e816cf9ff",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_history_verified_20260701_20260901\\settlements.json.gz": "158b91c1f02062c904a468708b0f7823d53a7edcdfbf0d092b4aa9f12f28f256",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_fresh_verified_20260901_20260912\\market_snapshots.json.gz": "5140f606f4a1f184d78410fc63814c8b7e1aa4b6942e49bb70c4bd732cb94912",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_fresh_verified_20260901_20260912\\weather_snapshots.json.gz": "1704d49be4e4c474528515a86cac1382a7487082161042f54e5526cdbd69084f",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_fresh_verified_20260901_20260912\\events.json.gz": "457dc50ccb895317ef85f2b91b32f16c9c4b3c61052da76b3335aa5899e2783b",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\profitability_fresh_verified_20260901_20260912\\settlements.json.gz": "46a70a11417dd6f52abbb877199c6d4417a1f153b330e31653e97455a1cb552e"
+  },
+  "preferred_challenger": "post_weather",
+  "calibration_log_loss": {
+    "mixed_market": 0.37728859875691917,
+    "mixed_weather": 0.37728859875691917,
+    "post_market": 0.37614528122042307,
+    "post_weather": 0.37614528122042307
+  },
+  "policy": {
+    "side": "no",
+    "min_price": 0.5,
+    "max_price": 0.85,
+    "min_hours": 14,
+    "min_net_edge": 0.05,
+    "bounded_only": false,
+    "min_probability": 0.85,
+    "max_spread": 0.05
+  },
+  "note": "Models serialized before evaluation scoring; dates already examined in earlier research."
+}

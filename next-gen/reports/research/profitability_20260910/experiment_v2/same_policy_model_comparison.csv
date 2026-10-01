@@ -1,0 +1,13 @@
+window,model,trades,settled_trades,wins,unsettled_trades,hit_rate,net_pnl,fees,gross_pnl,cash_debit,roi,contracts,breakeven_contract_hit_rate,contract_hit_rate,max_daily_drawdown,mean_probability
+validation,market,0,0,0,0,,0.0,0.0,0.0,0.0,,0.0,,,0.0,
+validation,market_calibrated,0,0,0,0,,0.0,0.0,0.0,0.0,,0.0,,,0.0,
+validation,weather_regularized,0,0,0,0,,0.0,0.0,0.0,0.0,,0.0,,,0.0,
+validation,weather_market,3,3,1,0,0.3333333333333333,-4.73,0.09,-4.640000000000001,5.73,-0.8254799301919721,7.0,0.8185714285714286,0.14285714285714285,-4.73,0.8608482776700145
+test,market,0,0,0,0,,0.0,0.0,0.0,0.0,,0.0,,,0.0,
+test,market_calibrated,0,0,0,0,,0.0,0.0,0.0,0.0,,0.0,,,0.0,
+test,weather_regularized,2,2,2,0,1.0,0.9799999999999999,0.07,1.0499999999999998,5.02,0.1952191235059761,6.0,0.8366666666666666,1.0,0.0,0.8654224491314899
+test,weather_market,8,8,8,0,1.0,3.6399999999999997,0.26,3.9000000000000004,20.36,0.17878192534381138,24.0,0.8483333333333333,1.0,0.0,0.8829061961736484
+fresh,market,0,0,0,0,,0.0,0.0,0.0,0.0,,0.0,,,0.0,
+fresh,market_calibrated,0,0,0,0,,0.0,0.0,0.0,0.0,,0.0,,,0.0,
+fresh,weather_regularized,0,0,0,0,,0.0,0.0,0.0,0.0,,0.0,,,0.0,
+fresh,weather_market,0,0,0,0,,0.0,0.0,0.0,0.0,,0.0,,,0.0,

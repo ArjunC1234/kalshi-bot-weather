@@ -1,0 +1,110 @@
+{
+  "id": "neuralcaster_v3",
+  "kind": "model",
+  "version": 3,
+  "label": "Neuralcaster v3",
+  "description": "Leakage-aware NWS residual distribution engine. Recommended default: Huber residual for small labeled weather-market datasets.",
+  "code": {
+    "working_directory": "."
+  },
+  "entrypoints": {
+    "rolling_eval": {
+      "label": "Rolling Evaluation",
+      "command": [
+        "python",
+        "maxtemp-engine/neuralcaster/v3/cli.py",
+        "rolling-eval",
+        "--data",
+        "{{ inputs.dataset.path }}",
+        "--output",
+        "{{ outputs.report_dir }}"
+      ],
+      "params_schema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "enum": [
+              "robust_ensemble",
+              "huber_residual",
+              "ridge_residual",
+              "tree_residual",
+              "source_blend",
+              "market_baseline",
+              "nws_baseline",
+              "mlp_residual",
+              "gru_residual"
+            ],
+            "default": "huber_residual",
+            "description": "Residual model family. huber_residual is the current small-data default; robust_ensemble is experimental and slower."
+          },
+          "train_days": {
+            "type": "integer",
+            "minimum": 7,
+            "default": 14,
+            "description": "Number of prior target dates used for each rolling training window."
+          },
+          "test_days": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "description": "Number of future target dates scored per fold."
+          },
+          "min_training_rows": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 60
+          },
+          "probability_floor": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.001
+          },
+          "seed": {
+            "type": "integer",
+            "default": 31
+          },
+          "device": {
+            "type": "string",
+            "default": "auto",
+            "description": "Torch device for MLP/GRU only. auto, cpu, or cuda."
+          }
+        }
+      },
+      "produces": {
+        "artifact_type": "model_report",
+        "contract": "weather_model_report.v1"
+      }
+    }
+  },
+  "inputs": {
+    "dataset": {
+      "type": "local_export",
+      "required_tables": ["events", "weather_snapshots", "market_snapshots", "final_temperature_labels"],
+      "optional_tables": ["settlements"]
+    }
+  },
+  "artifact_contract": {
+    "required_files": ["summary.json", "predictions.csv", "bracket_distributions.csv"],
+    "optional_files": [
+      "errors.csv",
+      "by_checkpoint.csv",
+      "by_city.csv",
+      "temperature_metrics.csv",
+      "bracket_metrics.csv",
+      "residual_errors.csv",
+      "residual_metrics.csv",
+      "residual_by_city.csv",
+      "residual_by_checkpoint.csv"
+    ]
+  },
+  "semantic_outputs": {
+    "prediction_time": "snapshot_time_utc",
+    "target_date": "target_date",
+    "city": "city",
+    "event": "event_ticker",
+    "point_prediction": "expected_high_f",
+    "probability_distribution": "probabilities"
+  }
+}

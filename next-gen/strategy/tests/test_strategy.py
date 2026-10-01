@@ -9,6 +9,16 @@ from pathlib import Path
 
 from libs.models import Bracket, MarketSnapshot, Settlement
 from strategy.backtest import run_backtest
+from strategy.ev_backtest import (
+    NeuralEvConfig,
+    _decision,
+    _distance_outside_contract,
+    _inside_contract,
+    _intervals_overlap_flag,
+    _passes_validation_constraints,
+    _validation_sort_key,
+    _within_date_window,
+)
 from strategy.fills import settle_order
 from strategy.live_replay import LiveReplayConfig, build_slice_allowlist, run_live_replay
 from strategy.metrics import edge_bucket, max_drawdown
@@ -28,6 +38,23 @@ class StrategyTests(unittest.TestCase):
         signal = signal_for_market(market, 0.60, StrategyConfig(max_edge=0.20))
         self.assertEqual(signal.decision, "skip")
         self.assertEqual(signal.skip_reason, "edge_above_max")
+
+    def test_neural_ev_respects_max_ev_filter(self) -> None:
+        decision, reason = _decision(
+            entry_price=0.60,
+            spread=0.05,
+            ev=0.21,
+            config=NeuralEvConfig(min_ev=0.02, max_ev=0.20),
+            hours_elapsed=None,
+        )
+        self.assertEqual(decision, "skip")
+        self.assertEqual(reason, "ev_above_threshold")
+
+    def test_neural_ev_defaults_to_post_settlement_system_dates(self) -> None:
+        config = NeuralEvConfig()
+
+        self.assertFalse(_within_date_window("2026-08-26", config))
+        self.assertTrue(_within_date_window("2026-08-27", config))
 
     def test_signal_respects_model_probability_filter(self) -> None:
         market = _market("MKT-WIN", yes_bid=0.20, yes_ask=0.30)
@@ -75,6 +102,70 @@ class StrategyTests(unittest.TestCase):
             _trade_like(0.5, datetime(2026, 7, 3, tzinfo=UTC)),
         ]
         self.assertAlmostEqual(max_drawdown(trades), -2.0)
+
+    def test_learned_gate_contract_distance_features_boundary_risk(self) -> None:
+        market = _market("MKT-BOUNDED", yes_bid=0.45, yes_ask=0.50)
+        self.assertEqual(market.bracket.lower_f, 80)
+        self.assertEqual(market.bracket.upper_f, 80)
+
+        self.assertTrue(_inside_contract(market, 80.0))
+        self.assertFalse(_inside_contract(market, 81.2))
+        self.assertAlmostEqual(_distance_outside_contract(market, 81.2) or 0.0, 1.2)
+        self.assertEqual(
+            _intervals_overlap_flag(market.bracket.lower_f, market.bracket.upper_f, 79.2, 80.2),
+            1,
+        )
+        self.assertEqual(
+            _intervals_overlap_flag(market.bracket.lower_f, market.bracket.upper_f, 81.0, 83.0),
+            0,
+        )
+
+    def test_hit_rate_validation_objective_prioritizes_hit_rate(self) -> None:
+        high_hit_low_pnl = {
+            "trades": 20,
+            "hit_rate": 0.80,
+            "positive_clv_rate": 0.70,
+            "total_pnl": 1.0,
+            "total_risk": 20.0,
+            "max_drawdown": -4.0,
+            "roi": 0.05,
+        }
+        lower_hit_higher_pnl = {
+            "trades": 20,
+            "hit_rate": 0.70,
+            "positive_clv_rate": 0.90,
+            "total_pnl": 10.0,
+            "total_risk": 20.0,
+            "max_drawdown": -1.0,
+            "roi": 0.50,
+        }
+        self.assertGreater(
+            _validation_sort_key(high_hit_low_pnl, "hit_rate"),
+            _validation_sort_key(lower_hit_higher_pnl, "hit_rate"),
+        )
+
+    def test_hit_rate_validation_objective_requires_positive_pnl(self) -> None:
+        metrics = {
+            "trades": 20,
+            "positive_clv_rate": 0.70,
+            "total_pnl": -0.01,
+        }
+        self.assertFalse(
+            _passes_validation_constraints(
+                metrics,
+                validation_objective="hit_rate",
+                min_validation_trades=5,
+                min_validation_positive_clv=0.50,
+            )
+        )
+        self.assertTrue(
+            _passes_validation_constraints(
+                {**metrics, "total_pnl": 0.01},
+                validation_objective="hit_rate",
+                min_validation_trades=5,
+                min_validation_positive_clv=0.50,
+            )
+        )
 
     def test_end_to_end_backtest_writes_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

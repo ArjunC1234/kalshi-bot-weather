@@ -203,12 +203,12 @@ def serve_gui(
 
     with ReusableTCPServer((host, port), TrendsHandler) as server:
         url = f"http://{host}:{port}"
-        print(f"trends GUI: {url}")
-        print(f"data root: {normalized_roots.data_root}")
-        print(f"report root: {normalized_roots.report_root}")
-        print(f"quality root: {normalized_roots.quality_root}")
-        print(f"strategy root: {normalized_roots.strategy_root}")
-        print(f"static root: {static_dir}")
+        print(f"trends GUI: {url}", flush=True)
+        print(f"data root: {normalized_roots.data_root}", flush=True)
+        print(f"report root: {normalized_roots.report_root}", flush=True)
+        print(f"quality root: {normalized_roots.quality_root}", flush=True)
+        print(f"strategy root: {normalized_roots.strategy_root}", flush=True)
+        print(f"static root: {static_dir}", flush=True)
         if open_browser:
             webbrowser.open(url)
         server.serve_forever()

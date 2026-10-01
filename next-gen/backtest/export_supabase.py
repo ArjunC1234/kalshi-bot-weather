@@ -9,6 +9,11 @@ from backtest.data_sources import SupabaseSource
 from libs.constants import SUPABASE_TABLES
 from libs.io_utils import write_json_gz
 from libs.json_utils import write_json
+from libs.settlement_policy import (
+    POST_SETTLEMENT_SYSTEM_START,
+    clamp_to_post_settlement_start,
+)
+from libs.settlement_sources import annotate_table_rows, settlement_source_summary
 from libs.supabase_client import SupabaseClient
 
 
@@ -17,21 +22,32 @@ def export_supabase(
     end: str,
     output: Path,
     client: SupabaseClient | None = None,
+    post_settlement_system_only: bool = True,
 ) -> Path:
+    requested_start = start
+    if post_settlement_system_only:
+        start = clamp_to_post_settlement_start(start).isoformat()
     active_client = client or SupabaseClient.from_env()
     source = SupabaseSource(active_client, start=start, end=end)
     output.mkdir(parents=True, exist_ok=True)
     manifest = {
         "start": start,
         "end": end,
+        "requested_start": requested_start,
+        "post_settlement_system_only": post_settlement_system_only,
+        "post_settlement_system_start": POST_SETTLEMENT_SYSTEM_START,
         "exported_at_utc": datetime.now(UTC).isoformat(),
         "export_name": output.name,
         "tables": {},
     }
+    exported_tables = {}
     for table in SUPABASE_TABLES:
         rows = source.load_table(table)
+        rows = annotate_table_rows(table, rows)
+        exported_tables[table] = rows
         write_json_gz(output / f"{table}.json.gz", rows)
         manifest["tables"][table] = len(rows)
+    manifest["settlement_sources"] = settlement_source_summary(exported_tables)
     write_json(output / "manifest.json", manifest)
     return output
 

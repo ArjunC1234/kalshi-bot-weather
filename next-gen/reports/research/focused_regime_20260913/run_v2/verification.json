@@ -1,0 +1,8 @@
+{
+  "reconciled_main_trades": 0,
+  "serialized_prediction_reproduction": "exact",
+  "one_snapshot_per_event": true,
+  "training_and_calibration_receipts_checked": true,
+  "same_evaluation_events_for_all_models": 84,
+  "live_orders": 0
+}

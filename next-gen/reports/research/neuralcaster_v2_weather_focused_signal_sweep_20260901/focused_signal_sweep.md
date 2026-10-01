@@ -1,0 +1,75 @@
+# Focused Capped-Edge Signal Sweep
+
+- focused_0946: side=all ev=0.08-0.12 price=0.6-0.65 prob>=0.55 disagree>=0.0 hours>=nan | search hit=0.723 pnl=4.68 trades=47 | test hit=0.667 pnl=0.97 trades=21
+- focused_0955: side=all ev=0.08-0.12 price=0.6-0.65 prob>=0.65 disagree>=0.0 hours>=nan | search hit=0.723 pnl=4.68 trades=47 | test hit=0.667 pnl=0.97 trades=21
+- focused_0949: side=all ev=0.08-0.12 price=0.6-0.65 prob>=0.55 disagree>=0.05 hours>=nan | search hit=0.717 pnl=4.28 trades=46 | test hit=0.667 pnl=0.97 trades=21
+- focused_0958: side=all ev=0.08-0.12 price=0.6-0.65 prob>=0.65 disagree>=0.05 hours>=nan | search hit=0.717 pnl=4.28 trades=46 | test hit=0.667 pnl=0.97 trades=21
+- focused_0579: side=all ev=0.02-0.08 price=0.5-0.65 prob>=0.65 disagree>=0.0 hours>=10.0 | search hit=0.714 pnl=2.05 trades=21 | test hit=0.600 pnl=-0.19 trades=5
+- focused_0606: side=all ev=0.02-0.08 price=0.55-0.65 prob>=0.65 disagree>=0.0 hours>=10.0 | search hit=0.714 pnl=2.05 trades=21 | test hit=0.600 pnl=-0.19 trades=5
+- focused_0460: side=no_only ev=0.08-0.12 price=0.6-0.65 prob>=0.55 disagree>=0.0 hours>=nan | search hit=0.711 pnl=3.89 trades=45 | test hit=0.632 pnl=0.20 trades=19
+- focused_0463: side=no_only ev=0.08-0.12 price=0.6-0.65 prob>=0.55 disagree>=0.05 hours>=nan | search hit=0.711 pnl=3.89 trades=45 | test hit=0.632 pnl=0.20 trades=19
+- focused_0469: side=no_only ev=0.08-0.12 price=0.6-0.65 prob>=0.65 disagree>=0.0 hours>=nan | search hit=0.711 pnl=3.89 trades=45 | test hit=0.632 pnl=0.20 trades=19
+- focused_0472: side=no_only ev=0.08-0.12 price=0.6-0.65 prob>=0.65 disagree>=0.05 hours>=nan | search hit=0.711 pnl=3.89 trades=45 | test hit=0.632 pnl=0.20 trades=19
+
+## Selected Rule Windows
+
+- focused_0946 search: trades=47 hit=0.723 pnl=4.68 roi=0.160 clv+=0.723
+- focused_0946 test: trades=21 hit=0.667 pnl=0.97 roi=0.074 clv+=0.667
+- focused_0946 aug_06_12: trades=8 hit=0.625 pnl=0.03 roi=0.006 clv+=0.625
+- focused_0946 aug_13_19: trades=11 hit=0.636 pnl=0.09 roi=0.013 clv+=0.636
+- focused_0946 aug_20_26: trades=14 hit=0.786 pnl=2.29 roi=0.263 clv+=0.786
+- focused_0946 aug_27_31: trades=7 hit=0.429 pnl=-1.32 roi=-0.306 clv+=0.429
+- focused_0955 search: trades=47 hit=0.723 pnl=4.68 roi=0.160 clv+=0.723
+- focused_0955 test: trades=21 hit=0.667 pnl=0.97 roi=0.074 clv+=0.667
+- focused_0955 aug_06_12: trades=8 hit=0.625 pnl=0.03 roi=0.006 clv+=0.625
+- focused_0955 aug_13_19: trades=11 hit=0.636 pnl=0.09 roi=0.013 clv+=0.636
+- focused_0955 aug_20_26: trades=14 hit=0.786 pnl=2.29 roi=0.263 clv+=0.786
+- focused_0955 aug_27_31: trades=7 hit=0.429 pnl=-1.32 roi=-0.306 clv+=0.429
+- focused_0949 search: trades=46 hit=0.717 pnl=4.28 roi=0.149 clv+=0.717
+- focused_0949 test: trades=21 hit=0.667 pnl=0.97 roi=0.074 clv+=0.667
+- focused_0949 aug_06_12: trades=8 hit=0.625 pnl=0.03 roi=0.006 clv+=0.625
+- focused_0949 aug_13_19: trades=11 hit=0.636 pnl=0.09 roi=0.013 clv+=0.636
+- focused_0949 aug_20_26: trades=14 hit=0.786 pnl=2.29 roi=0.263 clv+=0.786
+- focused_0949 aug_27_31: trades=7 hit=0.429 pnl=-1.32 roi=-0.306 clv+=0.429
+- focused_0958 search: trades=46 hit=0.717 pnl=4.28 roi=0.149 clv+=0.717
+- focused_0958 test: trades=21 hit=0.667 pnl=0.97 roi=0.074 clv+=0.667
+- focused_0958 aug_06_12: trades=8 hit=0.625 pnl=0.03 roi=0.006 clv+=0.625
+- focused_0958 aug_13_19: trades=11 hit=0.636 pnl=0.09 roi=0.013 clv+=0.636
+- focused_0958 aug_20_26: trades=14 hit=0.786 pnl=2.29 roi=0.263 clv+=0.786
+- focused_0958 aug_27_31: trades=7 hit=0.429 pnl=-1.32 roi=-0.306 clv+=0.429
+- focused_0579 search: trades=21 hit=0.714 pnl=2.05 roi=0.158 clv+=0.714
+- focused_0579 test: trades=5 hit=0.600 pnl=-0.19 roi=-0.060 clv+=0.600
+- focused_0579 aug_06_12: trades=2 hit=0.500 pnl=-0.21 roi=-0.174 clv+=0.500
+- focused_0579 aug_13_19: trades=3 hit=0.667 pnl=0.20 roi=0.111 clv+=0.667
+- focused_0579 aug_20_26: trades=3 hit=0.333 pnl=-0.94 roi=-0.485 clv+=0.333
+- focused_0579 aug_27_31: trades=2 hit=1.000 pnl=0.75 roi=0.600 clv+=1.000
+- focused_0606 search: trades=21 hit=0.714 pnl=2.05 roi=0.158 clv+=0.714
+- focused_0606 test: trades=5 hit=0.600 pnl=-0.19 roi=-0.060 clv+=0.600
+- focused_0606 aug_06_12: trades=2 hit=0.500 pnl=-0.21 roi=-0.174 clv+=0.500
+- focused_0606 aug_13_19: trades=3 hit=0.667 pnl=0.20 roi=0.111 clv+=0.667
+- focused_0606 aug_20_26: trades=3 hit=0.333 pnl=-0.94 roi=-0.485 clv+=0.333
+- focused_0606 aug_27_31: trades=2 hit=1.000 pnl=0.75 roi=0.600 clv+=1.000
+- focused_0460 search: trades=45 hit=0.711 pnl=3.89 roi=0.138 clv+=0.711
+- focused_0460 test: trades=19 hit=0.632 pnl=0.20 roi=0.017 clv+=0.632
+- focused_0460 aug_06_12: trades=7 hit=0.571 pnl=-0.36 roi=-0.083 clv+=0.571
+- focused_0460 aug_13_19: trades=11 hit=0.636 pnl=0.09 roi=0.013 clv+=0.636
+- focused_0460 aug_20_26: trades=12 hit=0.750 pnl=1.52 roi=0.203 clv+=0.750
+- focused_0460 aug_27_31: trades=7 hit=0.429 pnl=-1.32 roi=-0.306 clv+=0.429
+- focused_0463 search: trades=45 hit=0.711 pnl=3.89 roi=0.138 clv+=0.711
+- focused_0463 test: trades=19 hit=0.632 pnl=0.20 roi=0.017 clv+=0.632
+- focused_0463 aug_06_12: trades=7 hit=0.571 pnl=-0.36 roi=-0.083 clv+=0.571
+- focused_0463 aug_13_19: trades=11 hit=0.636 pnl=0.09 roi=0.013 clv+=0.636
+- focused_0463 aug_20_26: trades=12 hit=0.750 pnl=1.52 roi=0.203 clv+=0.750
+- focused_0463 aug_27_31: trades=7 hit=0.429 pnl=-1.32 roi=-0.306 clv+=0.429
+- focused_0469 search: trades=45 hit=0.711 pnl=3.89 roi=0.138 clv+=0.711
+- focused_0469 test: trades=19 hit=0.632 pnl=0.20 roi=0.017 clv+=0.632
+- focused_0469 aug_06_12: trades=7 hit=0.571 pnl=-0.36 roi=-0.083 clv+=0.571
+- focused_0469 aug_13_19: trades=11 hit=0.636 pnl=0.09 roi=0.013 clv+=0.636
+- focused_0469 aug_20_26: trades=12 hit=0.750 pnl=1.52 roi=0.203 clv+=0.750
+- focused_0469 aug_27_31: trades=7 hit=0.429 pnl=-1.32 roi=-0.306 clv+=0.429
+- focused_0472 search: trades=45 hit=0.711 pnl=3.89 roi=0.138 clv+=0.711
+- focused_0472 test: trades=19 hit=0.632 pnl=0.20 roi=0.017 clv+=0.632
+- focused_0472 aug_06_12: trades=7 hit=0.571 pnl=-0.36 roi=-0.083 clv+=0.571
+- focused_0472 aug_13_19: trades=11 hit=0.636 pnl=0.09 roi=0.013 clv+=0.636
+- focused_0472 aug_20_26: trades=12 hit=0.750 pnl=1.52 roi=0.203 clv+=0.750
+- focused_0472 aug_27_31: trades=7 hit=0.429 pnl=-1.32 roi=-0.306 clv+=0.429

@@ -1,0 +1,24 @@
+{
+  "model": "manual_v1",
+  "data": "..\\next-gen\\data\\current_20260701_20260827_lightweight",
+  "train_start": "2026-07-01",
+  "train_end": "2026-08-19",
+  "test_start": "2026-08-20",
+  "test_end": "2026-08-27",
+  "training_rows": 8000,
+  "test_rows": 1119,
+  "config": {
+    "min_edge": 0.03,
+    "max_spread": 0.1,
+    "min_entry_price": 0.35,
+    "max_entry_price": 0.65,
+    "daily_budget": 40.0,
+    "max_order_cost": 3.0,
+    "contracts_per_trade": 5
+  },
+  "trades": 48,
+  "total_risk": 97.75,
+  "total_pnl": -12.749999999999996,
+  "roi": -0.13043478260869562,
+  "hit_rate": 0.3541666666666667
+}

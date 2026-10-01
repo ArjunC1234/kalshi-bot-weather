@@ -1,0 +1,34 @@
+{
+  "locked_at": "2026-09-13T14:55:41.957954+00:00",
+  "models_sha256": "e7d29cfc2e747e81c77e23fe9e2f4963aca4584ba377677accc6985ddcaceb36",
+  "script_sha256": "2ce41b1eb1a9f309dec9312fc1095c0fa7caa9150f96253defb5aae2a8ee44da",
+  "replay_sha256": "ec325fcad46e248f30231a490280b3c66fd20124f5e3f213d08fb2aa6696ec7b",
+  "input_sha256": {
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\focused_history_afternoon_verified_20260701_20260901\\market_snapshots.json.gz": "ba0d25b3552e89f93683eda95199f89630daf79622464022b3a473abb582b85e",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\focused_history_afternoon_verified_20260701_20260901\\weather_snapshots.json.gz": "3feb9d97b8755eb2b72b14945c20c9640829d1aacc80ceeec72aef3c2544ca75",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\focused_history_afternoon_verified_20260701_20260901\\events.json.gz": "221d28298235761fcba2587c7fa8833300916300706742e88b0102a9edfb4d8d",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\focused_history_afternoon_verified_20260701_20260901\\settlements.json.gz": "ba35ebb9a6152a49084b5b8ce6b7c12164749ea7201d087317fe50feceba0f47",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\focused_fresh_afternoon_verified_20260901_20260912\\market_snapshots.json.gz": "82c14ab90aed4c0c2328350eb0bb331190749196932fc4a3e444b8b663d55970",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\focused_fresh_afternoon_verified_20260901_20260912\\weather_snapshots.json.gz": "8c7220043448660b4182e8a11737e7c6087ab563df71dbc186966739adf7efa2",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\focused_fresh_afternoon_verified_20260901_20260912\\events.json.gz": "51023c45aa8cbf5d7eca63663800fb768213051c66716fb93d5b907e6b16e261",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\focused_fresh_afternoon_verified_20260901_20260912\\settlements.json.gz": "94393d831c8efd0f7d333fb4f20e2e3a710298306973e13b331e23b3d6d56e8a"
+  },
+  "preferred_challenger": "mixed_weather",
+  "calibration_log_loss": {
+    "mixed_market": 0.2777715606113715,
+    "mixed_weather": 0.2777715606113715,
+    "post_market": 0.278948440823819,
+    "post_weather": 0.278948440823819
+  },
+  "policy": {
+    "side": "no",
+    "min_price": 0.5,
+    "max_price": 0.85,
+    "min_hours": 14,
+    "min_net_edge": 0.05,
+    "bounded_only": false,
+    "min_probability": 0.85,
+    "max_spread": 0.05
+  },
+  "note": "Models serialized before evaluation scoring; dates already examined in earlier research."
+}

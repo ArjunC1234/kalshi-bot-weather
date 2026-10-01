@@ -1,0 +1,19 @@
+{
+  "created_at": "2026-09-14T03:40:30.772924+00:00",
+  "protocol_sha256": "4b69b0baac6060389e5ede62847d63211b4c8e817dbad08a1a193f845b40187b",
+  "source_hashes": {
+    "timing_research/__init__.py": "45a7cf5fae9afa61f975affc5b870ae13f38c5954c67041c6aaba37d19e6aaaa",
+    "timing_research/__main__.py": "a71f746f239e7f1602c3566523e5f7a11d59af0abde2e2c032d69f52bf02d587",
+    "timing_research/contract.py": "394656e38dfcaf7a1b7eaa935b1faa273705d375ec65f89dd48a637fa1477095",
+    "timing_research/experiment.py": "5e56cefb7f589ee936541033dbe20f400b8e29a18b68f8e3632a81661d03c67c",
+    "timing_research/reader.py": "2eb80723667f574464f9a5410d2e4e490cc17d1aa8614df7848060dcc1e2efa2"
+  },
+  "python": "3.12.0",
+  "runtime": [
+    3,
+    12
+  ],
+  "protocol_notes_sha256": "7103ea4be45e7dc59c83b8ff385e0a7d36f92236216e69f98cedc9ab26af5367",
+  "live_trading_authorized": false,
+  "lock_sha256": "4e5f66ebee026444f2b226a1fac2e134a38918087a656fd73b6653f174682af1"
+}

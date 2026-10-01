@@ -379,16 +379,16 @@ def _strategy_summary(path: Path) -> dict[str, Any]:
         "name": path.name,
         "path": str(path),
         "mode": summary.get("mode") or summary.get("experiment"),
-        "trades": _float(summary.get("trades") or result.get("trades")),
-        "total_contracts": _float(summary.get("total_contracts") or result.get("contracts")),
-        "total_risk": _float(summary.get("total_risk") or result.get("risk")),
-        "total_pnl": _float(summary.get("total_pnl") or result.get("pnl")),
-        "roi": _float(summary.get("roi") or result.get("roi")),
-        "hit_rate": _float(summary.get("hit_rate") or result.get("hit_rate")),
-        "max_drawdown": _float(summary.get("max_drawdown") or result.get("max_drawdown")),
-        "mean_clv": _float(summary.get("mean_clv") or result.get("mean_clv")),
+        "trades": _float(_first_present(summary, result, "trades")),
+        "total_contracts": _float(_first_present(summary, result, "total_contracts", "contracts")),
+        "total_risk": _float(_first_present(summary, result, "total_risk", "risk")),
+        "total_pnl": _float(_first_present(summary, result, "total_pnl", "pnl")),
+        "roi": _float(_first_present(summary, result, "roi")),
+        "hit_rate": _float(_first_present(summary, result, "hit_rate")),
+        "max_drawdown": _float(_first_present(summary, result, "max_drawdown")),
+        "mean_clv": _float(_first_present(summary, result, "mean_clv")),
         "positive_clv_rate": _float(
-            summary.get("positive_clv_rate") or result.get("positive_clv_rate")
+            _first_present(summary, result, "positive_clv_rate")
         ),
         "generated_at_utc": summary.get("generated_at_utc"),
         "train_start_date": summary.get("train_start_date")
@@ -404,6 +404,15 @@ def _strategy_summary(path: Path) -> dict[str, Any]:
         or summary.get("edgecaster_test_end")
         or summary.get("edgecaster_test_end_date"),
     }
+
+
+def _first_present(primary: dict[str, Any], fallback: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        if key in primary and primary[key] is not None:
+            return primary[key]
+        if key in fallback and fallback[key] is not None:
+            return fallback[key]
+    return None
 
 
 def _strategy_result_block(summary: dict[str, Any]) -> dict[str, Any]:

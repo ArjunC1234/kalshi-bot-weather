@@ -1,0 +1,12 @@
+{
+  "created_at": "2026-09-14T03:40:33.162943+00:00",
+  "as_of": "2026-09-14T03:00:00+00:00",
+  "source_hashes": {
+    "timing_research/__init__.py": "45a7cf5fae9afa61f975affc5b870ae13f38c5954c67041c6aaba37d19e6aaaa",
+    "timing_research/__main__.py": "a71f746f239e7f1602c3566523e5f7a11d59af0abde2e2c032d69f52bf02d587",
+    "timing_research/contract.py": "394656e38dfcaf7a1b7eaa935b1faa273705d375ec65f89dd48a637fa1477095",
+    "timing_research/experiment.py": "5e56cefb7f589ee936541033dbe20f400b8e29a18b68f8e3632a81661d03c67c",
+    "timing_research/reader.py": "2eb80723667f574464f9a5410d2e4e490cc17d1aa8614df7848060dcc1e2efa2"
+  },
+  "python": "3.12.0"
+}

@@ -1,0 +1,7 @@
+count,metric,value
+395,offset_mae,1.5981265822784814
+395,offset_rmse,1.9698326087079359
+395,offset_bias,-0.6989367088607584
+395,nws_baseline_mae,3.091139240506329
+395,model_temperature_mae,1.5981265822784814
+395,mae_improvement_vs_nws,1.4930126582278478

@@ -1,0 +1,2 @@
+group,trades,pnl,roi,hit_rate,avg_edge,avg_model_probability,realized_win_rate,avg_entry_price,avg_clv,positive_clv_rate
+no,4,1.5,0.14285714285714285,0.75,0.019615039229393005,0.3540087789297104,0.75,0.7050000000000001,0.04249999999999998,0.75

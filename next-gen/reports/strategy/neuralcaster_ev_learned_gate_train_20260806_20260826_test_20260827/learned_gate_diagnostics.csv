@@ -1,0 +1,2 @@
+candidate_count,mean_training_reward,model_mode,positive_training_rate,selected_count,target_date,training_dates,training_examples
+44,0.005801242236024843,trained_hist_gradient_boosting,0.5788819875776398,4,2026-08-27,20,805

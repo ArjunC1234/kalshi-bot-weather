@@ -33,10 +33,19 @@ class SupabaseClient:
     def select(self, table: str, params: dict[str, str] | None = None) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
         offset = 0
+        primary_keys = {
+            "events": "event_id", "market_snapshots": "market_snapshot_id",
+            "weather_snapshots": "weather_snapshot_id", "settlements": "settlement_id",
+            "final_temperature_labels": "final_temperature_label_id", "raw_payloads": "raw_payload_id",
+        }
+        query = {"select": "*", **(params or {})}
+        if table in primary_keys:
+            # Range pagination without a stable order can repeat or omit facts.
+            query.setdefault("order", f"{primary_keys[table]}.asc")
         while True:
             response = self.session.get(
                 f"{self.config.url}/rest/v1/{table}",
-                params={"select": "*", **(params or {})},
+                params=query,
                 headers={
                     "Accept": "application/json",
                     "Range": f"{offset}-{offset + self.page_size - 1}",

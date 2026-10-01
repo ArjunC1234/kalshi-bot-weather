@@ -1,0 +1,40 @@
+{
+  "model": "neural",
+  "policy": {
+    "side": "no",
+    "min_price": 0.5,
+    "max_price": 0.85,
+    "min_hours": 10,
+    "min_net_edge": 0.02,
+    "bounded_only": false,
+    "min_probability": 0.85,
+    "max_spread": 0.05
+  },
+  "validation_qualified": false,
+  "validation_metrics": {
+    "model": "neural",
+    "policy_index": 0,
+    "trades": 25,
+    "settled_trades": 25,
+    "wins": 18,
+    "unsettled_trades": 0,
+    "hit_rate": 0.72,
+    "net_pnl": 0.129999999999999,
+    "fees": 1.1400000000000001,
+    "gross_pnl": 1.2699999999999974,
+    "cash_debit": 56.87,
+    "roi": 0.0022859152452962724,
+    "contracts": 77.0,
+    "breakeven_contract_hit_rate": 0.7385714285714285,
+    "contract_hit_rate": 0.7402597402597403,
+    "max_daily_drawdown": -6.48,
+    "mean_probability": 0.9309844814351307,
+    "week1_pnl": 1.2799999999999994,
+    "week2_pnl": -1.150000000000001
+  },
+  "locked_at_utc": "2026-09-12T15:00:24.034881+00:00",
+  "history_sha256": "7239928e58f7c356159c73cfb375571cb763410a7fd5a5c59bd704e8d299c4e6",
+  "status": "abstain_validation_failed",
+  "models_sha256": "8560c8eceea5d4cdf937cedf0a7da802ef5b1d562bce2e90963beb1d87c2f1cc",
+  "research_code_sha256": "78ab7e8767bdd60770b1665c42831212e0d8a6100feca16cabf511daf511f36e"
+}

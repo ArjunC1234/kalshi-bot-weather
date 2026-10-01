@@ -254,6 +254,89 @@ def run_fixed_window(
     return {**summary, "output_dir": str(output_dir)}
 
 
+def run_validation_gate_fixed_window(
+    data_path: str | Path,
+    model_report: str | Path,
+    output_dir: str | Path,
+    train_start: str,
+    train_end: str,
+    test_start: str,
+    test_end: str,
+    config: EdgecasterV2Config,
+    min_validation_trades: int = 5,
+) -> dict[str, Any]:
+    sets = load_candidate_sets(data_path, model_report)
+    train_sets, test_sets = split_sets(sets, train_start, train_end, test_start, test_end)
+    model, feature_spec, training_summary = train_model(train_sets, config)
+    validation_date = training_summary.get("validation_date")
+    validation_sets = [
+        item
+        for item in train_sets
+        if validation_date is not None and item.target_date == validation_date
+    ]
+    if not validation_sets:
+        validation_sets = train_sets
+    validation_predictions = predict_sets(
+        model,
+        feature_spec,
+        validation_sets,
+        training_examples=training_summary["training_examples"],
+        training_days=training_summary["training_days"],
+    )
+    test_predictions = predict_sets(
+        model,
+        feature_spec,
+        test_sets,
+        training_examples=training_summary["training_examples"],
+        training_days=training_summary["training_days"],
+    )
+    dataset = load_dataset_for_trades(data_path)
+    history = market_history(dataset)
+    gate_rows = _validation_gate_sweep(
+        validation_predictions,
+        history,
+        config,
+        min_validation_trades,
+    )
+    selected_gate = gate_rows[0] if gate_rows else _gate_row({}, [])
+    test_trades = _select_trades_for_gate(test_predictions, history, config, selected_gate)
+    test_result = _gate_row(selected_gate, test_trades)
+    summary = {
+        "mode": "edgecaster_v2_validation_gate_fixed_window",
+        "experiment": "choose_gate_on_validation_day_apply_to_untouched_test_set",
+        "data_path": str(data_path),
+        "model_report": str(model_report),
+        "config": asdict(config),
+        "train_start_date": train_start,
+        "train_end_date": train_end,
+        "validation_date": validation_date,
+        "test_start_date": test_start,
+        "test_end_date": test_end,
+        "candidate_sets": len(sets),
+        "train_sets": len(train_sets),
+        "validation_sets": len(validation_sets),
+        "test_sets": len(test_sets),
+        "training_examples": training_summary["training_examples"],
+        "training_days": training_summary["training_days"],
+        "validation_prediction_examples": len(validation_predictions),
+        "test_prediction_examples": len(test_predictions),
+        "min_validation_trades": min_validation_trades,
+        "selected_validation_gate": selected_gate,
+        "validation_result_for_selected_gate": selected_gate,
+        "test_result_using_validation_gate": test_result,
+        "top_10_validation_gates": gate_rows[:10],
+        "prediction_examples": len(test_predictions),
+        "calibration": {},
+        **training_summary,
+        **summary_metrics(test_trades),
+    }
+    output = Path(output_dir)
+    write_outputs(output, summary, test_predictions, test_trades)
+    _write_dict_rows(output / "validation_threshold_sweep.csv", gate_rows)
+    _write_dict_rows(output / "test_applied_gate_trades.csv", [asdict(row) for row in test_trades])
+    return {**summary, "output_dir": str(output_dir)}
+
+
 def run_rolling_eval(
     data_path: str | Path,
     model_report: str | Path,
@@ -477,6 +560,117 @@ def select_trades(
             trades.append(_trade(prediction, contracts, history, sequence))
             sequence += 1
     return trades
+
+
+def _validation_gate_sweep(
+    predictions: list[EdgecasterV2Prediction],
+    history: dict[tuple[str, str], list[Any]],
+    config: EdgecasterV2Config,
+    min_validation_trades: int,
+) -> list[dict[str, Any]]:
+    rows = []
+    for gate in _gate_grid(config):
+        trades = _select_trades_for_gate(predictions, history, config, gate)
+        row = _gate_row(gate, trades)
+        row["eligible_for_selection"] = row["trades"] >= min_validation_trades
+        rows.append(row)
+    eligible = [row for row in rows if row["eligible_for_selection"]]
+    selected_pool = eligible or rows
+    return sorted(
+        selected_pool,
+        key=lambda row: (
+            row["pnl"],
+            row["roi"],
+            row["trades"],
+            row["hit_rate"],
+        ),
+        reverse=True,
+    ) + sorted(
+        [row for row in rows if row not in selected_pool],
+        key=lambda row: (
+            row["pnl"],
+            row["roi"],
+            row["trades"],
+            row["hit_rate"],
+        ),
+        reverse=True,
+    )
+
+
+def _gate_grid(config: EdgecasterV2Config) -> list[dict[str, Any]]:
+    gates = []
+    for side in ("all", "no", "yes"):
+        for min_predicted_reward in (-0.05, 0.0, 0.03, 0.05, 0.08, 0.12):
+            for min_trade_probability in (0.0, 0.35, 0.5, 0.65, 0.8):
+                for min_raw_edge in (-0.05, 0.0, 0.03, 0.05, 0.08, 0.12):
+                    for min_entry_price in (0.01, 0.15):
+                        for max_entry_price in (0.65, 0.75, 0.85, 0.99):
+                            if min_entry_price >= max_entry_price:
+                                continue
+                            gates.append(
+                                {
+                                    "side": side,
+                                    "min_predicted_reward": min_predicted_reward,
+                                    "min_trade_probability": min_trade_probability,
+                                    "min_raw_edge": min_raw_edge,
+                                    "max_spread": config.max_spread,
+                                    "min_entry_price": min_entry_price,
+                                    "max_entry_price": max_entry_price,
+                                }
+                            )
+    return gates
+
+
+def _select_trades_for_gate(
+    predictions: list[EdgecasterV2Prediction],
+    history: dict[tuple[str, str], list[Any]],
+    config: EdgecasterV2Config,
+    gate: dict[str, Any],
+) -> list[PaperTrade]:
+    side = str(gate.get("side") or "all")
+    gate_config = replace(
+        config,
+        min_predicted_reward=float(gate.get("min_predicted_reward", config.min_predicted_reward)),
+        min_trade_probability=float(
+            gate.get("min_trade_probability", config.min_trade_probability)
+        ),
+        min_raw_edge=float(gate.get("min_raw_edge", config.min_raw_edge)),
+        max_spread=float(gate.get("max_spread", config.max_spread)),
+        min_entry_price=float(gate.get("min_entry_price", config.min_entry_price)),
+        max_entry_price=float(gate.get("max_entry_price", config.max_entry_price)),
+        selection_policy="standard",
+    )
+    gated_predictions = (
+        predictions
+        if side == "all"
+        else [row for row in predictions if row.candidate.side == side]
+    )
+    return select_trades(gated_predictions, history, gate_config)
+
+
+def _gate_row(gate: dict[str, Any], trades: list[PaperTrade]) -> dict[str, Any]:
+    metrics = summary_metrics(trades)
+    return {
+        "side": gate.get("side", "all"),
+        "min_predicted_reward": gate.get("min_predicted_reward"),
+        "min_trade_probability": gate.get("min_trade_probability"),
+        "min_raw_edge": gate.get("min_raw_edge"),
+        "max_spread": gate.get("max_spread"),
+        "min_entry_price": gate.get("min_entry_price"),
+        "max_entry_price": gate.get("max_entry_price"),
+        "trades": metrics["trades"],
+        "contracts": metrics["total_contracts"],
+        "risk": metrics["total_risk"],
+        "pnl": metrics["total_pnl"],
+        "roi": metrics["roi"],
+        "hit_rate": metrics["hit_rate"],
+        "average_entry_price": metrics.get("average_entry_price"),
+        "average_model_probability": metrics.get("average_model_probability"),
+        "average_edge": metrics.get("average_edge"),
+        "max_drawdown": metrics["max_drawdown"],
+        "mean_clv": metrics.get("mean_clv"),
+        "positive_clv_rate": metrics.get("positive_clv_rate"),
+    }
 
 
 datetime_key = tuple[str, str, Any]

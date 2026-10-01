@@ -13,6 +13,7 @@ from backtest.quality import build_quality_report, write_quality_report
 from backtest.reports import write_dataset_summary
 from backtest.validators import validate_dataset
 from libs.json_utils import write_json
+from libs.settlement_policy import clamp_to_post_settlement_start
 
 
 @dataclass(frozen=True)
@@ -21,8 +22,10 @@ class PipelineResult:
     report_dir: str
     exported_at_utc: str
     start: str
+    requested_start: str
     end: str
     require_settlements: bool
+    post_settlement_system_only: bool
     validation_status: str
 
 
@@ -32,8 +35,20 @@ def run_export_validate_pipeline(
     data_dir: Path,
     report_dir: Path,
     require_settlements: bool = False,
+    post_settlement_system_only: bool = True,
 ) -> PipelineResult:
-    export_supabase(start, end, data_dir)
+    requested_start = start
+    effective_start = (
+        clamp_to_post_settlement_start(start).isoformat()
+        if post_settlement_system_only
+        else start
+    )
+    export_supabase(
+        start,
+        end,
+        data_dir,
+        post_settlement_system_only=post_settlement_system_only,
+    )
     source = LocalExportSource(data_dir)
     dataset = load_dataset(source)
     validate_dataset(dataset, require_settlements=require_settlements)
@@ -44,11 +59,12 @@ def run_export_validate_pipeline(
         data_dir=str(data_dir),
         report_dir=str(report_dir),
         exported_at_utc=datetime.now(UTC).isoformat(),
-        start=start,
+        start=effective_start,
+        requested_start=requested_start,
         end=end,
         require_settlements=require_settlements,
+        post_settlement_system_only=post_settlement_system_only,
         validation_status="valid",
     )
     write_json(report_dir / "pipeline_result.json", asdict(result))
     return result
-

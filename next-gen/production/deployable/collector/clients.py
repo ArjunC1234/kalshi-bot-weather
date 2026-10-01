@@ -318,11 +318,36 @@ class PostgresClient:
             ).fetchall()
         return [dict(row) for row in rows]
 
-    def fetch_events_missing_final_high(self, limit: int = 100) -> list[dict[str, Any]]:
+    def fetch_events_missing_final_high(
+        self, limit: int = 100, source_provider: str = "nws_cli"
+    ) -> list[dict[str, Any]]:
         with psycopg.connect(self.database_url, row_factory=dict_row) as conn:
             rows = conn.execute(
-                "select * from v_events_missing_final_high order by target_date, city limit %s",
-                (limit,),
+                """
+                select distinct on (e.city, e.event_ticker)
+                  e.city,
+                  e.event_ticker,
+                  e.target_date,
+                  e.station_id,
+                  e.city_timezone,
+                  e.climate_day_end_utc,
+                  e.market_close_time_utc,
+                  e.metadata as event_metadata,
+                  s.winner_ticker,
+                  s.settlement_temperature_f as kalshi_settlement_temperature_f,
+                  s.settlement_bracket_index
+                from events e
+                left join final_temperature_labels f
+                  on f.city = e.city
+                  and f.event_ticker = e.event_ticker
+                  and f.source_provider = %s
+                left join settlements s on s.city = e.city and s.event_ticker = e.event_ticker
+                where f.final_temperature_label_id is null
+                  and e.climate_day_end_utc <= now()
+                order by e.city, e.event_ticker, e.snapshot_time_utc desc
+                limit %s
+                """,
+                (source_provider, limit),
             ).fetchall()
         return [dict(row) for row in rows]
 
@@ -402,7 +427,7 @@ def _csv_value(value: Any) -> Any:
 
 
 def _export_bounds(table: str, start: str, end: str) -> tuple[str, str]:
-    if table == "settlements":
+    if table in ("settlements", "final_temperature_labels"):
         return start, end
     return f"{start}T00:00:00+00:00", f"{end}T23:59:59+00:00"
 

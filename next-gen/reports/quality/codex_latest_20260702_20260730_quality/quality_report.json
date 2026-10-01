@@ -1,0 +1,53 @@
+{
+  "actual_city_hours": 4148,
+  "cities": [
+    "aus",
+    "den",
+    "la",
+    "mia",
+    "nyc",
+    "okc"
+  ],
+  "expected_city_hours": 4152,
+  "generated_at_utc": "2026-07-31T02:07:33.015817+00:00",
+  "latest_snapshot_utc": "2026-07-30T23:00:00+00:00",
+  "missing_city_hours": [
+    {
+      "city": "den",
+      "snapshot_time_utc": "2026-07-23T07:00:00+00:00"
+    },
+    {
+      "city": "la",
+      "snapshot_time_utc": "2026-07-23T07:00:00+00:00"
+    },
+    {
+      "city": "mia",
+      "snapshot_time_utc": "2026-07-23T07:00:00+00:00"
+    },
+    {
+      "city": "okc",
+      "snapshot_time_utc": "2026-07-23T07:00:00+00:00"
+    }
+  ],
+  "pending_final_highs": 6,
+  "pending_settlements": 6,
+  "provider_errors": {
+    "collector": 4,
+    "kalshi": 5,
+    "nws": 10,
+    "open_meteo": 84
+  },
+  "snapshot_hours": 692,
+  "source_export_id": "codex_latest_20260702_20260730_for_neuralcaster_edgecaster",
+  "storage_bytes": 129705408,
+  "table_counts": {
+    "collector_runs": 2079,
+    "events": 4148,
+    "final_temperature_labels": 168,
+    "market_snapshots": 24888,
+    "provider_errors": 103,
+    "raw_payloads": 36974,
+    "settlements": 168,
+    "weather_snapshots": 4148
+  }
+}

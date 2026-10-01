@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping
 
 from libs.models import Bracket
@@ -104,4 +105,4 @@ def _with_tail_points(quantiles: Mapping[float, float]) -> list[tuple[float, flo
 def _observed_floor(observed_high_so_far_f: float | None) -> float | None:
     if observed_high_so_far_f is None:
         return None
-    return observed_high_so_far_f - 0.75
+    return math.floor(observed_high_so_far_f + 0.5) - 0.5

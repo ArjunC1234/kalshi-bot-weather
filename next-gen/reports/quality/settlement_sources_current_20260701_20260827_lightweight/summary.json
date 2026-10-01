@@ -1,0 +1,33 @@
+{
+  "artifact_type": "quality_report",
+  "contract": "settlement_source_report.v1",
+  "source_export_id": "current_20260701_20260827_lightweight",
+  "generated_at_utc": "2026-08-28T20:52:52.210135+00:00",
+  "settlement_sources": {
+    "label_sources": {
+      "nws_cli_daily": 324
+    },
+    "market_settlement_sources": {
+      "unknown": 580
+    },
+    "settlement_row_sources": {
+      "unknown": 324
+    },
+    "label_source": "nws_cli_daily",
+    "market_settlement_source": "unknown",
+    "settlement_source": "unknown",
+    "compatible": false,
+    "warnings": [
+      "Market rule settlement source is unknown; verify Kalshi rules before trading."
+    ]
+  },
+  "label_rows": 324,
+  "coverage_rows": 324,
+  "comparison_rows": 324,
+  "nws_weather_company_pairs": 0,
+  "warnings": [
+    "Market rule settlement source is unknown; verify Kalshi rules before trading.",
+    "No Weather Company daily labels are present; comparison is coverage-only.",
+    "No event has both NWS CLI and Weather Company daily labels yet."
+  ]
+}

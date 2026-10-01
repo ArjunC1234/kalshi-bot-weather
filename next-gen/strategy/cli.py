@@ -4,7 +4,15 @@ from __future__ import annotations
 
 import argparse
 
+from libs.settlement_policy import POST_SETTLEMENT_SYSTEM_START
 from strategy.backtest import run_backtest
+from strategy.ev_backtest import (
+    NeuralEvConfig,
+    NeuralLearnedGateConfig,
+    run_neural_ev_backtest,
+    run_neural_ev_learned_gate,
+    run_neural_ev_validation_fixed_window,
+)
 from strategy.live_replay import LiveReplayConfig, build_slice_allowlist, run_live_replay
 from strategy.signals import StrategyConfig
 
@@ -42,6 +50,114 @@ def main(argv: list[str] | None = None) -> int:
         "--entry-policy",
         choices=["first", "latest", "best-edge"],
         default="first",
+    )
+    neural_ev = subparsers.add_parser(
+        "neural-ev",
+        help="run a Neuralcaster probability EV strategy backtest",
+    )
+    neural_ev.add_argument("--data", required=True)
+    neural_ev.add_argument("--model-report", required=True)
+    neural_ev.add_argument("--output", required=True)
+    neural_ev.add_argument("--start-date")
+    neural_ev.add_argument("--end-date")
+    neural_ev.add_argument("--min-target-date", default=POST_SETTLEMENT_SYSTEM_START)
+    neural_ev.add_argument("--min-ev", type=float, default=0.03)
+    neural_ev.add_argument("--max-ev", type=float)
+    neural_ev.add_argument("--max-spread", type=float, default=0.15)
+    neural_ev.add_argument("--min-entry-price", type=float, default=0.02)
+    neural_ev.add_argument("--max-entry-price", type=float, default=0.80)
+    neural_ev.add_argument("--daily-budget", type=float, default=40.0)
+    neural_ev.add_argument("--max-order-cost", type=float, default=3.0)
+    neural_ev.add_argument("--max-contracts-per-order", type=int, default=20)
+    neural_ev.add_argument("--max-no-contracts-per-order", type=int, default=10)
+    neural_ev.add_argument("--max-positions-per-event", type=int, default=1)
+    neural_ev.add_argument("--min-hours-elapsed", type=float)
+    neural_ev.add_argument("--allow-yes", action=argparse.BooleanOptionalAction, default=True)
+    neural_ev.add_argument("--allow-no", action=argparse.BooleanOptionalAction, default=True)
+    neural_ev.add_argument(
+        "--entry-policy",
+        choices=["first", "latest", "best-ev"],
+        default="best-ev",
+    )
+    neural_ev_validation = subparsers.add_parser(
+        "neural-ev-validation-fixed-window",
+        help="select a Neuralcaster EV policy on a validation window and apply it to a test window",
+    )
+    neural_ev_validation.add_argument("--data", required=True)
+    neural_ev_validation.add_argument("--model-report", required=True)
+    neural_ev_validation.add_argument("--output", required=True)
+    neural_ev_validation.add_argument("--train-start", required=True)
+    neural_ev_validation.add_argument("--train-end", required=True)
+    neural_ev_validation.add_argument("--test-start", required=True)
+    neural_ev_validation.add_argument("--test-end", required=True)
+    neural_ev_validation.add_argument("--min-target-date", default=POST_SETTLEMENT_SYSTEM_START)
+    neural_ev_validation.add_argument("--daily-budget", type=float, default=40.0)
+    neural_ev_validation.add_argument("--max-order-cost", type=float, default=3.0)
+    neural_ev_validation.add_argument("--max-contracts-per-order", type=int, default=20)
+    neural_ev_validation.add_argument("--max-no-contracts-per-order", type=int, default=10)
+    neural_ev_validation.add_argument("--max-positions-per-event", type=int, default=1)
+    neural_ev_validation.add_argument("--min-hours-elapsed", type=float)
+    neural_ev_validation.add_argument("--min-validation-trades", type=int, default=5)
+    neural_ev_validation.add_argument(
+        "--validation-objective",
+        choices=["robust", "pnl", "hit_rate"],
+        default="robust",
+    )
+    neural_ev_validation.add_argument("--min-validation-positive-clv", type=float, default=0.50)
+    neural_ev_validation.add_argument(
+        "--entry-policy",
+        choices=["first", "latest", "best-ev"],
+        default="best-ev",
+    )
+    neural_ev_gate = subparsers.add_parser(
+        "neural-ev-learned-gate",
+        help="train a leak-free learned gate on candidate trades and apply it to a test window",
+    )
+    neural_ev_gate.add_argument("--data", required=True)
+    neural_ev_gate.add_argument("--model-report", required=True)
+    neural_ev_gate.add_argument("--output", required=True)
+    neural_ev_gate.add_argument("--train-start", required=True)
+    neural_ev_gate.add_argument("--train-end", required=True)
+    neural_ev_gate.add_argument("--test-start", required=True)
+    neural_ev_gate.add_argument("--test-end", required=True)
+    neural_ev_gate.add_argument("--min-target-date", default=POST_SETTLEMENT_SYSTEM_START)
+    neural_ev_gate.add_argument(
+        "--gate-model-type",
+        choices=["hist_gradient_boosting", "ridge"],
+        default="hist_gradient_boosting",
+    )
+    neural_ev_gate.add_argument("--min-training-examples", type=int, default=400)
+    neural_ev_gate.add_argument("--min-training-dates", type=int, default=5)
+    neural_ev_gate.add_argument("--min-predicted-reward", type=float, default=0.0)
+    neural_ev_gate.add_argument("--min-trade-probability", type=float, default=0.55)
+    neural_ev_gate.add_argument(
+        "--selection-score",
+        choices=["predicted_reward", "trade_probability"],
+        default="predicted_reward",
+    )
+    neural_ev_gate.add_argument(
+        "--gate-application",
+        choices=["fixed_gate_veto", "rerank_candidates"],
+        default="fixed_gate_veto",
+        help="fixed_gate_veto only rejects fixed-gate trades; rerank_candidates can replace them",
+    )
+    neural_ev_gate.add_argument("--min-ev", type=float, default=0.0)
+    neural_ev_gate.add_argument("--max-ev", type=float)
+    neural_ev_gate.add_argument("--max-spread", type=float, default=0.10)
+    neural_ev_gate.add_argument("--min-entry-price", type=float, default=0.50)
+    neural_ev_gate.add_argument("--max-entry-price", type=float, default=0.65)
+    neural_ev_gate.add_argument("--daily-budget", type=float, default=40.0)
+    neural_ev_gate.add_argument("--max-order-cost", type=float, default=3.0)
+    neural_ev_gate.add_argument("--max-contracts-per-order", type=int, default=20)
+    neural_ev_gate.add_argument("--max-no-contracts-per-order", type=int, default=10)
+    neural_ev_gate.add_argument("--max-positions-per-event", type=int, default=1)
+    neural_ev_gate.add_argument("--min-hours-elapsed", type=float)
+    neural_ev_gate.add_argument("--allow-yes", action=argparse.BooleanOptionalAction, default=True)
+    neural_ev_gate.add_argument("--allow-no", action=argparse.BooleanOptionalAction, default=True)
+    neural_ev_gate.add_argument(
+        "--entry-policy",
+        choices=["first", "latest", "best-ev"],
+        default="best-ev",
     )
     replay = subparsers.add_parser("live-replay", help="run a live-like strategy replay")
     replay.add_argument("--data", required=True)
@@ -150,6 +266,105 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"paper backtest: trades={summary['trades']} pnl={summary['total_pnl']:.4f} "
             f"roi={summary['roi']:.4f} output={summary['output_dir']}"
+        )
+        return 0
+    if args.command == "neural-ev":
+        summary = run_neural_ev_backtest(
+            args.data,
+            args.model_report,
+            args.output,
+            NeuralEvConfig(
+                start_date=args.start_date,
+                end_date=args.end_date,
+                min_target_date=args.min_target_date,
+                min_ev=args.min_ev,
+                max_ev=args.max_ev,
+                max_spread=args.max_spread,
+                min_entry_price=args.min_entry_price,
+                max_entry_price=args.max_entry_price,
+                daily_budget=args.daily_budget,
+                max_order_cost=args.max_order_cost,
+                max_contracts_per_order=args.max_contracts_per_order,
+                max_no_contracts_per_order=args.max_no_contracts_per_order,
+                max_positions_per_event=args.max_positions_per_event,
+                min_hours_elapsed=args.min_hours_elapsed,
+                allow_yes=args.allow_yes,
+                allow_no=args.allow_no,
+                entry_policy=args.entry_policy,
+            ),
+        )
+        print(
+            f"neural ev: trades={summary['trades']} pnl={summary['total_pnl']:.4f} "
+            f"roi={summary['roi']:.4f} output={summary['output_dir']}"
+        )
+        return 0
+    if args.command == "neural-ev-validation-fixed-window":
+        summary = run_neural_ev_validation_fixed_window(
+            args.data,
+            args.model_report,
+            args.output,
+            NeuralEvConfig(
+                daily_budget=args.daily_budget,
+                min_target_date=args.min_target_date,
+                max_order_cost=args.max_order_cost,
+                max_contracts_per_order=args.max_contracts_per_order,
+                max_no_contracts_per_order=args.max_no_contracts_per_order,
+                max_positions_per_event=args.max_positions_per_event,
+                min_hours_elapsed=args.min_hours_elapsed,
+                entry_policy=args.entry_policy,
+            ),
+            train_start=args.train_start,
+            train_end=args.train_end,
+            test_start=args.test_start,
+            test_end=args.test_end,
+            min_validation_trades=args.min_validation_trades,
+            validation_objective=args.validation_objective,
+            min_validation_positive_clv=args.min_validation_positive_clv,
+        )
+        print(
+            f"neural ev validation: trades={summary['trades']} "
+            f"pnl={summary['total_pnl']:.4f} roi={summary['roi']:.4f} "
+            f"output={summary['output_dir']}"
+        )
+        return 0
+    if args.command == "neural-ev-learned-gate":
+        summary = run_neural_ev_learned_gate(
+            args.data,
+            args.model_report,
+            args.output,
+            NeuralLearnedGateConfig(
+                train_start=args.train_start,
+                train_end=args.train_end,
+                test_start=args.test_start,
+                test_end=args.test_end,
+                min_target_date=args.min_target_date,
+                gate_model_type=args.gate_model_type,
+                min_training_examples=args.min_training_examples,
+                min_training_dates=args.min_training_dates,
+                min_predicted_reward=args.min_predicted_reward,
+                min_trade_probability=args.min_trade_probability,
+                selection_score=args.selection_score,
+                gate_application=args.gate_application,
+                min_ev=args.min_ev,
+                max_ev=args.max_ev,
+                max_spread=args.max_spread,
+                min_entry_price=args.min_entry_price,
+                max_entry_price=args.max_entry_price,
+                daily_budget=args.daily_budget,
+                max_order_cost=args.max_order_cost,
+                max_contracts_per_order=args.max_contracts_per_order,
+                max_no_contracts_per_order=args.max_no_contracts_per_order,
+                max_positions_per_event=args.max_positions_per_event,
+                min_hours_elapsed=args.min_hours_elapsed,
+                allow_yes=args.allow_yes,
+                allow_no=args.allow_no,
+                entry_policy=args.entry_policy,
+            ),
+        )
+        print(
+            f"neural ev learned gate: trades={summary['trades']} "
+            f"pnl={summary['total_pnl']:.4f} roi={summary['roi']:.4f} "
+            f"output={summary['output_dir']}"
         )
         return 0
     if args.command == "live-replay":

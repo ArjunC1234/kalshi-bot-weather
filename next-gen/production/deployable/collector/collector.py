@@ -25,6 +25,7 @@ from normalizers import (
     final_high_validation_warnings,
     final_temperature_label_row,
     market_rows,
+    parse_weather_company_final_high,
     parse_bracket,
     select_event,
     select_nws_cli_final_high_product,
@@ -53,6 +54,7 @@ NBM_HOURLY_FIELDS = ",".join(
 )
 
 NWS_CLI_SEARCH_DAYS = 3
+WEATHER_COMPANY_DAILY_SOURCE = "weather_company_daily"
 
 
 def collect_once(
@@ -390,7 +392,7 @@ def ingest_final_highs(
     started = datetime.now(UTC)
     inserted = 0
     tables: dict[str, list[dict[str, Any]]] = {table: [] for table in FACT_TABLES}
-    for event in postgres.fetch_events_missing_final_high(limit):
+    for event in postgres.fetch_events_missing_final_high(limit, source_provider="nws_cli"):
         city = parse_cities(str(event["city"]))[0]
         event_ticker = str(event["event_ticker"])
         target_date = _date_value(event["target_date"])
@@ -431,6 +433,95 @@ def ingest_final_highs(
             recorder,
             started,
             "ingest-final-highs",
+            inserted,
+            sum(len(rows) for table, rows in tables.items() if table != "collector_runs"),
+        )
+    )
+    if storage is not None:
+        for record in raw_payload_dicts(recorder.raw_payloads):
+            storage.upload_raw_payload(record)
+    postgres.insert_facts(tables)
+    return inserted
+
+
+def ingest_weather_company_final_highs(
+    recorder: HttpRecorder,
+    postgres: PostgresClient,
+    storage: StorageClient | None,
+    url_template: str | None,
+    api_key: str | None = None,
+    limit: int = 100,
+    *,
+    require_config: bool = False,
+) -> int:
+    started = datetime.now(UTC)
+    inserted = 0
+    tables: dict[str, list[dict[str, Any]]] = {table: [] for table in FACT_TABLES}
+    for event in postgres.fetch_events_missing_final_high(
+        limit, source_provider=WEATHER_COMPANY_DAILY_SOURCE
+    ):
+        city = parse_cities(str(event["city"]))[0]
+        event_ticker = str(event["event_ticker"])
+        target_date = _date_value(event["target_date"])
+        try:
+            selected = (
+                fetch_weather_company_final_high(
+                    recorder,
+                    city,
+                    event_ticker,
+                    target_date,
+                    url_template,
+                    api_key,
+                )
+                if url_template
+                else weather_company_label_from_kalshi_settlement(event)
+            )
+            if selected is None:
+                if require_config:
+                    raise RuntimeError(
+                        "No Weather Company URL template is configured and Kalshi settlement "
+                        "temperature is not available yet."
+                    )
+                continue
+            product, final_high_f, raw_payload_id = selected
+            warnings = final_high_validation_warnings(
+                final_high_f,
+                event.get("event_metadata"),
+                _optional_text(event.get("winner_ticker")),
+            )
+            tables["final_temperature_labels"].append(
+                final_temperature_label_row(
+                    city,
+                    target_date,
+                    event_ticker,
+                    str(event.get("station_id") or city.station_id),
+                    final_high_f,
+                    product,
+                    raw_payload_id,
+                    datetime.now(UTC),
+                    warnings,
+                    source_provider=WEATHER_COMPANY_DAILY_SOURCE,
+                )
+            )
+            inserted += 1
+        except Exception as exc:  # noqa: BLE001 - keep other events retryable.
+            recorder.record_error(
+                "weather_company",
+                "weather_company_daily_final_high_parse",
+                exc,
+                city.key,
+                event_ticker,
+                str(target_date),
+            )
+    tables["raw_payloads"] = [
+        raw_payload_row(row) for row in raw_payload_dicts(recorder.raw_payloads)
+    ]
+    tables["provider_errors"] = recorder.errors
+    tables["collector_runs"].append(
+        post_event_collector_run_row(
+            recorder,
+            started,
+            "ingest-weather-company-final-highs",
             inserted,
             sum(len(rows) for table, rows in tables.items() if table != "collector_runs"),
         )
@@ -496,6 +587,65 @@ def fetch_nws_final_high_product(
     return product, final_high_f, raw_payload_id
 
 
+def fetch_weather_company_final_high(
+    recorder: HttpRecorder,
+    city: City,
+    event_ticker: str,
+    target_date: date,
+    url_template: str,
+    api_key: str | None = None,
+) -> tuple[dict[str, Any], float, str | None] | None:
+    snapshot_time_local = city_clock(
+        city, recorder.snapshot_time_utc, target_date
+    ).snapshot_time_local.isoformat()
+    url = _format_weather_company_url(url_template, city, event_ticker, target_date, api_key)
+    params = None if "{api_key}" in url_template else _weather_company_params(api_key)
+    payload = recorder.get_json(
+        "weather_company",
+        "weather_company_daily_final_high",
+        url,
+        params=params,
+        city=city.key,
+        event_ticker=event_ticker,
+        target_date=target_date.isoformat(),
+        snapshot_time_local=snapshot_time_local,
+        required=False,
+    )
+    if payload is None:
+        return None
+    final_high_f = parse_weather_company_final_high(payload, target_date)
+    if final_high_f is None:
+        raise RuntimeError("Weather Company payload did not include a parseable final high")
+    raw_payload_id = recorder.latest_raw_id(
+        "weather_company", "weather_company_daily_final_high", city.key
+    )
+    return payload, final_high_f, raw_payload_id
+
+
+def weather_company_label_from_kalshi_settlement(
+    event: dict[str, Any],
+) -> tuple[dict[str, Any], float, str | None] | None:
+    final_high_f = _optional_float(event.get("kalshi_settlement_temperature_f"))
+    if final_high_f is None:
+        return None
+    event_ticker = str(event.get("event_ticker") or "")
+    target_date = str(event.get("target_date") or "")[:10]
+    product = {
+        "id": f"kalshi_settlement:{event_ticker}",
+        "source": "kalshi_settlement_expiration_value",
+        "target_date": target_date,
+        "final_high_f": final_high_f,
+        "metadata": {
+            "note": (
+                "No direct Weather Company feed configured; using Kalshi's settled "
+                "expiration_value as the official resolved label."
+            ),
+            "source_provider": WEATHER_COMPANY_DAILY_SOURCE,
+        },
+    }
+    return product, final_high_f, None
+
+
 def status(data_dir: Path, postgres: PostgresClient | None) -> dict[str, Any]:
     output = {"local": local_status(data_dir)}
     if postgres is not None:
@@ -540,6 +690,42 @@ def _optional_text(value: Any) -> str | None:
     if value in (None, ""):
         return None
     return str(value)
+
+
+def _optional_float(value: Any) -> float | None:
+    if value in (None, ""):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _format_weather_company_url(
+    template: str,
+    city: City,
+    event_ticker: str,
+    target_date: date,
+    api_key: str | None,
+) -> str:
+    return template.format(
+        city=city.key,
+        city_name=city.name,
+        station_id=city.station_id,
+        station=city.station_id,
+        latitude=city.latitude,
+        longitude=city.longitude,
+        lat=city.latitude,
+        lon=city.longitude,
+        event_ticker=event_ticker,
+        target_date=target_date.isoformat(),
+        date=target_date.isoformat(),
+        api_key=api_key or "",
+    )
+
+
+def _weather_company_params(api_key: str | None) -> dict[str, str] | None:
+    return {"apiKey": api_key} if api_key else None
 
 
 def _nws_cli_listing_item(item: Any) -> tuple[str | None, datetime | None]:
@@ -620,6 +806,7 @@ def main(argv: list[str] | None = None) -> int:
     commands.add_parser("sync-spool")
     commands.add_parser("settle-pending")
     commands.add_parser("ingest-final-highs")
+    commands.add_parser("ingest-weather-company-highs")
     commands.add_parser("status")
     export = commands.add_parser("export")
     export.add_argument("--start", required=True)
@@ -660,7 +847,11 @@ def main(argv: list[str] | None = None) -> int:
             settings.supabase_storage_bucket,
             SCHEMA_VERSION,
         )
-        settled = settle_pending(recorder, postgres, storage)
+        settled = 0
+        try:
+            settled = settle_pending(recorder, postgres, storage)
+        except Exception as exc:  # noqa: BLE001 - settlement backfill should not block collection.
+            print(f"WARNING: settlement ingestion failed: {exc}", file=sys.stderr)
         final_highs = 0
         try:
             final_recorder = HttpRecorder(
@@ -673,9 +864,28 @@ def main(argv: list[str] | None = None) -> int:
             final_highs = ingest_final_highs(final_recorder, postgres, storage)
         except Exception as exc:  # noqa: BLE001 - final labels should not block collection.
             print(f"WARNING: final high ingestion failed: {exc}", file=sys.stderr)
+        weather_company_highs = 0
+        try:
+            weather_company_recorder = HttpRecorder(
+                settings.nws_user_agent,
+                deterministic_id("weather-company-final-high", datetime.now(UTC).isoformat()),
+                datetime.now(UTC),
+                settings.supabase_storage_bucket,
+                SCHEMA_VERSION,
+            )
+            weather_company_highs = ingest_weather_company_final_highs(
+                weather_company_recorder,
+                postgres,
+                storage,
+                settings.weather_company_daily_label_url_template,
+                settings.weather_company_api_key,
+            )
+        except Exception as exc:  # noqa: BLE001 - alternate labels should not block collection.
+            print(f"WARNING: Weather Company final high ingestion failed: {exc}", file=sys.stderr)
         print(
             "synced_spool_files="
-            f"{synced} inserted_settlements={settled} inserted_final_highs={final_highs}"
+            f"{synced} inserted_settlements={settled} inserted_final_highs={final_highs} "
+            f"inserted_weather_company_final_highs={weather_company_highs}"
         )
         return 0
     if args.command == "sync-spool":
@@ -706,6 +916,29 @@ def main(argv: list[str] | None = None) -> int:
             SCHEMA_VERSION,
         )
         print(f"inserted_final_highs={ingest_final_highs(recorder, postgres, storage)}")
+        return 0
+    if args.command == "ingest-weather-company-highs":
+        if postgres is None:
+            raise RuntimeError("DATABASE_URL is required")
+        recorder = HttpRecorder(
+            settings.nws_user_agent,
+            deterministic_id("weather-company-final-high", datetime.now(UTC).isoformat()),
+            datetime.now(UTC),
+            settings.supabase_storage_bucket,
+            SCHEMA_VERSION,
+        )
+        inserted = ingest_weather_company_final_highs(
+            recorder,
+            postgres,
+            storage,
+            settings.weather_company_daily_label_url_template,
+            settings.weather_company_api_key,
+            require_config=True,
+        )
+        print(
+            "inserted_weather_company_final_highs="
+            f"{inserted}"
+        )
         return 0
     if args.command == "status":
         print(json.dumps(status(data_dir, postgres), indent=2, default=str))

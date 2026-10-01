@@ -1,0 +1,17 @@
+[Unit]
+Description=Kalshi weather five-minute NWS and post-forecast quote capture
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/kalshi-weather-next-gen
+EnvironmentFile=/opt/kalshi-weather-next-gen/.env
+ExecStart=/usr/bin/flock -n -E 0 /opt/kalshi-weather-next-gen/collector_spool_v3/timing.lock /opt/kalshi-weather-next-gen/.venv/bin/python /opt/kalshi-weather-next-gen/collector/timing_collector.py --data-dir /opt/kalshi-weather-next-gen/collector_spool_v3/timing
+TimeoutStartSec=240
+UMask=0077
+Nice=5
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

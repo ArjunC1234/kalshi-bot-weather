@@ -1,0 +1,23 @@
+{
+  "checked_trades": 62,
+  "neural_probability_rows_reproduced": 11874,
+  "maximum_probability_reproduction_error": 0.0,
+  "training_label_value_availability_violations": [],
+  "late_created_labels_equal_earlier_settlement_values": 264,
+  "training_labels_checked": 264,
+  "fresh_diagnostics": {
+    "losses": 12,
+    "losses_in_miami_or_austin": 9,
+    "losses_above_q95": 8,
+    "all_entries_above_q95": 9,
+    "all_entries_below_q05": 1,
+    "mean_actual_minus_prediction_f": 1.4668484080921518,
+    "direct_observed_floor_contradictions_on_losses": 0
+  },
+  "limits": [
+    "Does not prove fills at stale quotes",
+    "Does not prove actual historical model training latency",
+    "Does not remove multiple-search bias",
+    "Receipt timestamps do not establish provider data correctness"
+  ]
+}

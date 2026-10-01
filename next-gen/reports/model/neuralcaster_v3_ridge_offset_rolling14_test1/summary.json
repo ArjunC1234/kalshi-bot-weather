@@ -1,0 +1,303 @@
+{
+  "model_name": "neuralcaster_v3",
+  "mode": "nws_residual_ridge_residual_rolling_window_14d_train_1d_test",
+  "source_export_id": "codex_latest_20260702_20260730_for_neuralcaster_edgecaster",
+  "generated_at_utc": "2026-07-31T04:26:53.687350+00:00",
+  "temperature_prediction_count": 2012,
+  "bracket_prediction_count": 2012,
+  "temperature_metrics": [
+    {
+      "metric": "mae",
+      "value": 1.016495455697295,
+      "count": 2012
+    },
+    {
+      "metric": "rmse",
+      "value": 1.51446101699769,
+      "count": 2012
+    },
+    {
+      "metric": "bias",
+      "value": -0.078517947304946,
+      "count": 2012
+    },
+    {
+      "metric": "within_1f",
+      "value": 0.6366799204771372,
+      "count": 2012
+    },
+    {
+      "metric": "within_2f",
+      "value": 0.8742544731610338,
+      "count": 2012
+    }
+  ],
+  "bracket_metrics": [
+    {
+      "metric": "log_loss",
+      "value": 0.992462533903914,
+      "count": 2012
+    },
+    {
+      "metric": "brier",
+      "value": 0.55635816922249,
+      "count": 2012
+    },
+    {
+      "metric": "rps",
+      "value": 0.0667618113597277,
+      "count": 2012
+    },
+    {
+      "metric": "top_one_accuracy",
+      "value": 0.591948310139165,
+      "count": 2012
+    },
+    {
+      "metric": "winner_probability",
+      "value": 0.42540740164594854,
+      "count": 2012
+    }
+  ],
+  "model_family": "nws_residual_distribution",
+  "model_kind": "ridge_residual",
+  "train_days": 14,
+  "test_days": 1,
+  "min_training_rows": 60,
+  "probability_floor": 0.001,
+  "seed": 31,
+  "labeled_target_dates": [
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
+    "2026-07-10",
+    "2026-07-11",
+    "2026-07-12",
+    "2026-07-13",
+    "2026-07-14",
+    "2026-07-15",
+    "2026-07-16",
+    "2026-07-17",
+    "2026-07-18",
+    "2026-07-19",
+    "2026-07-20",
+    "2026-07-21",
+    "2026-07-22",
+    "2026-07-23",
+    "2026-07-24",
+    "2026-07-25",
+    "2026-07-26",
+    "2026-07-27",
+    "2026-07-28",
+    "2026-07-29"
+  ],
+  "independent_city_days": 168,
+  "snapshot_rows_with_labels": 4028,
+  "residual_metrics": [
+    {
+      "metric": "offset_mae",
+      "value": 1.1156653514780475,
+      "count": 2012
+    },
+    {
+      "metric": "offset_rmse",
+      "value": 1.5952649662507998,
+      "count": 2012
+    },
+    {
+      "metric": "offset_bias",
+      "value": -0.19526647392846358,
+      "count": 2012
+    },
+    {
+      "metric": "nws_baseline_mae",
+      "value": 3.1446322067594434,
+      "count": 2012
+    },
+    {
+      "metric": "model_temperature_mae",
+      "value": 1.016495455697295,
+      "count": 2012
+    },
+    {
+      "metric": "mae_improvement_vs_nws",
+      "value": 2.1281367510621485,
+      "count": 2012
+    }
+  ],
+  "folds": [
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-02",
+      "train_end_date": "2026-07-15",
+      "test_start_date": "2026-07-16",
+      "test_end_date": "2026-07-16",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.6033315162609096,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-03",
+      "train_end_date": "2026-07-16",
+      "test_start_date": "2026-07-17",
+      "test_end_date": "2026-07-17",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 2.439228426423196,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-04",
+      "train_end_date": "2026-07-17",
+      "test_start_date": "2026-07-18",
+      "test_end_date": "2026-07-18",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 2.316085358970668,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-05",
+      "train_end_date": "2026-07-18",
+      "test_start_date": "2026-07-19",
+      "test_end_date": "2026-07-19",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.9265452992017968,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-06",
+      "train_end_date": "2026-07-19",
+      "test_start_date": "2026-07-20",
+      "test_end_date": "2026-07-20",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 0.9320670767630872,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-07",
+      "train_end_date": "2026-07-20",
+      "test_start_date": "2026-07-21",
+      "test_end_date": "2026-07-21",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.436713014598769,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-08",
+      "train_end_date": "2026-07-21",
+      "test_start_date": "2026-07-22",
+      "test_end_date": "2026-07-22",
+      "training_rows": 2016,
+      "fit_rows": 1872,
+      "validation_rows": 144,
+      "global_sigma": 1.2983288723885753,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-09",
+      "train_end_date": "2026-07-22",
+      "test_start_date": "2026-07-23",
+      "test_end_date": "2026-07-23",
+      "training_rows": 2015,
+      "fit_rows": 1872,
+      "validation_rows": 143,
+      "global_sigma": 1.4016527073376164,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-10",
+      "train_end_date": "2026-07-23",
+      "test_start_date": "2026-07-24",
+      "test_end_date": "2026-07-24",
+      "training_rows": 2012,
+      "fit_rows": 1871,
+      "validation_rows": 141,
+      "global_sigma": 1.4316892212724743,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-11",
+      "train_end_date": "2026-07-24",
+      "test_start_date": "2026-07-25",
+      "test_end_date": "2026-07-25",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.9704817493004356,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-12",
+      "train_end_date": "2026-07-25",
+      "test_start_date": "2026-07-26",
+      "test_end_date": "2026-07-26",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.385548183520232,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-13",
+      "train_end_date": "2026-07-26",
+      "test_start_date": "2026-07-27",
+      "test_end_date": "2026-07-27",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.4297267233143929,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-14",
+      "train_end_date": "2026-07-27",
+      "test_start_date": "2026-07-28",
+      "test_end_date": "2026-07-28",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 1.4672326599750949,
+      "independent_train_city_days": 84
+    },
+    {
+      "model_kind": "ridge_residual",
+      "train_start_date": "2026-07-15",
+      "train_end_date": "2026-07-28",
+      "test_start_date": "2026-07-29",
+      "test_end_date": "2026-07-29",
+      "training_rows": 2012,
+      "fit_rows": 1868,
+      "validation_rows": 144,
+      "global_sigma": 0.9869025878089978,
+      "independent_train_city_days": 84
+    }
+  ]
+}

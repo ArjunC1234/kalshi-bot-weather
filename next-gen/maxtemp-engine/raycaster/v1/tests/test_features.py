@@ -79,6 +79,31 @@ class FeatureTests(unittest.TestCase):
         row = feature_row_from_snapshot(weather)
         self.assertEqual(source_blend_prediction(row), 85)
 
+    def test_source_blend_prefers_settlement_observed_high(self) -> None:
+        weather = WeatherSnapshot(
+            city="nyc",
+            event_ticker="TEST",
+            target_date=date(2026, 7, 1),
+            snapshot_hour_utc=datetime(2026, 7, 1, 18, tzinfo=UTC),
+            nws_anchor_high_f=82,
+            observed_high_so_far_f=85,
+            hrrr_projected_high_f=83,
+            features={
+                "settlement_observed_high_so_far_f": 89,
+                "settlement_observed_source_count": 2,
+                "settlement_observed_age_hours": 0.25,
+                "settlement_observed_source_range_f": 0.8,
+                "settlement_observed_source_stddev_f": 0.4,
+                "settlement_observed_nws_delta_f": 1.0,
+            },
+        )
+
+        row = feature_row_from_snapshot(weather)
+
+        self.assertEqual(row.features["settlement_observed_high_so_far_f"], 89)
+        self.assertEqual(row.features["observed_minus_nws"], 7)
+        self.assertEqual(source_blend_prediction(row), 89)
+
 
 if __name__ == "__main__":
     unittest.main()

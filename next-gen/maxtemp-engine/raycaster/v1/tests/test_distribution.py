@@ -44,6 +44,23 @@ class DistributionTests(unittest.TestCase):
         self.assertAlmostEqual(sum(probabilities.values()), 1.0)
         self.assertEqual(set(probabilities), {"LOW", "MID", "HIGH"})
 
+    def test_observed_floor_uses_rounded_settlement_value(self) -> None:
+        brackets = [
+            Bracket("LOW", "91 or below", None, 91, 0),
+            Bracket("MID", "92 to 94", 92, 94, 1),
+            Bracket("HIGH", "95 or above", 95, None, 2),
+        ]
+        probabilities = bracket_distribution(
+            brackets,
+            expected_high_f=93,
+            quantiles={0.1: 91.5, 0.5: 93, 0.9: 95},
+            observed_high_so_far_f=91.94,
+            probability_floor=0.0,
+        )
+
+        self.assertEqual(probabilities["LOW"], 0.0)
+        self.assertAlmostEqual(sum(probabilities.values()), 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()

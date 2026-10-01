@@ -3,6 +3,8 @@ from __future__ import annotations
 # ruff: noqa: E402, I001
 
 import csv
+import gzip
+import json
 import sys
 import tempfile
 import time
@@ -33,6 +35,8 @@ class ControlPlaneTests(unittest.TestCase):
 
         self.assertIsNotNone(registry.get("model", "raycaster_v1"))
         self.assertIsNotNone(registry.get("model", "neuralcaster_v2"))
+        self.assertIsNotNone(registry.get("model", "neuralcaster_v3"))
+        self.assertIsNotNone(registry.get("strategy", "neuralcaster_ev"))
         profile = registry.get("export_profile", "lightweight_model_eval")
         self.assertIsNotNone(profile)
         preview = preview_export_profile(profile)  # type: ignore[arg-type]
@@ -82,6 +86,32 @@ class ControlPlaneTests(unittest.TestCase):
             index = ArtifactIndex(root / "artifacts.sqlite")
             index.replace_all(records)
             self.assertEqual(index.list()[0]["id"], "export_a")
+
+    def test_artifact_scan_exposes_settlement_source_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            export = root / "data" / "export_a"
+            _write_export(export, city="nyc", value="90")
+            _write_csv(
+                export / "final_temperature_labels.csv",
+                [
+                    {
+                        "city": "nyc",
+                        "event_ticker": "E1",
+                        "target_date": "2026-07-01",
+                        "station_id": "KNYC",
+                        "final_high_f": "90",
+                        "source_provider": "nws_cli",
+                    }
+                ],
+            )
+
+            inspected = inspect_artifact(export)
+
+            self.assertEqual(inspected["label_source"], "nws_cli_daily")
+            self.assertEqual(inspected["market_settlement_source"], "unknown")
+            self.assertFalse(inspected["source_compatibility"]["compatible"])
+            self.assertIn("settlement_sources", inspected)
 
     def test_model_dataset_compatibility_reports_missing_tables(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -188,6 +218,163 @@ class ControlPlaneTests(unittest.TestCase):
             self.assertTrue(manifest.exists())
             self.assertIn("toy_report.v1", manifest.read_text(encoding="utf-8"))
 
+    def test_registered_job_materializes_false_boolean_as_no_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            registry_root = root / "registry"
+            strategy_dir = registry_root / "strategies"
+            strategy_dir.mkdir(parents=True)
+            (strategy_dir / "toy_strategy.json").write_text(
+                """
+                {
+                  "id": "toy_strategy",
+                  "kind": "strategy",
+                  "label": "Toy Strategy",
+                  "entrypoints": {
+                    "run": {
+                      "command": ["python", "-c", "print('ok')"],
+                      "params_schema": {
+                        "type": "object",
+                        "properties": {"allow_no": {"type": "boolean"}}
+                      },
+                      "produces": {"artifact_type": "strategy_report", "contract": "toy.v1"}
+                    }
+                  },
+                  "inputs": {"dataset": {"type": "local_export", "required_tables": ["events"]}}
+                }
+                """,
+                encoding="utf-8",
+            )
+            registry = load_registry(registry_root)
+            entry = registry.get("strategy", "toy_strategy")
+            self.assertIsNotNone(entry)
+            runner = JobRunner(JobStore(root / "jobs.sqlite"), root)
+
+            command, _, _ = runner._materialize_command(  # type: ignore[attr-defined]
+                entry,  # type: ignore[arg-type]
+                "run",
+                {"dataset_path": "data/export_a", "allow_no": False},
+            )
+
+            self.assertIn("--no-allow-no", command)
+
+    def test_registered_model_default_output_path_names_mode_test_range_and_created_stamp(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            export = root / "data" / "export_20260702_20260722_control"
+            _write_csv(
+                export / "events.csv",
+                [
+                    {"city": "nyc", "target_date": f"2026-07-{day:02d}"}
+                    for day in range(2, 23)
+                ],
+            )
+            registry = load_registry()
+            entry = registry.get("model", "neuralcaster_v2")
+            self.assertIsNotNone(entry)
+            store = JobStore(root / "jobs.sqlite")
+            runner = JobRunner(store, root)
+
+            output_path = runner._output_path(  # type: ignore[attr-defined]
+                entry,  # type: ignore[arg-type]
+                "rolling_eval",
+                {
+                    "dataset_path": "data/export_20260702_20260722_control",
+                    "mode": "weather",
+                    "train_days": 7,
+                    "test_days": 1,
+                },
+            )
+
+            self.assertIsNotNone(output_path)
+            name = output_path.name  # type: ignore[union-attr]
+            self.assertTrue(name.startswith("NEURALCASTER_V2_ROLLING_EVAL_WEATHER_7DTRAIN_1DTEST_"))
+            self.assertIn("_TEST_20260709_20260722_", name)
+            self.assertRegex(name, r"_CREATED_\d{8}T\d{6}Z$")
+
+    def test_registered_model_output_path_reads_json_gz_export_dates(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            export = root / "data" / "export_20260702_20260722_control"
+            export.mkdir(parents=True)
+            rows = [
+                {"city": "nyc", "target_date": f"2026-07-{day:02d}"}
+                for day in range(2, 23)
+            ]
+            with gzip.open(export / "events.json.gz", "wt", encoding="utf-8") as handle:
+                json.dump(rows, handle)
+            registry = load_registry()
+            entry = registry.get("model", "neuralcaster_v2")
+            self.assertIsNotNone(entry)
+            runner = JobRunner(JobStore(root / "jobs.sqlite"), root)
+
+            output_path = runner._output_path(  # type: ignore[attr-defined]
+                entry,  # type: ignore[arg-type]
+                "rolling_eval",
+                {
+                    "dataset_path": "data/export_20260702_20260722_control",
+                    "mode": "weather",
+                    "train_days": 7,
+                    "test_days": 1,
+                },
+            )
+
+            self.assertIsNotNone(output_path)
+            self.assertIn("_TEST_20260709_20260722_", output_path.name)  # type: ignore[union-attr]
+
+    def test_model_artifact_scan_and_default_output_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            artifact = root / "models" / "neuralcaster_v2" / "saved"
+            artifact.mkdir(parents=True)
+            (artifact / "model.pt").write_bytes(b"placeholder")
+            (artifact / "artifact.json").write_text(
+                """
+                {
+                  "artifact_type": "model_artifact",
+                  "model_artifact_type": "neuralcaster_v2_frozen_model",
+                  "contract": "neuralcaster_v2_frozen_model.v1",
+                  "model_name": "neuralcaster_v2",
+                  "source_export_id": "export_a",
+                  "created_at_utc": "2026-08-27T00:00:00+00:00"
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            records = scan_artifacts(
+                root / "data",
+                root / "reports" / "model",
+                root / "reports" / "quality",
+                root / "reports" / "strategy",
+                root / "models",
+            )
+
+            self.assertEqual(len(records), 1)
+            self.assertEqual(records[0].artifact_type, "model_artifact")
+            self.assertTrue(records[0].id.startswith("model_artifact:"))
+            inspected = inspect_artifact(artifact)
+            self.assertEqual(inspected["contract"], "neuralcaster_v2_frozen_model.v1")
+            self.assertEqual(inspected["source_export_id"], "export_a")
+            self.assertEqual(
+                inspected["artifact_manifest"]["model_artifact_type"],
+                "neuralcaster_v2_frozen_model",
+            )
+
+            registry = load_registry()
+            entry = registry.get("model", "neuralcaster_v2")
+            self.assertIsNotNone(entry)
+            runner = JobRunner(JobStore(root / "jobs.sqlite"), root)
+
+            output_path = runner._output_path(  # type: ignore[attr-defined]
+                entry,  # type: ignore[arg-type]
+                "train_artifact",
+                {"dataset_path": "data/export_a", "mode": "weather"},
+            )
+
+            self.assertIsNotNone(output_path)
+            self.assertTrue(str(output_path).startswith(str((root / "models").resolve())))
+
     def test_export_manager_reduces_validates_and_compares_exports(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -228,7 +415,7 @@ class ControlPlaneTests(unittest.TestCase):
             summary = dashboard_summary(root, load_registry(), store)
             bot = bot_stub("status")
 
-            self.assertEqual(summary["brand"], "Kalshi Bot Control Center")
+            self.assertEqual(summary["brand"], "Kalshi Weather Workbench")
             self.assertEqual(summary["exports_available"], 1)
             self.assertEqual(bot["status"], "not_configured")
 

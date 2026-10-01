@@ -29,6 +29,8 @@ python -m backtest.cli export --start 2026-07-01 --end 2026-09-30
 python -m backtest.cli validate --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ
 python -m backtest.cli quality --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ
 python -m backtest.cli daily-health --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ --date 2026-07-01
+python -m backtest.cli import-labels --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ --labels weather_company_labels.csv --source-provider weather_company_daily
+python -m backtest.cli settlement-sources --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ
 python -m backtest.cli monitor --date 2026-07-01
 python -m backtest.cli pipeline --start 2026-07-01 --end 2026-09-30
 python -m backtest.cli evaluate --data data/export_20260701_20260930_YYYYMMDDTHHMMSSZ --model baseline
@@ -59,6 +61,33 @@ python -m backtest.cli daily-health --date 2026-07-04
 ```
 
 The no-`--data` form queries Supabase directly. The `--data` form is preferred for reproducible reports.
+
+Use `settlement-sources` whenever Kalshi changes source language or before trusting a report
+for live trading:
+
+```powershell
+python -m backtest.cli settlement-sources --data data/current_20260701_20260827_lightweight
+```
+
+The report writes `summary.json`, `source_coverage.csv`, and
+`label_source_comparison.csv`. It keeps market settlement source separate from
+training label source. If Weather Company daily labels are not present, the
+report stays coverage-only and emits a warning instead of pretending an NWS
+backtest is source-compatible.
+
+Use `import-labels` to add official alternate final-temperature labels without
+overwriting the NWS labels already in the export:
+
+```powershell
+python -m backtest.cli import-labels `
+  --data data/current_20260701_20260827_lightweight `
+  --labels weather_company_labels.csv `
+  --source-provider weather_company_daily
+```
+
+The CSV must include `city`, `event_ticker`, `target_date`, and `final_high_f`.
+Optional fields are `station_id`, `product_id`, `issued_at_utc`,
+`validation_status`, and `warnings`.
 
 ## Output Folders
 
@@ -108,6 +137,8 @@ Backtests should prefer `final_temperature_labels.final_high_f` for final NWS ma
 - `validators.py`: dataset consistency checks.
 - `quality.py`: dataset-level quality reports.
 - `health.py`: date-specific collector health reports.
+- `label_import.py`: append alternate final-temperature label sources to exports.
+- `settlement_source_report.py`: source coverage and NWS-vs-Weather Company label diffs.
 - `pipeline.py`: export plus validation plus quality report.
 - `settlements.py`: settlement validation helpers.
 - `splitters.py`: leakage-safe date splitters.

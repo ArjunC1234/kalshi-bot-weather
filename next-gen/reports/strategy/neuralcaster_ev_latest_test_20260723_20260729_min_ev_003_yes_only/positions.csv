@@ -1,0 +1,2 @@
+bracket_type,checkpoint,city,closing_mid,clv,contracts,edge,entry_price,entry_time_utc,event_ticker,hit,market_ticker,model_probability,order_id,pnl,roi,settlement_value,side,target_date,winner_ticker
+bounded,utc_09,mia,0.995,0.395,5.0,0.03427371859784534,0.6,2026-07-29 09:00:00+00:00,KXHIGHMIA-26JUL29,1.0,KXHIGHMIA-26JUL29-B94.5,0.6342737185978453,neural-ev-000001,2.0,0.6666666666666666,1.0,yes,2026-07-29,KXHIGHMIA-26JUL29-B94.5

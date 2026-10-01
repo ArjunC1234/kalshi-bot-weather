@@ -1,0 +1,63 @@
+{
+  "name": "rolling-walk-forward-v3",
+  "post_switch_start": "2026-08-14",
+  "minimum_training_events": 60,
+  "training_climate_hours": [10, 14, 18],
+  "probability_floor": 0.0001,
+  "entry_adverse_dollars": 0.01,
+  "fee_multipliers": [1, 2],
+  "folds": [
+    {"name": "rolling_14", "type": "rolling", "train_days": 14},
+    {"name": "rolling_21", "type": "rolling", "train_days": 21},
+    {"name": "rolling_28", "type": "rolling", "train_days": 28},
+    {"name": "expanding_post_switch", "type": "expanding", "train_days": null}
+  ],
+  "model_candidates": [
+    {"name": "raw_market", "kind": "raw_market", "use_market": true, "c": null},
+    {"name": "weather_logit_c0.1", "kind": "logit", "use_market": false, "c": 0.1},
+    {"name": "market_weather_logit_c0.1", "kind": "logit", "use_market": true, "c": 0.1}
+  ],
+  "strategy_validation_start": "2026-08-28",
+  "strategy_validation_end": "2026-09-03",
+  "strategy_test_start": "2026-09-04",
+  "strategy_test_end": "2026-09-17",
+  "strategy_grid": {
+    "side": ["all", "no"],
+    "minimum_probability": [0.75, 0.8, 0.85],
+    "minimum_net_edge": [0.02, 0.05, 0.08],
+    "minimum_entry_price": [0.5, 0.65],
+    "maximum_entry_price": [0.8, 0.9],
+    "maximum_spread": [0.03, 0.05],
+    "minimum_depth": [1.0],
+    "minimum_climate_hour": [10, 14]
+  },
+  "selection_requirements": {
+    "minimum_trades": 12,
+    "minimum_active_days": 5,
+    "minimum_hit_rate": 0.75,
+    "maximum_selected_calibration_gap": 0.12,
+    "positive_net_pnl": true,
+    "positive_fee_stress_pnl": true,
+    "positive_day_bootstrap_95_lower_bound": true,
+    "zero_availability_violations": true
+  },
+  "success_requirements": {
+    "minimum_trades": 25,
+    "minimum_active_days": 8,
+    "minimum_cities": 4,
+    "maximum_city_trade_fraction": 0.4,
+    "minimum_hit_rate": 0.8,
+    "minimum_iid_exact_95_hit_lower_bound": 0.65,
+    "maximum_selected_calibration_gap": 0.1,
+    "positive_net_pnl": true,
+    "positive_fee_stress_pnl": true,
+    "positive_day_bootstrap_95_lower_bound": true,
+    "positive_pnl_in_each_seven_day_half": true,
+    "nonnegative_leave_one_city_out_pnl": true,
+    "minimum_label_coverage": 0.95,
+    "zero_availability_violations": true,
+    "zero_input_integrity_errors": true
+  },
+  "test_independence_warning": "Historical rolling folds are development evidence. A final claim still requires a frozen future window.",
+  "live_trading_authorized": false
+}

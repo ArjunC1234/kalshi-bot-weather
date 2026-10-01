@@ -23,7 +23,11 @@ def source_family_features(values: Mapping[str, Any]) -> dict[str, float | int |
     hrrr = _number(values.get("hrrr_projected_high_f"))
     nbm = _number(values.get("nbm_projected_high_f"))
     ensemble = _number(values.get("ensemble_raw_median_high_f"))
-    observed = _number(values.get("observed_high_so_far_f"))
+    observed = _first_number(
+        values,
+        "settlement_observed_high_so_far_f",
+        "observed_high_so_far_f",
+    )
     numerical_anchor = nbm if nbm is not None else hrrr
     independent_ensemble = ensemble if _ensemble_is_independent(values) else None
     forecast_values = [
@@ -91,6 +95,7 @@ def weather_values(weather: Any) -> dict[str, Any]:
     for key in (
         "nws_anchor_high_f",
         "observed_high_so_far_f",
+        "settlement_observed_high_so_far_f",
         "hrrr_projected_high_f",
         "nbm_projected_high_f",
         "ensemble_raw_median_high_f",

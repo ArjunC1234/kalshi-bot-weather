@@ -1,0 +1,28 @@
+{
+  "created_at": "2026-09-13T21:10:37.712645+00:00",
+  "source_model_lock_sha256": "e885907bfa04fadc275fadd51fbd999411261d7f5f8f98e5eacfe78f0cdfe269",
+  "code_sha256": "ddf81f1b470d594f987a3b50b460d596236f27364f5f5daa4a3b339793a5cea2",
+  "protocol_sha256": "3f53e6cb4cbb27907373f56bba15d740f9c0288d5d163e8e21fe44257c35cb98",
+  "model": "mixed_weather",
+  "primary_edge": 0.01,
+  "reference_edge": 0.05,
+  "descriptive_edges": [
+    0.0,
+    0.02
+  ],
+  "policy": {
+    "side": "no",
+    "min_price": 0.5,
+    "max_price": 0.85,
+    "min_hours": 14,
+    "min_net_edge": 0.05,
+    "bounded_only": false,
+    "min_probability": 0.85,
+    "max_spread": 0.05
+  },
+  "evaluation": [
+    "2026-08-28",
+    "2026-09-10"
+  ],
+  "live_trading_enabled": false
+}

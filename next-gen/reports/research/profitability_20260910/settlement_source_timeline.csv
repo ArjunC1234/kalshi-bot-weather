@@ -1,0 +1,13 @@
+city,rule_source,min,max
+aus,nws,2026-07-01,2026-08-13
+aus,weather_company,2026-08-14,2026-09-01
+den,nws,2026-07-01,2026-08-13
+den,weather_company,2026-08-14,2026-09-01
+la,nws,2026-07-01,2026-08-13
+la,weather_company,2026-08-14,2026-09-01
+mia,nws,2026-07-01,2026-08-13
+mia,weather_company,2026-08-14,2026-09-01
+nyc,nws,2026-07-01,2026-08-13
+nyc,weather_company,2026-08-14,2026-09-01
+okc,nws,2026-07-01,2026-08-13
+okc,weather_company,2026-08-14,2026-09-01

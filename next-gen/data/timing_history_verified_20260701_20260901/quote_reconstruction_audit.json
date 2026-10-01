@@ -1,0 +1,10 @@
+{
+  "changed_size_fields": 23866,
+  "method": "original raw API contract counts, with NO ask size from YES bid size",
+  "parent": "data\\profitability_history_ordered_20260701_20260901",
+  "raw_payload_count": 1296,
+  "repair_end": "2026-08-31",
+  "repair_start": "2026-08-14",
+  "snapshot_selection": "all climate-hour [4, 16)",
+  "verified_quote_rows": 7776
+}

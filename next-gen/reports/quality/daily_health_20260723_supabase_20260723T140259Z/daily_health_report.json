@@ -1,0 +1,134 @@
+{
+  "actual_city_hours": 55,
+  "cities_seen": [
+    "aus",
+    "den",
+    "la",
+    "mia",
+    "nyc",
+    "okc"
+  ],
+  "city_coverage": [
+    {
+      "city": "nyc",
+      "coverage_ratio": 1.0,
+      "expected_hours": 11,
+      "snapshot_hours": 11
+    },
+    {
+      "city": "mia",
+      "coverage_ratio": 0.9090909090909091,
+      "expected_hours": 11,
+      "snapshot_hours": 10
+    },
+    {
+      "city": "la",
+      "coverage_ratio": 0.6363636363636364,
+      "expected_hours": 11,
+      "snapshot_hours": 7
+    },
+    {
+      "city": "den",
+      "coverage_ratio": 0.7272727272727273,
+      "expected_hours": 11,
+      "snapshot_hours": 8
+    },
+    {
+      "city": "aus",
+      "coverage_ratio": 0.9090909090909091,
+      "expected_hours": 11,
+      "snapshot_hours": 10
+    },
+    {
+      "city": "okc",
+      "coverage_ratio": 0.8181818181818182,
+      "expected_hours": 11,
+      "snapshot_hours": 9
+    }
+  ],
+  "event_count": 6,
+  "expected_cities": [
+    "nyc",
+    "mia",
+    "la",
+    "den",
+    "aus",
+    "okc"
+  ],
+  "expected_city_hours": 66,
+  "generated_at_utc": "2026-07-23T14:02:59.072483+00:00",
+  "latest_snapshot_utc": "2026-07-23T14:00:00+00:00",
+  "market_snapshot_rows": 330,
+  "missing_city_hours": [
+    {
+      "city": "mia",
+      "snapshot_local_date": "2026-07-23",
+      "snapshot_local_hour": 3
+    },
+    {
+      "city": "la",
+      "snapshot_local_date": "2026-07-23",
+      "snapshot_local_hour": 0
+    },
+    {
+      "city": "la",
+      "snapshot_local_date": "2026-07-23",
+      "snapshot_local_hour": 8
+    },
+    {
+      "city": "la",
+      "snapshot_local_date": "2026-07-23",
+      "snapshot_local_hour": 9
+    },
+    {
+      "city": "la",
+      "snapshot_local_date": "2026-07-23",
+      "snapshot_local_hour": 10
+    },
+    {
+      "city": "den",
+      "snapshot_local_date": "2026-07-23",
+      "snapshot_local_hour": 1
+    },
+    {
+      "city": "den",
+      "snapshot_local_date": "2026-07-23",
+      "snapshot_local_hour": 9
+    },
+    {
+      "city": "den",
+      "snapshot_local_date": "2026-07-23",
+      "snapshot_local_hour": 10
+    },
+    {
+      "city": "aus",
+      "snapshot_local_date": "2026-07-23",
+      "snapshot_local_hour": 10
+    },
+    {
+      "city": "okc",
+      "snapshot_local_date": "2026-07-23",
+      "snapshot_local_hour": 2
+    },
+    {
+      "city": "okc",
+      "snapshot_local_date": "2026-07-23",
+      "snapshot_local_hour": 10
+    }
+  ],
+  "pending_final_highs": 6,
+  "pending_settlements": 6,
+  "provider_errors": {
+    "collector": 4,
+    "kalshi": 4
+  },
+  "raw_payload_rows": 806,
+  "source_export_id": "supabase",
+  "status": "warning",
+  "target_date": "2026-07-23",
+  "warnings": [
+    "missing city-hours: 11",
+    "provider errors: 8"
+  ],
+  "weather_snapshot_rows": 55
+}

@@ -21,6 +21,7 @@ class PaperOrder:
     entry_price: float
     edge: float
     contracts: float
+    hours_elapsed: float | None = None
 
 
 @dataclass(frozen=True)
@@ -45,6 +46,7 @@ class PaperTrade:
     checkpoint: str
     side: str = "yes"
     bracket_type: str = "unknown"
+    hours_elapsed: float | None = None
 
 
 def order_from_signal(

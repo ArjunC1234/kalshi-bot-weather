@@ -1,0 +1,32 @@
+{
+  "created_at_utc": "2026-10-01T20:54:20.193913+00:00",
+  "requirements_sha256": "5ffab79f3b691697329826b87cfadb936479c93581bc51932f691131a1125b85",
+  "model_code_sha256": "c2e93327150057bfb0e6572266f094b25d73f7ba36ff9dfd1ce8972c92a615d6",
+  "v2_loader_sha256": "be1518e0a11a1898842cee32477a4bc56a0aa23b0ecbb5fb200f7b536044aedb",
+  "inputs": {
+    "raw": {
+      "path": "data\\hourly_snapshot_20260918\\model_20260918\\raw_payloads.csv",
+      "sha256": "4340e8105c260a1c591c98b8039c57e2f986ef31596fbf47c335e07ec23bc786"
+    },
+    "weather": {
+      "path": "data\\hourly_snapshot_20260918\\model_20260918\\weather_snapshots.csv",
+      "sha256": "8e6991f3bb855c981d15228e4db28a80c810a33d9ccb69f82d4575931e2944f6"
+    },
+    "market": {
+      "path": "data\\hourly_snapshot_20260918\\model_20260918\\market_snapshots.csv",
+      "sha256": "358bb35fd813d4d868d7568030249d330ec8224d5a83530952c1036b743b5cf9"
+    },
+    "settlements": {
+      "path": "data\\hourly_snapshot_20260918\\model_20260918\\settlements.csv",
+      "sha256": "e8084b9fb9a63d7e7a84158267ab500423da8f8a96b67cb67ca585d900fa3cd7"
+    }
+  },
+  "software": {
+    "python": "3.12.0",
+    "numpy": "2.4.4",
+    "pandas": "2.2.3",
+    "scikit_learn": "1.6.1",
+    "joblib": "1.4.2"
+  },
+  "live_trading": false
+}

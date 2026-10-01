@@ -1,0 +1,48 @@
+{
+  "description": "Compact export for model development that excludes raw payloads and collector internals.",
+  "id": "lightweight_model_eval",
+  "kind": "export_profile",
+  "label": "Lightweight Model Evaluation",
+  "source": "supabase.weather",
+  "tables": {
+    "collector_runs": {
+      "include": false,
+      "reason": "Collector metadata is not needed for model evaluation."
+    },
+    "events": {
+      "required": true,
+      "source_table": "events"
+    },
+    "final_temperature_labels": {
+      "required": false,
+      "source_table": "final_temperature_labels"
+    },
+    "market_snapshots": {
+      "exclude_columns": [
+        "raw_payload_id"
+      ],
+      "required": true,
+      "source_table": "market_snapshots"
+    },
+    "provider_errors": {
+      "include": false,
+      "reason": "Provider failures are quality diagnostics, not model features."
+    },
+    "raw_payloads": {
+      "include": false,
+      "reason": "Raw payloads are large and not needed for most model evaluation."
+    },
+    "settlements": {
+      "required": false,
+      "source_table": "settlements"
+    },
+    "weather_snapshots": {
+      "exclude_columns": [
+        "raw_payload_id"
+      ],
+      "required": true,
+      "source_table": "weather_snapshots"
+    }
+  },
+  "version": 1
+}

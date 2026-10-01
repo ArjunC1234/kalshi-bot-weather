@@ -142,31 +142,40 @@ process.once("SIGTERM", () => shutdown(143));
 if (await isListening(8765)) {
   console.log("[trends] already listening on http://127.0.0.1:8765/api");
 } else {
-  start(
+  const trends = start(
     "trends",
     pythonCommand,
     ["-m", "trends.cli", "serve", "--port", "8765", "--no-open"],
     nextGenRoot,
   );
-  waitForPort("trends", 8765);
+  if (!trends || !(await waitForPort("trends", 8765))) {
+    shutdown(1);
+    process.exit(1);
+  }
 }
 
 if (await isListening(8775)) {
   console.log("[control] already listening on http://127.0.0.1:8775/control/api");
   await warnIfStaleControlBackend();
 } else {
-  start(
+  const control = start(
     "control",
     pythonCommand,
     ["-m", "control.cli", "serve-workbench", "--port", "8775"],
     nextGenRoot,
   );
-  waitForPort("control", 8775);
+  if (!control || !(await waitForPort("control", 8775, 30_000))) {
+    shutdown(1);
+    process.exit(1);
+  }
 }
 
 if (await isListening(5173)) {
   console.log("[ui] already listening on http://127.0.0.1:5173");
 } else {
-  start("ui", npmCommand, ["run", "dev", "--", "--host", "127.0.0.1", "--port", "5173"], uiRoot);
-  waitForPort("ui", 5173);
+  const ui = start("ui", npmCommand, ["run", "dev", "--", "--host", "127.0.0.1", "--port", "5173"], uiRoot);
+  if (!ui || !(await waitForPort("ui", 5173))) {
+    shutdown(1);
+    process.exit(1);
+  }
 }

@@ -1,0 +1,119 @@
+{
+  "id": "collector_health_compact",
+  "kind": "export_profile",
+  "version": 1,
+  "label": "Collector Health Compact",
+  "source": "supabase.weather",
+  "description": "Small export for collector health and quality checks. Keeps coverage, label, settlement, provider-error, and storage-byte fields without full research metadata.",
+  "tables": {
+    "collector_runs": {
+      "source_table": "collector_runs",
+      "required": false,
+      "include_columns": [
+        "collector_run_id",
+        "snapshot_time_utc",
+        "started_at_utc",
+        "completed_at_utc",
+        "city_count_attempted",
+        "city_count_completed",
+        "provider_error_count",
+        "raw_payload_count",
+        "normalized_row_count",
+        "spool_status"
+      ]
+    },
+    "raw_payloads": {
+      "source_table": "raw_payloads",
+      "required": false,
+      "include_columns": [
+        "raw_payload_id",
+        "collector_run_id",
+        "city",
+        "event_ticker",
+        "target_date",
+        "snapshot_time_utc",
+        "provider",
+        "endpoint_name",
+        "success",
+        "compressed_size_bytes"
+      ]
+    },
+    "events": {
+      "source_table": "events",
+      "required": true,
+      "include_columns": [
+        "event_id",
+        "collector_run_id",
+        "city",
+        "event_ticker",
+        "target_date",
+        "snapshot_time_utc",
+        "snapshot_local_hour",
+        "climate_day_end_utc"
+      ]
+    },
+    "market_snapshots": {
+      "source_table": "market_snapshots",
+      "required": true,
+      "include_columns": [
+        "market_snapshot_id",
+        "collector_run_id",
+        "city",
+        "event_ticker",
+        "target_date",
+        "snapshot_time_utc"
+      ]
+    },
+    "weather_snapshots": {
+      "source_table": "weather_snapshots",
+      "required": true,
+      "include_columns": [
+        "weather_snapshot_id",
+        "collector_run_id",
+        "city",
+        "event_ticker",
+        "target_date",
+        "snapshot_time_utc"
+      ]
+    },
+    "settlements": {
+      "source_table": "settlements",
+      "required": false,
+      "include_columns": [
+        "settlement_id",
+        "city",
+        "event_ticker",
+        "target_date",
+        "settled_at_utc",
+        "winner_ticker"
+      ]
+    },
+    "final_temperature_labels": {
+      "source_table": "final_temperature_labels",
+      "required": false,
+      "include_columns": [
+        "final_temperature_label_id",
+        "city",
+        "event_ticker",
+        "target_date",
+        "created_at_utc",
+        "final_high_f"
+      ]
+    },
+    "provider_errors": {
+      "source_table": "provider_errors",
+      "required": false,
+      "include_columns": [
+        "provider_error_id",
+        "collector_run_id",
+        "city",
+        "event_ticker",
+        "target_date",
+        "snapshot_time_utc",
+        "provider",
+        "endpoint_name",
+        "error_type"
+      ]
+    }
+  }
+}

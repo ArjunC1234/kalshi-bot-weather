@@ -385,9 +385,9 @@ def _residual_quantiles(
             level: expected_high_f + _sample_quantile(residuals, level) for level in QUANTILE_LEVELS
         }
         quantiles[0.50] = expected_high_f
-    observed = _finite_float(row.features.get("observed_high_so_far_f"))
+    observed = _observed(row)
     if observed is not None:
-        return {level: max(value, observed - 0.75) for level, value in quantiles.items()}
+        return {level: max(value, observed) for level, value in quantiles.items()}
     return quantiles
 
 
@@ -407,8 +407,17 @@ def _equal_target_date_weights(rows: list[FeatureRow]) -> list[float]:
 
 
 def _respect_observed_floor(value: float, row: FeatureRow) -> float:
-    observed = _finite_float(row.features.get("observed_high_so_far_f"))
+    observed = _observed(row)
     return max(value, observed) if observed is not None else value
+
+
+def _observed(row: FeatureRow) -> float | None:
+    observed = _finite_float(row.features.get("settlement_observed_high_so_far_f"))
+    return (
+        observed
+        if observed is not None
+        else _finite_float(row.features.get("observed_high_so_far_f"))
+    )
 
 
 def _finite_float(value: object) -> float | None:

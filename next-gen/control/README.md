@@ -127,6 +127,9 @@ registered entrypoint schema, aside from reserved control parameters such as
 `dataset_path`, `model_report_path`, `output_path`, and `timeout_seconds`.
 Completed registered jobs write a `run_manifest.json` with the registry ID,
 entrypoint, command, selected dataset/report inputs, and output contract.
+When the selected dataset has settlement-source metadata, the job manifest also
+copies that metadata so model and strategy reports can be audited without
+guessing which label source they targeted.
 
 ## Export Profile Contract
 
@@ -146,6 +149,10 @@ loaders or joins.
 
 New artifacts should write `run_manifest.json` when possible. Legacy exports and
 reports are still discovered by marker files, but manifests are preferred.
+Exports and reports should expose normalized source fields under
+`settlement_sources`, including `label_source` and `market_settlement_source`.
+Known values are `nws_cli_daily`, `weather_company_daily`,
+`weather_company_hourly`, and `unknown`.
 
 Recommended model report files:
 

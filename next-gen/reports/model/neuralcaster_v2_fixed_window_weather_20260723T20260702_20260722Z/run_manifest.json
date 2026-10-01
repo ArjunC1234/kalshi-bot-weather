@@ -1,0 +1,13 @@
+{
+  "artifact_type": "model_report",
+  "contract": "weather_model_report.v1",
+  "registry_id": "neuralcaster_v2",
+  "registry_kind": "model",
+  "entrypoint": "fixed_window",
+  "source_export_id": "export_20260702_20260722T143730",
+  "created_utc": "2026-07-23T18:56:23.269010+00:00",
+  "job_id": "job_20260723T185623Z_c855574c",
+  "status": "complete",
+  "updated_utc": "2026-07-23T18:57:05.264769+00:00",
+  "returncode": 0
+}

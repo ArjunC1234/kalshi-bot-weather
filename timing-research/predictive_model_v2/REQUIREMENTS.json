@@ -1,0 +1,55 @@
+{
+  "name": "causal-bracket-logit-v2",
+  "frozen_before_v2_test_execution": "2026-09-18",
+  "fit_start": "2026-08-14",
+  "fit_end": "2026-08-26",
+  "selection_start": "2026-08-28",
+  "selection_end": "2026-09-03",
+  "test_start": "2026-09-04",
+  "test_end": "2026-09-17",
+  "entry_adverse_dollars": 0.01,
+  "fee_multipliers": [1, 2],
+  "one_trade_per_event": true,
+  "minimum_displayed_ask_depth": 1.0,
+  "model_candidates": [
+    {"name": "weather_logit_c0.1", "use_market": false, "c": 0.1},
+    {"name": "weather_logit_c1.0", "use_market": false, "c": 1.0},
+    {"name": "market_weather_logit_c0.1", "use_market": true, "c": 0.1},
+    {"name": "market_weather_logit_c1.0", "use_market": true, "c": 1.0}
+  ],
+  "candidate_grid": {
+    "side": ["all", "no"],
+    "minimum_probability": [0.8, 0.85, 0.9],
+    "minimum_net_edge": [0.02, 0.05, 0.08],
+    "minimum_entry_price": [0.5, 0.65],
+    "maximum_entry_price": [0.8, 0.9, 0.95],
+    "maximum_spread": [0.03, 0.05],
+    "minimum_climate_hour": [10, 14, 18]
+  },
+  "selection_requirements": {
+    "minimum_trades": 12,
+    "minimum_hit_rate": 0.75,
+    "positive_net_pnl": true,
+    "positive_fee_stress_pnl": true,
+    "zero_availability_violations": true
+  },
+  "success_requirements": {
+    "full_14_day_window_complete": true,
+    "minimum_trades": 25,
+    "minimum_active_days": 8,
+    "minimum_cities": 4,
+    "maximum_city_trade_fraction": 0.4,
+    "minimum_hit_rate": 0.8,
+    "minimum_iid_exact_95_hit_lower_bound": 0.65,
+    "positive_net_pnl": true,
+    "positive_fee_stress_pnl": true,
+    "positive_day_bootstrap_95_lower_bound": true,
+    "positive_pnl_in_each_seven_day_half": true,
+    "nonnegative_leave_one_city_out_pnl": true,
+    "minimum_label_coverage": 0.95,
+    "zero_availability_violations": true,
+    "zero_input_integrity_errors": true
+  },
+  "test_independence_warning": "September 4-10 outcomes were examined in prior research, so this is a strict chronological replay but not a pristine independent confirmation.",
+  "live_trading_authorized": false
+}

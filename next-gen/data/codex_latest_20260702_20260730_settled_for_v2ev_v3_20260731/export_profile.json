@@ -1,0 +1,45 @@
+{
+  "description": "Full local research export for model evaluation, quality checks, settlement analysis, and Trends visualization.",
+  "id": "weather_research_default",
+  "kind": "export_profile",
+  "label": "Weather Research Default",
+  "source": "supabase.weather",
+  "tables": {
+    "collector_runs": {
+      "required": false,
+      "source_table": "collector_runs"
+    },
+    "events": {
+      "required": true,
+      "source_table": "events"
+    },
+    "final_temperature_labels": {
+      "required": false,
+      "source_table": "final_temperature_labels"
+    },
+    "market_snapshots": {
+      "required": true,
+      "source_table": "market_snapshots"
+    },
+    "provider_errors": {
+      "required": false,
+      "source_table": "provider_errors"
+    },
+    "raw_payloads": {
+      "exclude_columns": [
+        "payload"
+      ],
+      "required": false,
+      "source_table": "raw_payloads"
+    },
+    "settlements": {
+      "required": false,
+      "source_table": "settlements"
+    },
+    "weather_snapshots": {
+      "required": true,
+      "source_table": "weather_snapshots"
+    }
+  },
+  "version": 1
+}

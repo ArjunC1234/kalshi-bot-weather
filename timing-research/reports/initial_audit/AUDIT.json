@@ -1,0 +1,32 @@
+{
+  "start": "2026-09-14T02:20:30+00:00",
+  "end": "2026-09-14T03:00:00+00:00",
+  "expected_cycles": 8,
+  "captured_cycles": 8,
+  "missing_cycles": 0,
+  "duplicate_slot_runs": 0,
+  "cycle_coverage": 1.0,
+  "valid_city_cycle_coverage": 1.0,
+  "provider_failures": 0,
+  "http_429": 0,
+  "integrity_errors": [],
+  "observation_issues": {
+    "forecast:missing_target_daytime_high": 48
+  },
+  "quote_brackets": 288,
+  "brackets_with_no_ask_size": 0,
+  "source_age_median_minutes": 378.72954373333334,
+  "source_age_over_90_minutes": 42,
+  "immutable_input_bytes": 562588,
+  "daily": [
+    {
+      "date": "2026-09-14",
+      "expected_cycles": 8,
+      "captured_cycles": 8,
+      "valid_city_cycles": 48,
+      "expected_city_cycles": 48
+    }
+  ],
+  "duplicate_copies_ignored": 0,
+  "note": "Archive presence is not proof of database sync. Missing sizes are never inferred."
+}

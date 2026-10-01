@@ -1,0 +1,5 @@
+candidate_count,mean_training_reward,model_mode,positive_training_rate,selected_count,target_date,training_dates,training_examples
+41,0.04188679245283018,fallback_raw_ev,0.6037735849056604,5,2026-08-28,21,106
+45,0.04188679245283018,fallback_raw_ev,0.6037735849056604,6,2026-08-29,21,106
+32,0.04188679245283018,fallback_raw_ev,0.6037735849056604,4,2026-08-30,21,106
+69,0.04188679245283018,fallback_raw_ev,0.6037735849056604,6,2026-08-31,21,106

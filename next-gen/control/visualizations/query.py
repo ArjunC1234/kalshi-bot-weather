@@ -19,21 +19,32 @@ AGGREGATIONS = {"count", "sum", "avg", "min", "max"}
 
 
 def execute_visualization_query(artifact_path: Path, request: dict[str, Any]) -> dict[str, Any]:
-    """Run a bounded visualization query over one artifact table.
+    """Run a bounded visualization query over one or more artifact tables.
 
     The request is intentionally JSON-shaped so it can be used from the HTTP
     server and tests without coupling to a UI model.
     """
 
-    table = _required_string(request, "table")
-    schema = infer_table_schema(artifact_path, table)
+    tables = _query_tables(request)
+    table = tables[0]
+    schemas = {name: infer_table_schema(artifact_path, name) for name in tables}
+    schema = _merged_schema(table, schemas)
     columns = set(schema["columns"])
     if not columns:
-        raise ValueError(f"table not found or empty: {table}")
+        raise ValueError(f"table not found or empty: {', '.join(tables)}")
 
     x_field = _optional_string(request.get("x"))
     y_field = _optional_string(request.get("y"))
     group_fields = _string_list(request.get("group") or request.get("groups"))
+    join = _join_request(request.get("join"))
+    if len(tables) > 1 and join:
+        raise ValueError("join is only supported for single-base-table queries")
+    if join:
+        schemas[join["table"]] = infer_table_schema(artifact_path, join["table"])
+        schema = _joined_schema(schema, schemas[join["table"]], join)
+        columns = set(schema["columns"])
+    if len(tables) > 1 and request.get("group_by_table", True) and "source_table" not in group_fields:
+        group_fields = [*group_fields, "source_table"]
     filters = _dict(request.get("filters", {}))
     hour_blocks = _optional_int(request.get("hour_blocks") or filters.get("hour_blocks"))
     aggregation = _aggregation(request.get("aggregation"))
@@ -44,7 +55,9 @@ def execute_visualization_query(artifact_path: Path, request: dict[str, Any]) ->
         _require_column(columns, field, "group")
     _validate_filters(columns, filters)
 
-    rows = _read_rows(artifact_path, table)
+    rows = _read_query_rows(artifact_path, tables, schemas)
+    if join:
+        rows = _join_rows(rows, _read_rows(artifact_path, join["table"]), join)
     total_rows = len(rows)
     rows = [_coerce_row(row, schema) for row in rows]
     rows = [_with_hour_block(row, hour_blocks) for row in rows]
@@ -75,7 +88,8 @@ def execute_visualization_query(artifact_path: Path, request: dict[str, Any]) ->
     page_rows = rows[start:end]
 
     return {
-        "table": table,
+        "table": table if len(tables) == 1 else "__combined__",
+        "tables": tables,
         "schema": schema,
         "rows": page_rows,
         "metadata": {
@@ -97,12 +111,126 @@ def execute_visualization_query(artifact_path: Path, request: dict[str, Any]) ->
                 "groups": group_fields,
                 "hour_blocks": hour_blocks,
             },
+            "join": join or {},
             "aggregation": aggregation or {"op": "none"},
             "sampling": sample_meta,
             "decimation": decimation_meta,
             "density": density,
         },
+}
+
+
+def _query_tables(request: dict[str, Any]) -> list[str]:
+    tables = _string_list(request.get("tables"))
+    if not tables:
+        tables = [_required_string(request, "table")]
+    deduped: list[str] = []
+    for table in tables:
+        if table not in deduped:
+            deduped.append(table)
+    if len(deduped) > 12:
+        raise ValueError("at most 12 tables can be compared in one visualization query")
+    return deduped
+
+
+def _read_query_rows(
+    artifact_path: Path,
+    tables: list[str],
+    schemas: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    if len(tables) == 1:
+        return _read_rows(artifact_path, tables[0])
+    rows: list[dict[str, Any]] = []
+    for table in tables:
+        table_columns = set(schemas[table]["columns"])
+        for row in _read_rows(artifact_path, table):
+            rows.append({column: row.get(column) for column in table_columns} | {"source_table": table})
+    return rows
+
+
+def _merged_schema(table: str, schemas: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    if len(schemas) == 1:
+        return next(iter(schemas.values()))
+    shared = set.intersection(*(set(schema["columns"]) for schema in schemas.values()))
+    columns = {
+        column: _merged_column_schema([schema["columns"][column] for schema in schemas.values()])
+        for column in sorted(shared)
     }
+    columns["source_table"] = {"type": "string", "role": "dimension.table"}
+    return {
+        "table": "__combined__",
+        "tables": sorted(schemas),
+        "row_grain": [],
+        "primary_time_column": _first_existing(
+            ["target_date", "snapshot_time_utc", "snapshot_hour_utc", "entry_time_utc"],
+            set(columns),
+        ),
+        "columns": columns,
+    }
+
+
+def _joined_schema(
+    base_schema: dict[str, Any],
+    join_schema: dict[str, Any],
+    join: dict[str, Any],
+) -> dict[str, Any]:
+    columns = dict(base_schema["columns"])
+    join_columns = join_schema["columns"]
+    for key in join["keys"]:
+        if key not in columns:
+            raise ValueError(f"join key is not in base table: {key}")
+        if key not in join_columns:
+            raise ValueError(f"join key is not in joined table: {key}")
+    for field in join["fields"]:
+        if field not in join_columns:
+            raise ValueError(f"join field is not in joined table: {field}")
+        columns[f"{join['table']}.{field}"] = join_columns[field]
+    return {
+        **base_schema,
+        "columns": columns,
+        "join": {
+            "table": join["table"],
+            "keys": join["keys"],
+            "fields": join["fields"],
+        },
+    }
+
+
+def _merged_column_schema(items: list[dict[str, Any]]) -> dict[str, Any]:
+    types = {str(item.get("type") or "string") for item in items}
+    roles = [str(item.get("role") or "") for item in items if item.get("role")]
+    return {
+        "type": "number" if types == {"number"} else "string",
+        "role": roles[0] if roles and all(role == roles[0] for role in roles) else "dimension.mixed",
+    }
+
+
+def _first_existing(candidates: list[str], values: set[str]) -> str | None:
+    return next((candidate for candidate in candidates if candidate in values), None)
+
+
+def _join_rows(
+    base_rows: list[dict[str, Any]],
+    join_rows: list[dict[str, Any]],
+    join: dict[str, Any],
+) -> list[dict[str, Any]]:
+    keys = join["keys"]
+    fields = join["fields"]
+    table = join["table"]
+    index: dict[tuple[Any, ...], dict[str, Any]] = {}
+    for row in join_rows:
+        key = tuple(row.get(field) for field in keys)
+        if key not in index:
+            index[key] = row
+    output: list[dict[str, Any]] = []
+    for row in base_rows:
+        key = tuple(row.get(field) for field in keys)
+        match = index.get(key, {})
+        output.append({
+            **row,
+            **{f"{table}.{field}": match.get(field) for field in fields},
+        })
+    return output
 
 
 def _read_rows(path: Path, table: str) -> list[dict[str, Any]]:
@@ -343,6 +471,23 @@ def _aggregation(value: Any) -> dict[str, Any] | None:
     if op not in AGGREGATIONS:
         raise ValueError(f"unsupported aggregation: {op}")
     return {**value, "op": op}
+
+
+def _join_request(value: Any) -> dict[str, Any] | None:
+    if value in (None, "", False):
+        return None
+    if not isinstance(value, dict):
+        raise ValueError("join must be an object")
+    table = _optional_string(value.get("table"))
+    if not table:
+        raise ValueError("join.table is required")
+    keys = _string_list(value.get("keys"))
+    if not keys:
+        raise ValueError("join.keys is required")
+    fields = _string_list(value.get("fields"))
+    if not fields:
+        raise ValueError("join.fields is required")
+    return {"table": table, "keys": keys, "fields": fields}
 
 
 def _validate_filters(columns: set[str], filters: dict[str, Any]) -> None:

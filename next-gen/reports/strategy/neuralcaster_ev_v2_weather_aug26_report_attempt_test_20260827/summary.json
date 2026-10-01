@@ -1,0 +1,33 @@
+{
+  "mode": "neuralcaster_ev_strategy",
+  "data_path": "data/current_20260701_20260827_lightweight",
+  "model_report": "reports/model/neuralcaster_v2_weather_current_20260701_20260826_rolling14",
+  "config": {
+    "start_date": "2026-08-27",
+    "end_date": "2026-08-27",
+    "min_ev": 0.02,
+    "max_spread": 0.1,
+    "min_entry_price": 0.5,
+    "max_entry_price": 0.65,
+    "daily_budget": 40.0,
+    "max_order_cost": 3.0,
+    "max_contracts_per_order": 20,
+    "max_no_contracts_per_order": 10,
+    "max_positions_per_event": 1,
+    "allow_yes": true,
+    "allow_no": true,
+    "entry_policy": "best-ev",
+    "min_hours_elapsed": null
+  },
+  "signals": 0,
+  "orders": 0,
+  "trades": 0,
+  "total_contracts": 0.0,
+  "total_risk": 0.0,
+  "total_pnl": 0.0,
+  "roi": 0.0,
+  "hit_rate": 0.0,
+  "max_drawdown": 0.0,
+  "mean_clv": null,
+  "positive_clv_rate": null
+}

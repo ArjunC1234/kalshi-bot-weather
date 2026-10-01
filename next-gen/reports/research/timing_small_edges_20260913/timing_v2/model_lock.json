@@ -1,0 +1,17 @@
+{
+  "locked_at": "2026-09-13T21:52:57.088119+00:00",
+  "models_sha256": "e6b32e523a3cd06f9e7c7746a7183a85a2fe61df56cc22600143740c558d357e",
+  "input_sha256": {
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\timing_history_verified_20260701_20260901\\market_snapshots.json.gz": "7015cfa4f6c435074bb1febd1f057e05bbdf840663fdc152d2aa61592eecb218",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\timing_history_verified_20260701_20260901\\weather_snapshots.json.gz": "19ce9d39860f31be01d24f9b27d9a8d336d598444669305a3d4abedf7bf1c3b4",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\timing_history_verified_20260701_20260901\\events.json.gz": "63d572be5330ca1583399b652b3a0948d42ac9b80f9695adc5ba358793a13c42",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\timing_history_verified_20260701_20260901\\settlements.json.gz": "b5868d1d811fc1ed84eec654612b40b95fb6589b006cae352da41455c49e4258",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\timing_fresh_verified_20260901_20260912\\market_snapshots.json.gz": "68e0da6dfe3bd3239d63309adffd956f3b8ef5055cc2560e64694719c4ae2de8",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\timing_fresh_verified_20260901_20260912\\weather_snapshots.json.gz": "5f3f7bb33a0934bac7d2fd6e6f4763cebb6e7ab0afc4bb6d67e26dc8e5f05977",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\timing_fresh_verified_20260901_20260912\\events.json.gz": "eda0924143e4bb328d8e3241ac181ade608799413e68349c88e72650e095f709",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\timing_fresh_verified_20260901_20260912\\settlements.json.gz": "cd36c535518b2edacfb0bea7319b0490141500c0f621b2a9ad35fe5b2d372571",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\timing_history_verified_20260701_20260901\\source_receipts.json.gz": "0e8e23898012648069b74a42862e3d3890ac7009ab1ccba84cf706439af0cf2b",
+    "C:\\Users\\Arjun\\Desktop\\Coding Projects\\kalshi-bot-weather\\next-gen\\data\\timing_fresh_verified_20260901_20260912\\source_receipts.json.gz": "8d611421319b2fbd2a9d51ebc245d1af81fc29cadce477637817f756e4c860ad"
+  },
+  "note": "Saved before evaluation metrics. Transition labels and probe markouts were materialized before fitting; only pre-cutoff price labels entered fitting. No evaluation-based model or parameter selection."
+}

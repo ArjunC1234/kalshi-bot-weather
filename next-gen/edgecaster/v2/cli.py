@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import argparse
 
-from edgecaster.v2.evaluate import run_fixed_window, run_rolling_eval
+from edgecaster.v2.evaluate import (
+    run_fixed_window,
+    run_rolling_eval,
+    run_validation_gate_fixed_window,
+)
 from edgecaster.v2.model import EdgecasterV2Config
 
 
@@ -17,6 +21,17 @@ def main(argv: list[str] | None = None) -> int:
     fixed.add_argument("--train-end", required=True)
     fixed.add_argument("--test-start", required=True)
     fixed.add_argument("--test-end", required=True)
+
+    validation_gate = subparsers.add_parser(
+        "validation-gate-fixed-window",
+        help="choose a gate on the held-out validation day and apply it to fixed test dates",
+    )
+    _add_common(validation_gate)
+    validation_gate.add_argument("--train-start", required=True)
+    validation_gate.add_argument("--train-end", required=True)
+    validation_gate.add_argument("--test-start", required=True)
+    validation_gate.add_argument("--test-end", required=True)
+    validation_gate.add_argument("--min-validation-trades", type=int, default=5)
 
     rolling = subparsers.add_parser("rolling-eval", help="walk-forward Edgecaster v2 evaluation")
     _add_common(rolling)
@@ -35,6 +50,18 @@ def main(argv: list[str] | None = None) -> int:
             args.test_start,
             args.test_end,
             config,
+        )
+    elif args.command == "validation-gate-fixed-window":
+        summary = run_validation_gate_fixed_window(
+            args.data,
+            args.model_report,
+            args.output,
+            args.train_start,
+            args.train_end,
+            args.test_start,
+            args.test_end,
+            config,
+            min_validation_trades=args.min_validation_trades,
         )
     elif args.command == "rolling-eval":
         summary = run_rolling_eval(

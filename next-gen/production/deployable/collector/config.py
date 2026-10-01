@@ -103,6 +103,8 @@ class Settings:
     supabase_storage_bucket: str
     database_url: str | None
     collector_data_dir: Path
+    weather_company_api_key: str | None
+    weather_company_daily_label_url_template: str | None
 
 
 def load_dotenv(path: Path = Path(".env")) -> None:
@@ -124,6 +126,10 @@ def settings_from_env() -> Settings:
         supabase_storage_bucket=os.environ.get("SUPABASE_STORAGE_BUCKET", DEFAULT_BUCKET),
         database_url=os.environ.get("DATABASE_URL"),
         collector_data_dir=Path(os.environ.get("COLLECTOR_DATA_DIR", DEFAULT_DATA_DIR)),
+        weather_company_api_key=os.environ.get("WEATHER_COMPANY_API_KEY"),
+        weather_company_daily_label_url_template=os.environ.get(
+            "WEATHER_COMPANY_DAILY_LABEL_URL_TEMPLATE"
+        ),
     )
 
 

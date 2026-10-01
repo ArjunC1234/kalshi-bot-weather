@@ -1,0 +1,356 @@
+{
+  "preferred_challenger": "post_weather",
+  "training": {
+    "mixed": {
+      "events": 80,
+      "rows": 480,
+      "first_target": "2026-08-06",
+      "last_target": "2026-08-23",
+      "latest_label_receipt": "2026-08-24T14:01:25.001607+00:00",
+      "rule_sources": {
+        "weather_company": 42,
+        "nws": 38
+      }
+    },
+    "post": {
+      "events": 42,
+      "rows": 252,
+      "first_target": "2026-08-14",
+      "last_target": "2026-08-23",
+      "latest_label_receipt": "2026-08-24T14:01:25.001607+00:00",
+      "rule_sources": {
+        "weather_company": 42
+      }
+    }
+  },
+  "calibration": {
+    "events": 18,
+    "rows": 108,
+    "first_target": "2026-08-24",
+    "last_target": "2026-08-27",
+    "latest_label_receipt": "2026-08-28T15:00:39.039348+00:00",
+    "rule_sources": {
+      "weather_company": 18
+    }
+  },
+  "evaluation": {
+    "events": 61,
+    "rows": 366,
+    "first_target": "2026-08-28",
+    "last_target": "2026-09-10",
+    "latest_label_receipt": "2026-09-11T14:00:34.968137+00:00",
+    "rule_sources": {
+      "weather_company": 61
+    }
+  },
+  "input_audits": {
+    "history": {
+      "path": "data\\profitability_history_verified_20260701_20260901",
+      "quotes": 49152,
+      "joined_quotes": 49152,
+      "settled_events": 354,
+      "settled_date_min": "2026-07-01",
+      "settled_date_max": "2026-09-01",
+      "settled_events_by_date": {
+        "2026-07-01": 6,
+        "2026-07-02": 6,
+        "2026-07-03": 6,
+        "2026-07-04": 6,
+        "2026-07-05": 6,
+        "2026-07-06": 6,
+        "2026-07-07": 6,
+        "2026-07-08": 6,
+        "2026-07-09": 6,
+        "2026-07-10": 6,
+        "2026-07-11": 6,
+        "2026-07-12": 6,
+        "2026-07-13": 6,
+        "2026-07-14": 6,
+        "2026-07-15": 6,
+        "2026-07-16": 6,
+        "2026-07-17": 6,
+        "2026-07-18": 6,
+        "2026-07-19": 6,
+        "2026-07-20": 6,
+        "2026-07-21": 6,
+        "2026-07-22": 6,
+        "2026-07-23": 6,
+        "2026-07-24": 6,
+        "2026-07-25": 6,
+        "2026-07-26": 6,
+        "2026-07-27": 6,
+        "2026-07-28": 6,
+        "2026-07-29": 6,
+        "2026-07-30": 6,
+        "2026-07-31": 6,
+        "2026-08-01": 6,
+        "2026-08-06": 6,
+        "2026-08-07": 6,
+        "2026-08-08": 6,
+        "2026-08-09": 6,
+        "2026-08-10": 6,
+        "2026-08-11": 6,
+        "2026-08-12": 6,
+        "2026-08-13": 6,
+        "2026-08-14": 6,
+        "2026-08-15": 6,
+        "2026-08-16": 6,
+        "2026-08-17": 6,
+        "2026-08-18": 6,
+        "2026-08-19": 6,
+        "2026-08-20": 6,
+        "2026-08-21": 6,
+        "2026-08-22": 6,
+        "2026-08-23": 6,
+        "2026-08-24": 6,
+        "2026-08-25": 6,
+        "2026-08-26": 6,
+        "2026-08-27": 6,
+        "2026-08-28": 6,
+        "2026-08-29": 6,
+        "2026-08-30": 6,
+        "2026-08-31": 6,
+        "2026-09-01": 6
+      },
+      "known_future_weather_snapshots": 1294,
+      "identical_event_time_duplicates_removed": 0,
+      "rule_source_quote_counts": {
+        "nws": 32958,
+        "weather_company": 16194
+      },
+      "quote_size_columns_present": true,
+      "verified_depth_rows": 4590,
+      "complete_availability_metadata_rows": 4590,
+      "actual_collection_timestamps_present": false
+    },
+    "fresh": {
+      "path": "data\\profitability_fresh_verified_20260901_20260912",
+      "quotes": 10044,
+      "joined_quotes": 10044,
+      "settled_events": 65,
+      "settled_date_min": "2026-09-01",
+      "settled_date_max": "2026-09-11",
+      "settled_events_by_date": {
+        "2026-09-01": 6,
+        "2026-09-02": 6,
+        "2026-09-03": 6,
+        "2026-09-04": 6,
+        "2026-09-05": 6,
+        "2026-09-06": 6,
+        "2026-09-07": 6,
+        "2026-09-08": 6,
+        "2026-09-09": 6,
+        "2026-09-10": 6,
+        "2026-09-11": 5
+      },
+      "known_future_weather_snapshots": 150,
+      "identical_event_time_duplicates_removed": 0,
+      "rule_source_quote_counts": {
+        "weather_company": 10044
+      },
+      "quote_size_columns_present": true,
+      "verified_depth_rows": 1968,
+      "complete_availability_metadata_rows": 1968,
+      "actual_collection_timestamps_present": false
+    }
+  },
+  "models": {
+    "raw_market": {
+      "log_loss": 0.5396545946365892,
+      "brier": 0.3242298758386224,
+      "trading": {
+        "trades": 0,
+        "settled_trades": 0,
+        "wins": 0,
+        "unsettled_trades": 0,
+        "hit_rate": null,
+        "net_pnl": 0.0,
+        "fees": 0.0,
+        "gross_pnl": 0.0,
+        "cash_debit": 0.0,
+        "roi": null,
+        "contracts": 0.0,
+        "breakeven_contract_hit_rate": null,
+        "contract_hit_rate": null,
+        "max_daily_drawdown": 0.0,
+        "mean_probability": null,
+        "day_bootstrap_pnl_95_interval": [
+          0.0,
+          0.0
+        ],
+        "day_bootstrap_hit_95_interval": [
+          null,
+          null
+        ]
+      }
+    },
+    "mixed_market": {
+      "log_loss": 0.5104641848407432,
+      "brier": 0.3229934830984161,
+      "trading": {
+        "trades": 0,
+        "settled_trades": 0,
+        "wins": 0,
+        "unsettled_trades": 0,
+        "hit_rate": null,
+        "net_pnl": 0.0,
+        "fees": 0.0,
+        "gross_pnl": 0.0,
+        "cash_debit": 0.0,
+        "roi": null,
+        "contracts": 0.0,
+        "breakeven_contract_hit_rate": null,
+        "contract_hit_rate": null,
+        "max_daily_drawdown": 0.0,
+        "mean_probability": null,
+        "day_bootstrap_pnl_95_interval": [
+          0.0,
+          0.0
+        ],
+        "day_bootstrap_hit_95_interval": [
+          null,
+          null
+        ]
+      }
+    },
+    "mixed_weather": {
+      "log_loss": 0.5104641848407432,
+      "brier": 0.3229934830984161,
+      "trading": {
+        "trades": 0,
+        "settled_trades": 0,
+        "wins": 0,
+        "unsettled_trades": 0,
+        "hit_rate": null,
+        "net_pnl": 0.0,
+        "fees": 0.0,
+        "gross_pnl": 0.0,
+        "cash_debit": 0.0,
+        "roi": null,
+        "contracts": 0.0,
+        "breakeven_contract_hit_rate": null,
+        "contract_hit_rate": null,
+        "max_daily_drawdown": 0.0,
+        "mean_probability": null,
+        "day_bootstrap_pnl_95_interval": [
+          0.0,
+          0.0
+        ],
+        "day_bootstrap_hit_95_interval": [
+          null,
+          null
+        ]
+      }
+    },
+    "post_market": {
+      "log_loss": 0.510320486333306,
+      "brier": 0.32310264462149574,
+      "trading": {
+        "trades": 0,
+        "settled_trades": 0,
+        "wins": 0,
+        "unsettled_trades": 0,
+        "hit_rate": null,
+        "net_pnl": 0.0,
+        "fees": 0.0,
+        "gross_pnl": 0.0,
+        "cash_debit": 0.0,
+        "roi": null,
+        "contracts": 0.0,
+        "breakeven_contract_hit_rate": null,
+        "contract_hit_rate": null,
+        "max_daily_drawdown": 0.0,
+        "mean_probability": null,
+        "day_bootstrap_pnl_95_interval": [
+          0.0,
+          0.0
+        ],
+        "day_bootstrap_hit_95_interval": [
+          null,
+          null
+        ]
+      }
+    },
+    "post_weather": {
+      "log_loss": 0.510320486333306,
+      "brier": 0.32310264462149574,
+      "trading": {
+        "trades": 0,
+        "settled_trades": 0,
+        "wins": 0,
+        "unsettled_trades": 0,
+        "hit_rate": null,
+        "net_pnl": 0.0,
+        "fees": 0.0,
+        "gross_pnl": 0.0,
+        "cash_debit": 0.0,
+        "roi": null,
+        "contracts": 0.0,
+        "breakeven_contract_hit_rate": null,
+        "contract_hit_rate": null,
+        "max_daily_drawdown": 0.0,
+        "mean_probability": null,
+        "day_bootstrap_pnl_95_interval": [
+          0.0,
+          0.0
+        ],
+        "day_bootstrap_hit_95_interval": [
+          null,
+          null
+        ]
+      }
+    }
+  },
+  "comparisons": {
+    "mixed_weather minus mixed_market": {
+      "events": 61,
+      "mean_log_loss_delta": 0.0,
+      "day_bootstrap_95_interval": [
+        0.0,
+        0.0
+      ]
+    },
+    "post_weather minus post_market": {
+      "events": 61,
+      "mean_log_loss_delta": 0.0,
+      "day_bootstrap_95_interval": [
+        0.0,
+        0.0
+      ]
+    },
+    "post_weather minus mixed_weather": {
+      "events": 61,
+      "mean_log_loss_delta": -0.00014369850743740055,
+      "day_bootstrap_95_interval": [
+        -0.0007432863610828667,
+        0.00046829876673573336
+      ]
+    },
+    "post_market minus mixed_market": {
+      "events": 61,
+      "mean_log_loss_delta": -0.00014369850743740055,
+      "day_bootstrap_95_interval": [
+        -0.0007432863610828667,
+        0.00046829876673573336
+      ]
+    },
+    "post_weather minus raw_market": {
+      "events": 61,
+      "mean_log_loss_delta": -0.02933410830328327,
+      "day_bootstrap_95_interval": [
+        -0.06069285946986215,
+        0.002300061024389899
+      ]
+    }
+  },
+  "qualification_checks": {
+    "lower_log_loss_than_raw_market": true,
+    "lower_log_loss_than_matched_market": false,
+    "paired_interval_upper_below_zero": false,
+    "at_least_twenty_trades": false,
+    "observed_hit_rate_at_least_eighty_percent": false,
+    "positive_net_profit": false,
+    "positive_each_week": false
+  },
+  "forward_qualified": false
+}
