@@ -7,6 +7,7 @@ This folder mirrors the server-side directory deployed to `/opt/kalshi-weather-n
 - Collector v3 under `collector/`.
 - Runtime `requirements.txt`.
 - `.env.example` templates with placeholder values only.
+- Example credential templates such as `kalshi_private_key.example.pem`.
 - `systemd/` service and timer files.
 - Minimal production entrypoints such as `bot.py` placeholders.
 
@@ -19,6 +20,10 @@ This folder mirrors the server-side directory deployed to `/opt/kalshi-weather-n
 - Local frozen exports.
 - Legacy experimentation scripts.
 - Real credentials in tracked files.
+
+Private keys should be copied onto the server as local-only files, for example
+`kalshi_private_key.local.pem`, and referenced through environment variables
+such as `KALSHI_PRIVATE_KEY_PATH`.
 
 ## Collector v3 Commands
 
